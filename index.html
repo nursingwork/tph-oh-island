@@ -1,0 +1,3118 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>職醫守護島 ｜ 衛生福利部臺北醫院 職業醫學科</title>
+
+  <!-- GitHub Pages 專屬 SEO 與社群卡片中繼標籤 (Open Graph / Meta) -->
+  <meta name="description" content="衛生福利部臺北醫院職業醫學科「職醫守護島」3D 互動島嶼。以臺北醫院為地理核心，守護新莊、三重、五股、板橋、中和、台北市企業特約臨場服務、職能復健與勞能減損鑑定。">
+  <meta name="keywords" content="職業醫學科,部立臺北醫院,新莊,三重,五股,板橋,中和,台北市,臨場健康服務,職災職能復健,勞工健康保護規則,勞動能力減損鑑定,職興市場,蔡旻翰,林義哲">
+  <meta name="author" content="衛生福利部臺北醫院 職業醫學科">
+  <meta name="theme-color" content="#060913">
+
+  <!-- Open Graph / Facebook / LINE / Threads 連結分享預覽卡片 -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="職醫守護島 ｜ 衛生福利部臺北醫院 職業醫學科">
+  <meta property="og:description" content="以部立臺北醫院為地理核心，放射守護新莊、三重、五股、板橋、中和、台北市企業法定特約臨場與安心復工。">
+  <meta property="og:site_name" content="衛福部臺北醫院 職業醫學科">
+
+  <!-- Twitter / X 預覽卡片 -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="職醫守護島 ｜ 衛生福利部臺北醫院 職業醫學科">
+  <meta name="twitter:description" content="探索 3D 職醫守護島！雙星守護陣容，以臺北醫院為核心守護雙北各區企業。">
+
+  <!-- 內嵌 SVG Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              400: '#2dd4bf',
+              500: '#14b8a6',
+              600: '#0d9488',
+              900: '#134e4a'
+            },
+            medblue: {
+              400: '#38bdf8',
+              500: '#0284c7',
+              600: '#0369a1',
+              900: '#0c4a6e'
+            },
+            accent: {
+              gold: '#fbbf24',
+              orange: '#f97316',
+              violet: '#8b5cf6'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Inter"', '"Noto Sans TC"', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Three.js (r128), OrbitControls, & Tween.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #060913;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #webgl-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      z-index: 1;
+    }
+
+    /* 高奢晶透毛玻璃 */
+    .glass-morphism {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+    html:not(.dark) .glass-morphism {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.07);
+    }
+
+    /* 隱藏滾動條 */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* 呼吸脈衝霓虹光感 */
+    @keyframes neonGlow {
+      0%, 100% { opacity: 0.55; transform: scale(1); filter: drop-shadow(0 0 10px rgba(20, 184, 166, 0.4)); }
+      50% { opacity: 1; transform: scale(1.02); filter: drop-shadow(0 0 20px rgba(20, 184, 166, 0.8)); }
+    }
+    .neon-pulse {
+      animation: neonGlow 3s infinite ease-in-out;
+    }
+
+    /* 聲波跳動動畫 */
+    @keyframes barWave {
+      0%, 100% { height: 4px; }
+      50% { height: 16px; }
+    }
+    .audio-bar-1 { animation: barWave 1.2s infinite ease-in-out; }
+    .audio-bar-2 { animation: barWave 0.8s infinite ease-in-out 0.2s; }
+    .audio-bar-3 { animation: barWave 1.4s infinite ease-in-out 0.4s; }
+
+    /* 3D 懸浮互動地標 Pin 樣式 */
+    .island-pin {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      pointer-events: auto;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s ease, filter 0.3s ease;
+      will-change: transform, opacity;
+      z-index: 15;
+    }
+    .island-pin:hover {
+      transform: translate(-50%, -108%) scale(1.06);
+      z-index: 25;
+    }
+    .island-pin.dimmed {
+      opacity: 0.25 !important;
+      filter: grayscale(80%);
+      pointer-events: none;
+    }
+    .island-pin.highlight {
+      transform: translate(-50%, -110%) scale(1.1);
+      filter: drop-shadow(0 0 16px rgba(45, 212, 191, 0.9));
+      z-index: 30;
+    }
+
+    /* 地區專屬 Pin 樣式 */
+    .region-pin {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      pointer-events: auto;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s ease, filter 0.3s ease;
+      will-change: transform, opacity;
+      z-index: 14;
+    }
+    .region-pin:hover {
+      transform: translate(-50%, -108%) scale(1.08);
+      z-index: 26;
+    }
+
+    /* 標籤脈衝瞄準環 */
+    @keyframes pinPulse {
+      0% { transform: scale(0.9); opacity: 0.8; box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.6); }
+      70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 10px rgba(45, 212, 191, 0); }
+      100% { transform: scale(0.9); opacity: 0.8; box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); }
+    }
+    .pin-beacon {
+      animation: pinPulse 2s infinite ease-in-out;
+    }
+
+    @keyframes regionPulse {
+      0% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 0 0 rgba(147, 197, 253, 0.6); }
+      70% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 0 8px rgba(147, 197, 253, 0); }
+      100% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 0 0 rgba(147, 197, 253, 0); }
+    }
+    .region-beacon {
+      animation: regionPulse 2.4s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="text-slate-100 transition-colors duration-700">
+
+  <!-- ================= 3D WEBGL CANVAS ================= -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- ================= 3D 投影懸浮互動標籤層 ================= -->
+  <div id="pins-container" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
+
+  <!-- ================= 頂部全景 HUD 導航列 ================= -->
+  <header class="absolute top-4 left-4 right-4 md:top-6 md:left-8 md:right-8 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pointer-events-none z-20">
+    
+    <!-- 機構主徽章 -->
+    <div class="glass-morphism px-4 py-2.5 rounded-2xl pointer-events-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-medblue-500 flex items-center justify-center text-white shadow-lg font-bold text-xl neon-pulse">
+          <span>🩺</span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/20">EST. 2001</span>
+            <span class="text-[11px] text-slate-400 font-medium">公立區域教學醫院 · 雙北地理核心</span>
+          </div>
+          <h1 class="text-sm md:text-base font-extrabold tracking-tight text-white flex items-center gap-1.5">
+            職醫守護島 <span class="text-xs font-normal text-slate-400">｜ 部立臺北醫院 職業醫學科</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- 控制工具：音效 & 即時台北時間天候切換 -->
+      <div class="flex items-center gap-2 pl-2 border-l border-white/10">
+        <!-- 音效切換 -->
+        <button id="audioToggleBtn" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-teal-400 border border-teal-500/20 transition flex items-center gap-1.5" title="空間環境音效 (Web Audio)">
+          <div class="flex items-center gap-0.5 h-4 px-0.5">
+            <span class="w-1 bg-teal-400 rounded-full audio-bar-1"></span>
+            <span class="w-1 bg-teal-400 rounded-full audio-bar-2"></span>
+            <span class="w-1 bg-teal-400 rounded-full audio-bar-3"></span>
+          </div>
+          <span class="text-[11px] font-mono hidden sm:inline" id="audioStateText">SOUND ON</span>
+        </button>
+
+        <!-- 台灣台北時間與四時辰天色切換按鈕 -->
+        <button id="timeCycleBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-amber-400 border border-amber-500/20 transition flex items-center gap-2 group" title="點擊切換四時辰天候 (自動對齊台北即時時間)">
+          <span id="timeCycleIcon" class="text-base group-hover:scale-110 transition-transform">🌙</span>
+          <div class="flex flex-col text-left leading-none">
+            <div class="flex items-center gap-1">
+              <span class="text-[9px] font-mono text-slate-400" id="taipeiClockText">台北 00:00</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" title="即時對齊中"></span>
+            </div>
+            <span class="text-[10px] font-bold text-amber-300 tracking-wide mt-0.5" id="timePeriodName">靜謐星夜</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- 身分視角切換器 + 故事巡航 -->
+    <div class="glass-morphism p-1.5 rounded-2xl pointer-events-auto flex items-center gap-1 justify-center self-center md:self-auto">
+      <button data-role="all" class="role-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-gradient-to-r from-teal-500 to-medblue-600 text-white shadow-md">
+        🌐 全島巡視
+      </button>
+      <button data-role="employer" class="role-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+        🏢 企業雇主 / HR
+      </button>
+      <button data-role="worker" class="role-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+        👷 勞工 / 傷病夥伴
+      </button>
+      <div class="w-px h-4 bg-white/10 mx-1"></div>
+      <button id="btnStartTour" class="px-3 py-1.5 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all flex items-center gap-1">
+        <span>🚀</span>
+        <span>故事巡航</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= 協作能量流線快捷區 ================= -->
+  <div class="absolute top-28 left-4 md:left-8 flex flex-wrap gap-2 pointer-events-auto z-10 max-w-[92vw] md:max-w-md">
+    <div class="glass-morphism px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+      <span>跨域協作閉環：</span>
+    </div>
+    <button id="flowBtn1" class="glass-morphism px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-teal-300 hover:border-teal-500/50 transition">
+      ⚡ 健檢滿江紅對策
+    </button>
+    <button id="flowBtn2" class="glass-morphism px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-amber-300 hover:border-amber-500/50 transition">
+      🔄 職災安心復工閉環
+    </button>
+    <button id="flowBtn3" class="glass-morphism px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-sky-300 hover:border-sky-500/50 transition">
+      🏛️ 創科使命（預防·補償·復工）
+    </button>
+    <button id="clearFlowBtn" class="glass-morphism px-2.5 py-1.5 rounded-xl text-xs text-slate-400 hover:text-rose-400 transition hidden">
+      ✕ 取消光軌
+    </button>
+  </div>
+
+  <!-- ================= 地理方位速覽浮動卡 ================= -->
+  <div id="regionHudCard" class="absolute top-28 right-4 md:right-8 glass-morphism p-4 rounded-2xl shadow-2xl z-30 pointer-events-auto opacity-0 translate-y-3 transition-all duration-300 max-w-xs w-[88vw] border border-sky-500/30 hidden">
+    <div class="flex items-start justify-between gap-3 mb-2">
+      <div class="flex items-center gap-2">
+        <span id="regionHudIcon" class="text-2xl">📍</span>
+        <div>
+          <span class="text-[10px] font-mono tracking-widest text-sky-400 font-bold block uppercase" id="regionHudCode">GEOGRAPHIC BEACON</span>
+          <h3 id="regionHudTitle" class="text-sm font-bold text-white leading-tight">地區名稱</h3>
+        </div>
+      </div>
+      <button id="closeRegionHudBtn" class="p-1 rounded-lg text-slate-400 hover:text-white transition text-xs">✕</button>
+    </div>
+
+    <div class="space-y-2 text-xs">
+      <div class="flex items-center justify-between p-2 rounded-xl bg-slate-800/80 border border-white/5">
+        <span class="text-slate-400">相對臺北醫院方位：</span>
+        <span id="regionHudBearing" class="font-bold text-amber-300">西南方 (SW)</span>
+      </div>
+      <div class="flex items-center justify-between p-2 rounded-xl bg-slate-800/80 border border-white/5">
+        <span class="text-slate-400">直線測距：</span>
+        <span id="regionHudDistance" class="font-mono font-bold text-teal-300">約 1.2 km</span>
+      </div>
+      <div class="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-slate-300 leading-relaxed text-[11px]" id="regionHudTransit">
+        思源路大本營直通，急重症與專科門診 5 分鐘特約快速覆蓋。
+      </div>
+    </div>
+
+    <button id="regionToCenterBtn" class="w-full mt-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 hover:text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 border border-sky-500/30">
+      <span>🎯 重新聚焦部立臺北醫院心臟</span>
+    </button>
+  </div>
+
+  <!-- ================= 動態敘事巡航橫幅 ================= -->
+  <div id="tourBanner" class="absolute top-44 left-1/2 transform -translate-x-1/2 glass-morphism px-5 py-3 rounded-2xl shadow-2xl z-30 pointer-events-none opacity-0 transition-all duration-500 flex items-center gap-3.5 max-w-lg w-[90vw] md:w-auto border border-teal-500/30">
+    <div id="tourStepBadge" class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-300 font-mono font-bold flex items-center justify-center text-sm border border-teal-500/40 shrink-0">
+      01
+    </div>
+    <div class="flex-1 min-w-0 pr-2">
+      <div id="tourTitle" class="text-sm font-bold text-white truncate">導覽站點名稱</div>
+      <p id="tourSubtitle" class="text-xs text-slate-300 leading-snug">導覽詳細說明</p>
+    </div>
+    <button id="btnStopTour" class="pointer-events-auto shrink-0 px-2.5 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 hover:border-rose-400 transition flex items-center gap-1 text-xs font-bold" title="中斷故事巡航">
+      <span>✕</span>
+      <span class="hidden sm:inline">中斷</span>
+    </button>
+  </div>
+
+  <!-- ================= 視角探索指南 ================= -->
+  <div class="absolute bottom-6 left-4 md:left-8 pointer-events-none hidden lg:flex items-center gap-3 text-xs text-slate-400 glass-morphism px-4 py-2.5 rounded-2xl">
+    <span class="flex items-center gap-1.5"><span class="text-teal-400">🖱️ 左鍵</span> 360° 旋轉視角</span>
+    <span>•</span>
+    <span class="flex items-center gap-1.5"><span class="text-teal-400">🖱️ 右鍵</span> 平移地圖</span>
+    <span>•</span>
+    <span class="flex items-center gap-1.5"><span class="text-teal-400">🔍 滾輪</span> 縮放</span>
+    <span>•</span>
+    <span class="flex items-center gap-1.5"><span class="text-sky-400">🧭 點擊外圍地名</span> 查看相距方位與測距</span>
+  </div>
+
+  <!-- ================= 底部精銳行動工具列 ================= -->
+  <footer class="absolute bottom-6 right-4 md:right-8 flex flex-wrap items-center gap-2 pointer-events-auto z-10">
+    <button id="btnOpenDoctors" class="glass-morphism px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold text-teal-300 hover:border-teal-400/60 hover:shadow-teal-500/10 hover:shadow-lg transition flex items-center gap-2">
+      <span>👨‍⚕️ 雙星守護陣容</span>
+    </button>
+    <button id="btnOpenMarket" class="glass-morphism px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold text-amber-300 hover:border-amber-400/60 hover:shadow-amber-500/10 hover:shadow-lg transition flex items-center gap-2">
+      <span>🏪 職興市場智庫</span>
+    </button>
+    <button id="btnOpenHistory" class="glass-morphism px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold text-sky-300 hover:border-sky-400/60 transition flex items-center gap-2">
+      <span>📜 創科2001沿革</span>
+    </button>
+    <button id="btnOpenCalc" class="glass-morphism px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold text-emerald-300 hover:border-emerald-400/60 transition flex items-center gap-2">
+      <span>🧮 臨場次數速算</span>
+    </button>
+    <button id="btnResetView" class="glass-morphism p-2.5 rounded-2xl text-slate-300 hover:text-white hover:border-white/30 transition" title="攝影機置中歸位">
+      🎯
+    </button>
+  </footer>
+
+  <!-- ================= 模組資訊抽屜式面板 ================= -->
+  <aside id="infoDrawer" class="absolute top-0 right-0 h-full w-full sm:w-[440px] lg:w-[480px] glass-morphism z-30 transform translate-x-full transition-transform duration-500 cubic-bezier(0.16, 1, 0.3, 1) flex flex-col border-l border-white/10">
+    <div class="p-6 border-b border-white/10 flex items-start justify-between">
+      <div class="flex items-center gap-3.5">
+        <div id="drawerIcon" class="w-12 h-12 rounded-2xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-2xl font-bold border border-teal-500/30 shadow-inner">
+          🏛️
+        </div>
+        <div>
+          <div id="drawerBadge" class="text-[10px] font-bold tracking-widest px-2.5 py-0.5 rounded-full inline-block mb-1 bg-teal-500/10 text-teal-300 border border-teal-500/20">
+            SERVICE MODULE
+          </div>
+          <h2 id="drawerTitle" class="text-xl font-extrabold text-white">模組名稱</h2>
+        </div>
+      </div>
+      <button id="closeDrawerBtn" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition">
+        ✕
+      </button>
+    </div>
+
+    <div class="p-6 overflow-y-auto no-scrollbar space-y-6 flex-1">
+      <div class="bg-teal-500/10 p-4 rounded-2xl border border-teal-500/20">
+        <h4 class="text-[11px] font-bold uppercase tracking-wider text-teal-400 mb-1">衛福部臺北醫院專科項管</h4>
+        <p id="drawerOfficialName" class="text-sm font-semibold text-slate-200"></p>
+      </div>
+
+      <div>
+        <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">專案定位綜覽</h4>
+        <p id="drawerDesc" class="text-sm leading-relaxed text-slate-300"></p>
+      </div>
+
+      <div>
+        <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">適法性與臨床執行規格</h4>
+        <ul id="drawerKeypoints" class="space-y-2.5 text-xs md:text-sm text-slate-300"></ul>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <div class="bg-slate-800/60 p-3.5 rounded-2xl border border-white/5">
+          <span class="text-[11px] font-bold text-medblue-400 block mb-1">🏢 企業雇主效益</span>
+          <span id="drawerEmployerBenefit" class="text-xs text-slate-300 leading-snug block"></span>
+        </div>
+        <div class="bg-slate-800/60 p-3.5 rounded-2xl border border-white/5">
+          <span class="text-[11px] font-bold text-teal-400 block mb-1">👷 工作夥伴保障</span>
+          <span id="drawerWorkerBenefit" class="text-xs text-slate-300 leading-snug block"></span>
+        </div>
+      </div>
+
+      <div class="border-t border-white/10 pt-5 mt-4 space-y-2.5">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">📍 官方臨場特約服務專線窗口</div>
+        <a href="tel:02-22765566,3242" class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 transition text-xs text-slate-200">
+          <span>📞 企業臨場諮詢熱線</span>
+          <span class="font-mono font-bold text-teal-400">分機 3242 / 3244</span>
+        </a>
+        <a href="https://www.tph.mohw.gov.tw/?aid=60&pid=225" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 transition text-xs text-slate-200">
+          <span>🌐 臺北醫院職醫科官方首頁</span>
+          <span class="text-teal-400">前往查閱 ↗</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="p-5 border-t border-white/10 bg-slate-900/60 flex gap-2">
+      <button id="drawerCtaAction" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-medblue-600 hover:from-teal-400 hover:to-medblue-500 text-white font-bold text-xs md:text-sm shadow-lg transition active:scale-[0.98]">
+        立即專案諮詢
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================= 彈出面板：雙星守護醫師陣容 ================= -->
+  <div id="doctorsModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div class="glass-morphism w-full max-w-3xl max-h-[90vh] overflow-y-auto no-scrollbar rounded-3xl p-6 md:p-8 relative border border-white/20">
+      <button id="closeDoctorsBtn" class="absolute top-6 right-6 text-slate-400 hover:text-white text-xl">✕</button>
+
+      <div class="flex items-center gap-3.5 mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-2xl font-bold border border-teal-500/30">🩺</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30">雙星守護 · 雙專科引領</span>
+            <span class="text-xs text-slate-400">衛生福利部臺北醫院 職業醫學科</span>
+          </div>
+          <h3 class="text-xl font-extrabold text-white">專科醫師陣容與跨界優勢</h3>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-teal-500/10 via-sky-500/10 to-amber-500/10 p-4 rounded-2xl border border-teal-500/20 mb-6 text-xs md:text-sm text-slate-300 leading-relaxed">
+        <strong class="text-teal-400">【公立教學醫院法定公信力 ✕ 前台積電高科技廠醫落地溝通】</strong><br>
+        蔡旻翰主任與林義哲主治醫師雙星聯手，以國家級教學醫院權威品質與一線科技業溝通語言，打造兼顧法規防禦、勞資和諧與安心復工的閉環。
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- 蔡旻翰 主任 -->
+        <div class="bg-slate-800/70 p-5 rounded-2xl border border-white/10 flex flex-col justify-between hover:border-teal-500/50 transition">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500 to-sky-600 text-white flex items-center justify-center text-2xl shadow-md">👨‍⚕️</div>
+              <div>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 inline-block mb-1">科主任 / 主任醫師</span>
+                <h4 class="text-base font-bold text-white">蔡旻翰 醫師</h4>
+              </div>
+            </div>
+            <div class="space-y-2 text-xs text-slate-300 mb-4">
+              <p><strong>學歷：</strong>臺灣大學醫學系學士、臺大環境與職業健康科學所碩士</p>
+              <p><strong>專科：</strong>職業醫學專科、家庭醫學專科、骨質疏鬆專科、安寧緩和醫學專科</p>
+              <p><strong>經歷：</strong>現任衛福部臺北醫院職醫科主任、臺大醫院環境及職業醫學部/家醫部醫師</p>
+              <div class="pt-2 border-t border-white/10">
+                <span class="font-bold text-teal-400 block mb-1">💡 核心職掌與公信力：</span>
+                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                  <li>出具之鑑定與建議書具備國家公立醫院法定最高公信力</li>
+                  <li>健檢第四級追蹤指導、四大預防指引專業簽章合規</li>
+                  <li>急重症大樓綠色通道快速轉銜後送</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2 pt-2 border-t border-white/10">
+            <a href="https://www.tph.mohw.gov.tw/?aid=51&pid=225&page_name=detail&iid=871" target="_blank" rel="noopener noreferrer" class="flex-1 py-2 px-3 text-center rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs transition">
+              蔡主任院內檔案 ↗
+            </a>
+            <a href="https://www.tph.mohw.gov.tw/?aid=60&pid=225" target="_blank" rel="noopener noreferrer" class="py-2 px-3 text-center rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs transition">
+              預約掛號
+            </a>
+          </div>
+        </div>
+
+        <!-- 林義哲 主治醫師 -->
+        <div class="bg-slate-800/70 p-5 rounded-2xl border border-white/10 flex flex-col justify-between hover:border-amber-500/50 transition">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-teal-600 text-white flex items-center justify-center text-2xl shadow-md">👨‍💻</div>
+              <div>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 inline-block mb-1">主治醫師 / 職興市場創辦人</span>
+                <h4 class="text-base font-bold text-white">林義哲 醫師</h4>
+              </div>
+            </div>
+            <div class="space-y-2 text-xs text-slate-300 mb-4">
+              <p><strong>專科：</strong>中華民國職業醫學科專科醫師</p>
+              <p><strong>經歷：</strong>前輔大醫院職業醫學科主任、前台積電專任廠醫、臺大環職部主治醫師</p>
+              <p><strong>創立智庫：</strong>職興市場 (ohsmart.blog) 創辦人</p>
+              <div class="pt-2 border-t border-white/10">
+                <span class="font-bold text-amber-400 block mb-1">💡 核心專長與勞能鑑定：</span>
+                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                  <li>勞動能力減損鑑定（車禍/工傷自費門診與法院囑託評估）</li>
+                  <li>高科技業、高壓輪班族群健康管理與白話職醫溝通</li>
+                  <li>職場不法侵害、過勞風險評估與客製化企業諮詢</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2 pt-2 border-t border-white/10">
+            <a href="https://ohsmart.blog/" target="_blank" rel="noopener noreferrer" class="flex-1 py-2 px-3 text-center rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition">
+              造訪職興市場 ↗
+            </a>
+            <a href="https://www.tph.mohw.gov.tw/?aid=51&pid=225&page_name=detail&iid=982" target="_blank" rel="noopener noreferrer" class="py-2 px-3 text-center rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs transition">
+              院內簡介 ↗
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center text-xs text-slate-400">
+        特約臨場諮詢熱線：(02) 2276-5566 分機 3242、3244 ｜ 院址：新北市新莊區思源路127號
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 彈出面板：職興市場 OH SMART 智庫 ================= -->
+  <div id="marketModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div class="glass-morphism w-full max-w-xl max-h-[90vh] overflow-y-auto no-scrollbar rounded-3xl p-6 md:p-8 relative border border-white/20">
+      <button id="closeMarketBtn" class="absolute top-6 right-6 text-slate-400 hover:text-white text-xl">✕</button>
+
+      <div class="flex items-center gap-3.5 mb-5">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-2xl font-bold border border-amber-500/30">🏪</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">ohsmart.blog · 智匯智庫</span>
+            <span class="text-xs text-slate-400">林義哲醫師 x 蔡旻翰主任</span>
+          </div>
+          <h3 class="text-xl font-extrabold text-white">職興市場 ｜ 職業醫學 x 企業臨場服務</h3>
+        </div>
+      </div>
+
+      <p class="text-xs md:text-sm text-slate-300 leading-relaxed mb-5">
+        由林義哲醫師創立，與蔡旻翰主任共同推動。堅持「誠信正直、良善與美」，為雙北企業與廣大勞動夥伴提供接地氣、高效落地、白話好懂的健康管理方針。
+      </p>
+
+      <div class="space-y-3 mb-6">
+        <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+          <h5 class="text-xs font-bold text-amber-300 mb-1 flex items-center gap-1.5"><span>⚖️</span> 勞動能力減損鑑定（車禍與工傷）</h5>
+          <p class="text-xs text-slate-300 leading-relaxed">提供門診自費鑑定與法院民事囑託鑑定，依嚴謹醫學常模判定永久性功能減損比例，建立勞資或求償訴訟的客觀基準。</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-teal-500/10 border border-teal-500/20">
+          <h5 class="text-xs font-bold text-teal-300 mb-1 flex items-center gap-1.5"><span>🏢</span> 企業臨場健康服務與四大指引</h5>
+          <p class="text-xs text-slate-300 leading-relaxed">輔導 50 人以上企業落實勞工健康保護規則，包括過勞防範、母性保護、職場霸凌防治與人因工程改善計畫。</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/20">
+          <h5 class="text-xs font-bold text-sky-300 mb-1 flex items-center gap-1.5"><span>📖</span> 實戰職醫白話專欄知識庫</h5>
+          <p class="text-xs text-slate-300 leading-relaxed">破除職災給付迷思、剖析科技業輪班生理節律與心智減壓技巧，已廣受企業人資與勞工好評分享。</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-2.5">
+        <a href="https://ohsmart.blog/" target="_blank" rel="noopener noreferrer" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold text-xs md:text-sm text-center shadow-lg transition">
+          前往造訪「職興市場」官方網站 ↗
+        </a>
+        <button id="marketToCalcBtn" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs md:text-sm font-semibold transition">
+          試算臨場服務次數
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 彈出面板：2001創科沿革與願景 ================= -->
+  <div id="historyModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div class="glass-morphism w-full max-w-2xl max-h-[90vh] overflow-y-auto no-scrollbar rounded-3xl p-6 md:p-8 relative border border-white/20">
+      <button id="closeHistoryBtn" class="absolute top-6 right-6 text-slate-400 hover:text-white text-xl">✕</button>
+
+      <div class="flex items-center gap-3.5 mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-300 flex items-center justify-center text-2xl font-bold border border-sky-500/30">📜</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">EST. 2001.12.04 · 創科歷史</span>
+            <span class="text-xs text-slate-400">衛生福利部臺北醫院</span>
+          </div>
+          <h3 class="text-xl font-extrabold text-white">職業醫學科 發展沿革與願景</h3>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-sky-500/20 via-teal-500/20 to-transparent p-5 rounded-2xl border border-sky-500/30 mb-6">
+        <div class="flex items-baseline gap-2 mb-2">
+          <span class="font-mono text-2xl md:text-3xl font-extrabold text-sky-400">2001.12.04</span>
+          <span class="text-xs font-semibold text-slate-300">行政院衛生署公告成立</span>
+        </div>
+        <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+          本科結合專業臨床醫療與工業安全衛生專家，主動深入各大職場，深耕雙北二十餘載，秉持公立區域教學醫院責任，實踐「預防・補償・復工」三大核心閉環。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <div class="bg-slate-800/70 p-4 rounded-2xl border border-white/10">
+          <div class="text-xl mb-1.5">🛡️</div>
+          <div class="font-bold text-sm text-white mb-1">1. 預防 (Prevention)</div>
+          <p class="text-xs text-slate-400 leading-relaxed">協同工衛專家深入作業現場，辨識物理、化學及人因危害，斬斷疾病源頭。</p>
+        </div>
+        <div class="bg-slate-800/70 p-4 rounded-2xl border border-white/10">
+          <div class="text-xl mb-1.5">⚖️</div>
+          <div class="font-bold text-sm text-white mb-1">2. 補償 (Compensation)</div>
+          <p class="text-xs text-slate-400 leading-relaxed">嚴謹時序性鑑定，開立具公立醫院最高公信力之勞保職業病診斷書。</p>
+        </div>
+        <div class="bg-slate-800/70 p-4 rounded-2xl border border-white/10">
+          <div class="text-xl mb-1.5">🦾</div>
+          <div class="font-bold text-sm text-white mb-1">3. 復工 (Rehabilitation)</div>
+          <p class="text-xs text-slate-400 leading-relaxed">國家認可「職業災害勞工職能復健機構」，工作能力強化訓練與安全復工。</p>
+        </div>
+      </div>
+
+      <div class="mb-6 space-y-2.5">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400">未來發展願景：三大平衡支柱</h4>
+        <div class="p-3 rounded-xl bg-slate-800/50 border border-white/5 text-xs text-slate-300 flex items-start gap-2.5">
+          <span class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 font-bold whitespace-nowrap">專業服務</span>
+          <span>以公立區域教學醫院公信力，深耕新莊、三重、五股、板橋、中和與臺北市企業基層，落實臨場特約服務。</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-800/50 border border-white/5 text-xs text-slate-300 flex items-start gap-2.5">
+          <span class="px-2 py-0.5 rounded bg-medblue-500/20 text-medblue-300 font-bold whitespace-nowrap">教學培訓</span>
+          <span>打造職業醫學實務培訓培育中心，培育具備公衛視野與臨床實務經驗之專科醫師與護理師。</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-800/50 border border-white/5 text-xs text-slate-300 flex items-start gap-2.5">
+          <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold whitespace-nowrap">本土研究</span>
+          <span>結合大數據與流行病學開展實證醫學，建立具成本效益與永續經營之健康促進模式。</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="historyToContactBtn" class="flex-1 py-3 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs md:text-sm transition text-center shadow-lg">
+          致電洽詢特約臨場（分機 3242 / 3244）
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 彈出面板：企業臨場頻率試算機 ================= -->
+  <div id="calcModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div class="glass-morphism w-full max-w-lg rounded-3xl p-6 md:p-8 relative border border-white/20">
+      <button id="closeCalcBtn" class="absolute top-6 right-6 text-slate-400 hover:text-white text-xl">✕</button>
+
+      <div class="flex items-center gap-3.5 mb-5">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-2xl font-bold border border-emerald-500/30">🧮</div>
+        <div>
+          <h3 class="text-xl font-extrabold text-white">勞工健康保護規則 · 臨場速查</h3>
+          <p class="text-xs text-slate-400">依事業單位規模與危害等級，秒查法定醫護臨場服務次數</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 my-6">
+        <div>
+          <div class="flex justify-between text-sm mb-1.5">
+            <span class="font-medium text-slate-300">事業單位勞工總人數：</span>
+            <span id="workerCountDisplay" class="font-mono font-bold text-emerald-400 text-lg">150 人</span>
+          </div>
+          <input id="workerSlider" type="range" min="30" max="1200" step="10" value="150" class="w-full accent-emerald-500 cursor-pointer">
+          <div class="flex justify-between text-[11px] text-slate-500 mt-1">
+            <span>30人 (微型)</span>
+            <span>100人 (中型)</span>
+            <span>300人+ (大型)</span>
+            <span>1000人+</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">作業危害等級分類：</label>
+          <select id="riskSelect" class="w-full text-xs md:text-sm bg-slate-800 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-emerald-500">
+            <option value="low">第一類/第二類一般作業 (辦公行政、金融商務、服務業)</option>
+            <option value="special">特別危害健康作業 (噪音、游離輻射、粉塵、化學有機等)</option>
+          </select>
+        </div>
+
+        <div class="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 p-4 rounded-2xl border border-emerald-500/20">
+          <div class="text-xs font-semibold text-slate-400 mb-1">法定臨場服務頻率建議</div>
+          <div id="calcResultFreq" class="text-base md:text-lg font-bold text-emerald-300 mb-1.5">
+            特約醫師每年至少臨場 4 次 (每季1次)
+          </div>
+          <p id="calcResultTip" class="text-xs text-slate-300 leading-relaxed">
+            部立臺北醫院職業醫學科提供一站式合規特約醫護團隊，到廠辦理健康指導、工作環境改善評估與四大計畫落實。
+          </p>
+        </div>
+      </div>
+
+      <button id="calcToContactBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-lg transition">
+        向部立臺北醫院預約特約臨場諮詢
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= 浮動通知提示 ================= -->
+  <div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 glass-morphism px-4 py-2.5 rounded-full shadow-2xl text-xs font-semibold text-slate-100 border border-teal-500/40 opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2.5">
+    <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+    <span id="toastMsg">系統提示訊息</span>
+  </div>
+
+  <!-- ================= JAVASCRIPT: THREE.JS 3D 世界與音訊核心 ================= -->
+  <script>
+    // -------------------------------------------------------------
+    // 1. 核心資料模型
+    // -------------------------------------------------------------
+    const ISLAND_MODULES = [
+      {
+        id: 0,
+        type: 'core',
+        name: '部立臺北醫院 · 職醫心臟',
+        officialName: '衛生福利部臺北醫院 職業醫學科 (創立於2001年12月4日)',
+        role: 'both',
+        icon: '🏥',
+        badge: 'EST. 2001 · 雙北地理核心',
+        color: '#0284c7',
+        gridPos: { x: 0, z: 0 },
+        desc: '創立於 2001 年 12 月 4 日（行政院衛生署公告成立）。由蔡旻翰主任領航、林義哲主治醫師攜手，深耕雙北企業超過二十載，是具備國家級公信力之公立區域教學醫院。',
+        keypoints: [
+          '2001年12月4日由行政院衛生署公告成立，二十餘年公信歷史',
+          '三大整合性功能：主動「預防」危害、法定「補償」鑑定、安心「復工」職能復健',
+          '國家認可「職業災害勞工職能復健專業機構」合法資質',
+          '蔡旻翰主任（家醫/職醫雙專科）與林義哲醫師（前台積電廠醫）雙星駐診'
+        ],
+        employerBenefit: '20餘年公信品牌背書，全方位量身打造合法、專業臨場健康服務。',
+        workerBenefit: '從預防、診治到復能完整閉環，爭取法定補償並安全重回工作崗位。',
+        cta: '檢閱創科沿革與發展願景'
+      },
+      {
+        id: 1,
+        type: 'core',
+        name: '環境探勘哨所',
+        officialName: '1. 工作環境潛在危害評估',
+        role: 'employer',
+        icon: '📡',
+        badge: 'HAZARD ASSESSMENT',
+        color: '#f59e0b',
+        gridPos: { x: 55, z: -35 },
+        desc: '實地走入工廠與企業作業現場，辨識高溫、噪音、人因骨骼肌肉與化學毒性，在職業病或災害發生前消弭危機。',
+        keypoints: [
+          '醫師現場實地訪視，辨識物理、化學、生物及人因性危害因子',
+          '肌肉骨骼人因危害調查（KIM / RULA 評估方法）',
+          '現場作業安全衛生教育與工程/行政控制對策諮詢',
+          '協助落實職安法規危害辨識紀錄備查'
+        ],
+        employerBenefit: '及早發現作業隱患，有效降低職災補償成本與工時損失。',
+        workerBenefit: '改善惡劣人因與環境，保障工作日常不留暗傷。',
+        cta: '預約企業現場實地訪視'
+      },
+      {
+        id: 2,
+        type: 'core',
+        name: '適能選配所',
+        officialName: '2. 員工工作適應性評估',
+        role: 'both',
+        icon: '⚖️',
+        badge: 'WORK FITNESS',
+        color: '#06b6d4',
+        gridPos: { x: 60, z: 30 },
+        desc: '為一般員工及傷病勞工進行科學化工作能力評估，落實適性選配工，讓人盡其才且無負擔，避免二次重創。',
+        keypoints: [
+          '特殊健康檢查異常勞工之適性評估與面談指導',
+          '傷病員工復工前生理與心理負荷承載力客觀鑑定',
+          '職務內容與人因相容性科學分析',
+          '出具合法公正且具醫學依據之轉調配工建議書'
+        ],
+        employerBenefit: '科學化選配工，避免「因病錯置」引發後續勞資糾紛與賠償爭議。',
+        workerBenefit: '在自身身體機能許可的安全環境下工作，保障健康尊嚴。',
+        cta: '諮詢選配工鑑定服務'
+      },
+      {
+        id: 3,
+        type: 'core',
+        name: '因果真理燈塔',
+        officialName: '3. 職業病與傷害診治 (專科門診)',
+        role: 'worker',
+        icon: '🗼',
+        badge: 'DIAGNOSIS & CLINIC',
+        color: '#3b82f6',
+        gridPos: { x: 0, z: 65 },
+        desc: '專科醫師親自坐診，嚴謹釐清病症（腕隧道、椎間盤突出、職業性聽損、化學中毒等）與工作時序因果關係。',
+        keypoints: [
+          '職業疾病因果關係嚴謹醫學鑑定與病歷回溯調查',
+          '開立國家勞工保險認可之正式「職業疾病診斷書」',
+          '職業傷病勞工之臨床醫療治療與跨專科綠色通道轉介',
+          '協助勞工朋友爭取法定職災醫療給付與傷病失能給付'
+        ],
+        employerBenefit: '釐清疾病來源，客觀界定法定補償責任與非職場因素。',
+        workerBenefit: '獲得公信權威診斷書，保障勞保職災權益與醫療補助。',
+        cta: '預約臺北醫院職醫科門診'
+      },
+      {
+        id: 4,
+        type: 'core',
+        name: '復能再造基地',
+        officialName: '4. 復健與重返職場賦能 (職能復健)',
+        role: 'worker',
+        icon: '🦾',
+        badge: 'REHABILITATION',
+        color: '#10b981',
+        gridPos: { x: -60, z: 30 },
+        desc: '國家認可專門機構！提供工作強化訓練（Work Hardening）與職務再設計，協助遭遇職災勞工重建肌耐力與信心。',
+        keypoints: [
+          '功能性能力評估（FCE）精準量測生理做功能限',
+          '模擬職場環境之漸進式生理肌耐力與工具操作強化訓練',
+          '人因輔具介入、工作流程微調與職務再設計（Job Accommodation）',
+          '全程由專業職能治療師與職醫團隊追蹤復工歷程'
+        ],
+        employerBenefit: '加速熟練員工重返崗位，降低長期招募與培育新人的損失。',
+        workerBenefit: '不再畏懼回到職場，科學化重建身心戰鬥力。',
+        cta: '了解職災職能復健專案'
+      },
+      {
+        id: 5,
+        type: 'core',
+        name: '法規防禦金鐘',
+        officialName: '5. 健康促進與法規教育',
+        role: 'employer',
+        icon: '🛡️',
+        badge: 'COMPLIANCE & SHIELD',
+        color: '#8b5cf6',
+        gridPos: { x: -55, z: -35 },
+        desc: '依《職業安全衛生法》與《勞工健康保護規則》，輔導企業推動「四大指引」（人因、過勞、母性、不法侵害）並辦理健康講座。',
+        keypoints: [
+          '輔導制訂異常工作負荷促發心血管疾病（過勞）預防計畫',
+          '母性健康保護計畫（孕期與產後女性同仁友善關懷）',
+          '執行職務遭受不法侵害（職場霸凌/暴力）防護指引建置',
+          '企業專屬人因預防操與急救/慢性病健康衛教講座'
+        ],
+        employerBenefit: '百分之百符合勞檢標準，避免違規受罰，塑造幸福企業形象。',
+        workerBenefit: '享有尊重、身心平衡且免於恐懼的友善安全職場。',
+        cta: '預約企業四大計畫合規輔導'
+      },
+      {
+        id: 6,
+        type: 'core',
+        name: '公衛天樞數據塔',
+        officialName: '6. 公衛分析與計畫擬定',
+        role: 'employer',
+        icon: '📊',
+        badge: 'DATA & EPI',
+        color: '#ec4899',
+        gridPos: { x: 0, z: -65 },
+        desc: '結合職業流行病學與大數據交叉比對，針對全公司年度健檢進行第一至四級分級管理，客製年度長期健康防護對策。',
+        keypoints: [
+          '一般健檢與特殊健檢結果之綜合統計與趨勢分析',
+          '健檢第一級至第四級分級健康管理追蹤機制',
+          '三高、代謝症候群、心血管疾病大數據地圖繪製',
+          '協助人資及安衛委員會向董事會提出健康改善成效報告'
+        ],
+        employerBenefit: '數據化掌握員工健康輪廓，精準配置企業福委與醫療預算。',
+        workerBenefit: '健檢異常及早獲得專科醫師追蹤提醒，不演變成重症。',
+        cta: '洽詢健檢大數據分析服務'
+      },
+      {
+        id: 7,
+        type: 'core',
+        name: '職興市場 OH Smart',
+        officialName: '職興市場 (ohsmart.blog) · 企業臨場與勞能鑑定智庫',
+        role: 'both',
+        icon: '🏪',
+        badge: 'OH SMART MARKET',
+        color: '#d97706',
+        gridPos: { x: 75, z: 80 },
+        desc: '由主治醫師林義哲創立、科主任蔡旻翰共同推動的智庫平台。融會前台積電廠醫實務與公立醫院公信力，專精「勞動能力減損鑑定」與白話職醫專欄。',
+        keypoints: [
+          '創辦人林義哲醫師（曾任台積電專任廠醫、輔大職醫科主任）',
+          '特殊專長：車禍與職災「勞動能力減損鑑定」（自費與法院囑託）',
+          '用企業聽得懂的白話語言，把繁複醫學法規轉化為可落地執行方案',
+          '與蔡旻翰主任攜手，提供雙北企業最具公信力之臨場服務與健康講座'
+        ],
+        employerBenefit: '精準落實法規防罰，依科技業標竿建立高效率健康管理機制。',
+        workerBenefit: '客觀評估車禍或工傷之勞動能力減損程度，取得法庭信賴依據。',
+        cta: '造訪職興市場 (ohsmart.blog)'
+      },
+
+      // ========= 雙北 6 大純地理方位地標島嶼 =========
+      {
+        id: 8,
+        type: 'region',
+        name: '新莊區',
+        bearing: '西南方 (SW)',
+        distanceKm: '直線 1.2 km',
+        transit: '思源路醫療大本營直通，急重症與專科門診 5 分鐘覆蓋。',
+        code: 'REG-XINZHUANG',
+        icon: '🏭',
+        color: '#059669',
+        gridPos: { x: -135, z: 75 }
+      },
+      {
+        id: 9,
+        type: 'region',
+        name: '五股區',
+        bearing: '北北西方 (NNW)',
+        distanceKm: '直線 3.8 km',
+        transit: '緊鄰新北產業園區（五股工業區），化學與機械聚落聯防。',
+        code: 'REG-WUGU',
+        icon: '⚙️',
+        color: '#d97706',
+        gridPos: { x: -55, z: -155 }
+      },
+      {
+        id: 10,
+        type: 'region',
+        name: '三重區',
+        bearing: '東北方 (NE)',
+        distanceKm: '直線 3.5 km',
+        transit: '跨二重疏洪道快速接軌，服務五金精密代工與物流廊道。',
+        code: 'REG-SANCHONG',
+        icon: '🛠️',
+        color: '#0284c7',
+        gridPos: { x: 145, z: -85 }
+      },
+      {
+        id: 11,
+        type: 'region',
+        name: '板橋區',
+        bearing: '正南方 (S)',
+        distanceKm: '直線 2.5 km',
+        transit: '跨大漢橋即刻抵達，直達新板特區旗艦總部與遠東通訊園區。',
+        code: 'REG-BANQIAO',
+        icon: '🏙️',
+        color: '#6366f1',
+        gridPos: { x: 15, z: 165 }
+      },
+      {
+        id: 12,
+        type: 'region',
+        name: '中和區',
+        bearing: '東南方 (SE)',
+        distanceKm: '直線 5.5 km',
+        transit: '捷運環狀線直通，串聯遠東世紀廣場生醫與高科技電子聚落。',
+        code: 'REG-ZHONGHE',
+        icon: '🔬',
+        color: '#8b5cf6',
+        gridPos: { x: 155, z: 165 }
+      },
+      {
+        id: 13,
+        type: 'region',
+        name: '台北市',
+        bearing: '正東方 (E)',
+        distanceKm: '直線 7.0 km',
+        transit: '跨淡水河直通台北市政經核心，跨區提供公立教學醫院公信力支援。',
+        code: 'REG-TAIPEI-CITY',
+        icon: '🏛️',
+        color: '#ec4899',
+        gridPos: { x: 215, z: 20 }
+      }
+    ];
+
+    // 雙星守護醫師陣容（精準錨定島面高度，徹底消滅浮空與穿模）
+    const DOCTORS = [
+      {
+        id: 'tsai',
+        name: '蔡旻翰 主任',
+        title: '職業醫學科 科主任',
+        avatar: '👨‍⚕️',
+        badge: '臺大環職所碩士 · 雙專科',
+        pos: { x: 14, y: 24.5, z: 12 }, // 嚴格錨定在部立臺北醫院島面（y = 24.5）
+        color: '#0284c7',
+        desc: '部立臺北醫院職業醫學科主任，具備家醫與職業醫學雙專科，主掌臨場健康服務法定公信力與全人健康管理。'
+      },
+      {
+        id: 'lin',
+        name: '林義哲 醫師',
+        title: '職業醫學科 主治醫師',
+        avatar: '👨‍💻',
+        badge: '前台積電廠醫 · 職興市場創辦人',
+        pos: { x: 68, y: 18.5, z: 91 }, // 嚴格錨定在職興市場露台島面（y = 18.5，位於門市前方）
+        color: '#d97706',
+        desc: '曾任輔大醫院職醫科主任、台積電專任廠醫。創立「職興市場 (ohsmart.blog)」，專精勞動能力減損鑑定。'
+      }
+    ];
+
+    const TOUR_STOPS = [
+      {
+        step: '01',
+        title: '部立臺北醫院 · 創科樞紐 (2001)',
+        subtitle: '2001年12月4日由行政院衛生署公告成立，引領雙北預防、補償與復工三大整合功能。',
+        camPos: { x: 45, y: 56, z: 65 },
+        lookAt: { x: 0, y: 25, z: 0 },
+        targetModuleId: 0
+      },
+      {
+        step: '02',
+        title: '因果真理燈塔 · 專科門診',
+        subtitle: '專科醫師親自坐診，釐清病症與工作時序因果關係，開立具公立醫院最高公信力之診斷書。',
+        camPos: { x: 38, y: 52, z: 105 },
+        lookAt: { x: 0, y: 24, z: 65 },
+        targetModuleId: 3
+      },
+      {
+        step: '03',
+        title: '復能再造基地 · 國家級職能復健',
+        subtitle: '國家認可專門機構，提供生理耐力工作強化訓練與職務再設計，保障安心復工。',
+        camPos: { x: -30, y: 48, z: 65 },
+        lookAt: { x: -60, y: 22, z: 30 },
+        targetModuleId: 4
+      },
+      {
+        step: '04',
+        title: '職興市場 OH Smart · 智匯港',
+        subtitle: '林義哲醫師創立，融合前台積電廠醫實務與公立醫院公信力，專精勞動能力減損鑑定。',
+        camPos: { x: 115, y: 52, z: 120 },
+        lookAt: { x: 75, y: 20, z: 80 },
+        targetModuleId: 7
+      },
+      {
+        step: '05',
+        title: '雙北地理聯防航線 (新莊/五股/三重/板橋/中和/台北市)',
+        subtitle: '以思源路部立醫院為軸心，輻射守護雙北各大產業園區與核心政經聚落。',
+        camPos: { x: 235, y: 240, z: 295 },
+        lookAt: { x: 20, y: 0, z: 15 },
+        targetModuleId: null
+      }
+    ];
+
+    const SCENARIOS = {
+      flow1: {
+        name: '健檢滿江紅對策閉環',
+        path: [6, 2, 5],
+        color: 0x14b8a6,
+        desc: '大數據分析 ➔ 醫師適性面談 ➔ 四大預防計畫落實！'
+      },
+      flow2: {
+        name: '職災安心復工閉環',
+        path: [3, 4, 2],
+        color: 0xf59e0b,
+        desc: '專科因果診斷 ➔ 國家級職能強化 ➔ 適工安全復工證明！'
+      },
+      flow3: {
+        name: '預防・補償・復工三大整合使命',
+        path: [1, 3, 4],
+        color: 0x38bdf8,
+        desc: '創立於2001年：危害預防 ➔ 診斷補償 ➔ 職能復工賦能！'
+      }
+    };
+
+    // -------------------------------------------------------------
+    // 2. 原生合成空間音效引擎 (Web Audio API)
+    // -------------------------------------------------------------
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.oceanGain = null;
+        this.initialized = false;
+      }
+
+      init() {
+        if (this.initialized) return;
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+          this.setupAmbientOcean();
+          this.initialized = true;
+        } catch (e) {
+          console.warn('Web Audio not supported');
+        }
+      }
+
+      setupAmbientOcean() {
+        const bufferSize = this.ctx.sampleRate * 2;
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          output[i] = (b0 + b1 + b2) * 0.04;
+        }
+
+        const whiteNoise = this.ctx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+        whiteNoise.loop = true;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(320, this.ctx.currentTime);
+
+        const lfo = this.ctx.createOscillator();
+        lfo.frequency.setValueAtTime(0.12, this.ctx.currentTime);
+        const lfoGain = this.ctx.createGain();
+        lfoGain.gain.setValueAtTime(160, this.ctx.currentTime);
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        lfo.start();
+
+        this.oceanGain = this.ctx.createGain();
+        this.oceanGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+
+        whiteNoise.connect(filter);
+        filter.connect(this.oceanGain);
+        this.oceanGain.connect(this.ctx.destination);
+        whiteNoise.start();
+      }
+
+      playTone(freq, type = 'sine', duration = 0.4, gainLevel = 0.06) {
+        if (!this.enabled || !this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+        gain.gain.setValueAtTime(gainLevel, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+      }
+
+      playHover() {
+        this.playTone(523.25, 'sine', 0.25, 0.025);
+      }
+
+      playClick() {
+        this.playTone(659.25, 'triangle', 0.35, 0.05);
+        setTimeout(() => this.playTone(783.99, 'sine', 0.45, 0.04), 80);
+      }
+
+      playChime() {
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+          setTimeout(() => this.playTone(f, 'sine', 0.8, 0.04), i * 90);
+        });
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        if (this.oceanGain) {
+          this.oceanGain.gain.setValueAtTime(this.enabled ? 0.04 : 0, this.ctx.currentTime);
+        }
+        return this.enabled;
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // -------------------------------------------------------------
+    // 3. 台灣台北時間 (UTC+8) 與四時辰天色光影系統
+    // -------------------------------------------------------------
+    const TIME_PRESETS = [
+      {
+        id: 0,
+        name: '晨曦朝陽',
+        timeSpan: '05:00 - 10:59',
+        icon: '🌅',
+        skyColor: 0xdbeafe,
+        fogColor: 0xe0f2fe,
+        fogDensity: 0.00065,
+        sunColor: 0xffedd5,
+        sunIntensity: 1.35,
+        sunPos: [-160, 110, 140],
+        ambientIntensity: 0.72,
+        oceanColor: 0x0284c7
+      },
+      {
+        id: 1,
+        name: '澄澈正午',
+        timeSpan: '11:00 - 16:59',
+        icon: '☀️',
+        skyColor: 0xbfe5fb,
+        fogColor: 0xdbf0fd,
+        fogDensity: 0.00055,
+        sunColor: 0xffffff,
+        sunIntensity: 1.55,
+        sunPos: [60, 220, 60],
+        ambientIntensity: 0.85,
+        oceanColor: 0x0284c7
+      },
+      {
+        id: 2,
+        name: '暮色微醺',
+        timeSpan: '17:00 - 19:59',
+        icon: '🌇',
+        skyColor: 0x4a1d24,
+        fogColor: 0x3f1d2e,
+        fogDensity: 0.00075,
+        sunColor: 0xf97316,
+        sunIntensity: 1.45,
+        sunPos: [180, 68, -120],
+        ambientIntensity: 0.52,
+        oceanColor: 0x0c4a6e
+      },
+      {
+        id: 3,
+        name: '靜謐星夜',
+        timeSpan: '20:00 - 04:59',
+        icon: '🌙',
+        skyColor: 0x050814,
+        fogColor: 0x070c1b,
+        fogDensity: 0.0008,
+        sunColor: 0x38bdf8,
+        sunIntensity: 0.75,
+        sunPos: [-90, 150, 110],
+        ambientIntensity: 0.38,
+        oceanColor: 0x082f49
+      }
+    ];
+
+    let timeMode = 3;
+    let isManualTimeOverride = false;
+
+    function getTaipeiTime() {
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('zh-TW', {
+        timeZone: 'Asia/Taipei',
+        hourCycle: 'h23',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric'
+      });
+      const parts = formatter.formatToParts(now);
+      const h = parseInt(parts.find(p => p.type === 'hour').value, 10);
+      const m = parseInt(parts.find(p => p.type === 'minute').value, 10);
+      const s = parseInt(parts.find(p => p.type === 'second').value, 10);
+      const pad = n => String(n).padStart(2, '0');
+      return {
+        hour: h,
+        minute: m,
+        second: s,
+        displayStr: `${pad(h)}:${pad(m)}:${pad(s)}`
+      };
+    }
+
+    function getTaipeiPeriodMode(hour) {
+      if (hour >= 5 && hour < 11) return 0;
+      if (hour >= 11 && hour < 17) return 1;
+      if (hour >= 17 && hour < 20) return 2;
+      return 3;
+    }
+
+    function startTaipeiClockMonitor() {
+      const updateClock = () => {
+        const tp = getTaipeiTime();
+        const clockEl = document.getElementById('taipeiClockText');
+        if (clockEl) {
+          clockEl.textContent = `台北 ${tp.displayStr.slice(0, 5)}`;
+        }
+
+        if (!isManualTimeOverride) {
+          const autoMode = getTaipeiPeriodMode(tp.hour);
+          if (autoMode !== timeMode) {
+            applyTimeMode(autoMode, true, false);
+          }
+        }
+      };
+
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
+    // -------------------------------------------------------------
+    // 4. THREE.JS 3D 世界架構
+    // -------------------------------------------------------------
+    const canvas = document.getElementById('webgl-canvas');
+    let scene, camera, renderer, controls;
+    let oceanMesh, islandGroup, synergyCurveGroup, regionVectorGroup;
+    let raycaster, mouse;
+    let selectedModule = null;
+    let activeRole = 'all';
+    let activeFlow = null;
+    let animationFrameId;
+    let clock = new THREE.Clock();
+    let dirLight, hemiLight, ambientLight;
+
+    const OVERVIEW_CAMERA_POS = { x: 235, y: 240, z: 295 };
+    const OVERVIEW_TARGET_POS = { x: 20, y: 0, z: 15 };
+
+    let pointerDownPos = { x: 0, y: 0 };
+    let isDraggingCanvas = false;
+
+    const interactiveMeshes = [];
+    const interactiveDoctors = [];
+    const rotatingElements = [];
+    const pinElements = [];
+
+    // =========================================================================
+    // 臺北盆地有機山海測繪模型（嚴格挖除陸地、為所有島嶼注水，保留開闊水域）
+    // =========================================================================
+    function getTerrainElevation(x, z) {
+      const distCenter = Math.hypot(x, z);
+      const theta = Math.atan2(z, x);
+      const seaBed = -28;
+
+      const islandClearingZones = [
+        { x: 0, z: 0, r: 125 },
+        { x: -135, z: 75, r: 68 },
+        { x: -55, z: -155, r: 68 },
+        { x: 145, z: -85, r: 68 },
+        { x: 15, z: 165, r: 68 },
+        { x: 155, z: 165, r: 68 },
+        { x: 215, z: 20, r: 72 }
+      ];
+
+      for (let i = 0; i < islandClearingZones.length; i++) {
+        const zone = islandClearingZones[i];
+        const distToZone = Math.hypot(x - zone.x, z - zone.z);
+        if (distToZone < zone.r) {
+          return seaBed;
+        }
+      }
+
+      const coastalWiggle = Math.sin(theta * 3 + 0.8) * 58 +
+                            Math.cos(theta * 5 - 1.4) * 36 +
+                            Math.sin(theta * 8 + 2.1) * 20 +
+                            Math.cos(theta * 12) * 9;
+      const coastRadius = 390 + coastalWiggle;
+
+      if (distCenter < coastRadius - 75) {
+        return seaBed;
+      }
+
+      const tShelf = Math.min(1, Math.max(0, (distCenter - (coastRadius - 75)) / 115));
+      const shelfFactor = tShelf * tShelf * (3 - 2 * tShelf);
+
+      let mountainH = -28;
+
+      // 遠眺觀音山
+      const dGY = Math.hypot(x - (-440), z - (-500));
+      if (dGY < 320) {
+        const norm = 1 - dGY / 320;
+        const peak = Math.pow(norm, 1.75) * 170;
+        const ridges = Math.sin(Math.atan2(z - (-500), x - (-440)) * 6) * 12 * Math.pow(norm, 1.4);
+        mountainH = Math.max(mountainH, peak + ridges);
+      }
+
+      // 林口台地
+      const dLK = Math.hypot(x - (-520), z - (-120));
+      if (dLK < 360) {
+        const norm = 1 - dLK / 360;
+        const plateau = Math.min(88, Math.pow(norm, 0.72) * 105);
+        const valleys = (Math.sin(x * 0.016) + Math.cos(z * 0.014)) * 6.5 * norm;
+        mountainH = Math.max(mountainH, plateau + valleys);
+      }
+
+      // 大屯火山群
+      const dDT = Math.hypot(x - 260, z - (-460));
+      if (dDT < 300) {
+        const norm = 1 - dDT / 300;
+        mountainH = Math.max(mountainH, Math.pow(norm, 1.45) * 135);
+      }
+      const dQX = Math.hypot(x - 520, z - (-580));
+      if (dQX < 340) {
+        const norm = 1 - dQX / 340;
+        mountainH = Math.max(mountainH, Math.pow(norm, 1.55) * 182);
+      }
+
+      // 大棟山
+      const dDD = Math.hypot(x - (-420), z - 320);
+      if (dDD < 320) {
+        const norm = 1 - dDD / 320;
+        mountainH = Math.max(mountainH, Math.pow(norm, 1.38) * 108);
+      }
+
+      // 烘爐地
+      const dHL = Math.hypot(x - 400, z - 350);
+      if (dHL < 300) {
+        const norm = 1 - dHL / 300;
+        mountainH = Math.max(mountainH, Math.pow(norm, 1.35) * 102);
+      }
+
+      if (mountainH > 0) {
+        const microNoise = (Math.sin(x * 0.02) * Math.cos(z * 0.02) * 5 +
+                            Math.sin(x * 0.04 + z * 0.03) * 3) * (mountainH / 120);
+        mountainH += microNoise;
+      }
+
+      if (mountainH <= 0) {
+        return seaBed;
+      }
+
+      const elevation = seaBed + (mountainH - seaBed) * shelfFactor;
+
+      if (elevation > -4.5 && elevation < 2.5) {
+        return elevation < 0 ? -9 : 4.0;
+      }
+
+      return elevation;
+    }
+
+    function initThree() {
+      scene = new THREE.Scene();
+
+      camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 1.5, 4500);
+      camera.position.set(OVERVIEW_CAMERA_POS.x, OVERVIEW_CAMERA_POS.y, OVERVIEW_CAMERA_POS.z);
+
+      renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        antialias: true,
+        alpha: false,
+        powerPreference: 'high-performance',
+        logarithmicDepthBuffer: true
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1;
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.06;
+      controls.maxPolarAngle = Math.PI / 2 - 0.05;
+      controls.minDistance = 60;
+      controls.maxDistance = 1100;
+      controls.target.set(OVERVIEW_TARGET_POS.x, OVERVIEW_TARGET_POS.y, OVERVIEW_TARGET_POS.z);
+
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
+
+      const tp = getTaipeiTime();
+      timeMode = getTaipeiPeriodMode(tp.hour);
+
+      setupEnvironmentAndLighting();
+      buildSolitaryArchipelagoWorld();
+      buildAtmosphereParticles();
+      setupIslandPins();
+      buildRegionalVectors();
+      startTaipeiClockMonitor();
+
+      window.addEventListener('resize', onWindowResize);
+      window.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointerup', onPointerUp);
+    }
+
+    function setupEnvironmentAndLighting() {
+      const preset = TIME_PRESETS[timeMode];
+
+      scene.background = new THREE.Color(preset.fogColor);
+      scene.fog = new THREE.FogExp2(preset.fogColor, preset.fogDensity);
+
+      ambientLight = new THREE.AmbientLight(0xffffff, preset.ambientIntensity);
+      scene.add(ambientLight);
+
+      hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.4);
+      scene.add(hemiLight);
+
+      dirLight = new THREE.DirectionalLight(preset.sunColor, preset.sunIntensity);
+      dirLight.position.set(...preset.sunPos);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 2048;
+      dirLight.shadow.mapSize.height = 2048;
+      dirLight.shadow.camera.near = 10;
+      dirLight.shadow.camera.far = 900;
+      const d = 260;
+      dirLight.shadow.camera.left = -d;
+      dirLight.shadow.camera.right = d;
+      dirLight.shadow.camera.top = d;
+      dirLight.shadow.camera.bottom = -d;
+      dirLight.shadow.bias = -0.00015;
+      dirLight.shadow.normalBias = 0.04;
+      scene.add(dirLight);
+
+      updateTimeUI(preset);
+    }
+
+    function updateTimeUI(preset) {
+      document.getElementById('timeCycleIcon').textContent = preset.icon;
+      document.getElementById('timePeriodName').textContent = preset.name;
+    }
+
+    function applyTimeMode(modeIndex, isAnimated = true, isManual = true) {
+      timeMode = modeIndex;
+      if (isManual) {
+        isManualTimeOverride = true;
+      }
+      const preset = TIME_PRESETS[timeMode];
+      updateTimeUI(preset);
+
+      const dur = isAnimated ? 1200 : 0;
+
+      if (!isAnimated) {
+        scene.fog.density = preset.fogDensity;
+        scene.background.setHex(preset.fogColor);
+        scene.fog.color.setHex(preset.fogColor);
+        dirLight.color.setHex(preset.sunColor);
+        dirLight.intensity = preset.sunIntensity;
+        dirLight.position.set(...preset.sunPos);
+        ambientLight.intensity = preset.ambientIntensity;
+        if (oceanMesh) oceanMesh.material.color.setHex(preset.oceanColor);
+        return;
+      }
+
+      new TWEEN.Tween(scene.fog)
+        .to({ density: preset.fogDensity }, dur)
+        .start();
+
+      new TWEEN.Tween(scene.background)
+        .to(new THREE.Color(preset.fogColor), dur)
+        .start();
+
+      new TWEEN.Tween(scene.fog.color)
+        .to(new THREE.Color(preset.fogColor), dur)
+        .start();
+
+      new TWEEN.Tween(dirLight.color)
+        .to(new THREE.Color(preset.sunColor), dur)
+        .start();
+
+      new TWEEN.Tween(dirLight)
+        .to({ intensity: preset.sunIntensity }, dur)
+        .start();
+
+      new TWEEN.Tween(dirLight.position)
+        .to({ x: preset.sunPos[0], y: preset.sunPos[1], z: preset.sunPos[2] }, dur)
+        .start();
+
+      new TWEEN.Tween(ambientLight)
+        .to({ intensity: preset.ambientIntensity }, dur)
+        .start();
+
+      if (oceanMesh) {
+        new TWEEN.Tween(oceanMesh.material.color)
+          .to(new THREE.Color(preset.oceanColor), dur)
+          .start();
+      }
+
+      if (isManual) {
+        showToast(`已切換至「${preset.name}」時段 (${preset.timeSpan})`);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 5. 程序化貼圖產生器 (PBR Canvas Textures)
+    // -------------------------------------------------------------
+    const TextureGen = {
+      waterBump() {
+        const cvs = document.createElement('canvas');
+        cvs.width = 512; cvs.height = 512;
+        const ctx = cvs.getContext('2d');
+        ctx.fillStyle = '#808080';
+        ctx.fillRect(0, 0, 512, 512);
+
+        for (let i = 0; i < 600; i++) {
+          const x = Math.random() * 512;
+          const y = Math.random() * 512;
+          const r = Math.random() * 24 + 6;
+          const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+          grad.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
+          grad.addColorStop(0.5, 'rgba(128, 128, 128, 0.1)');
+          grad.addColorStop(1, 'rgba(0, 0, 0, 0.25)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        const tex = new THREE.CanvasTexture(cvs);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(18, 18);
+        return tex;
+      },
+
+      cliffStrata() {
+        const cvs = document.createElement('canvas');
+        cvs.width = 256; cvs.height = 512;
+        const ctx = cvs.getContext('2d');
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 0, 256, 512);
+
+        for (let y = 0; y < 512; y += 4) {
+          const v = Math.sin(y * 0.12) * 16 + 42;
+          ctx.fillStyle = `rgb(${v * 0.8}, ${v * 0.9}, ${v * 1.0})`;
+          ctx.fillRect(0, y, 256, 4);
+        }
+        const tex = new THREE.CanvasTexture(cvs);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.ClampToEdgeWrapping;
+        return tex;
+      },
+
+      hexPlate(baseHex, isCenter = false, isRegion = false) {
+        const cvs = document.createElement('canvas');
+        cvs.width = 512; cvs.height = 512;
+        const ctx = cvs.getContext('2d');
+        ctx.fillStyle = baseHex;
+        ctx.fillRect(0, 0, 512, 512);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.lineWidth = 2;
+        const step = 32;
+        for (let x = 0; x <= 512; x += step) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 512); ctx.stroke();
+        }
+        for (let y = 0; y <= 512; y += step) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(512, y); ctx.stroke();
+        }
+
+        ctx.strokeStyle = isCenter ? 'rgba(56, 189, 248, 0.7)' : (isRegion ? 'rgba(147, 197, 253, 0.6)' : 'rgba(45, 212, 191, 0.45)');
+        ctx.lineWidth = 14;
+        ctx.strokeRect(10, 10, 492, 492);
+
+        if (isRegion) {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(256, 256, 160, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(256, 256, 80, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        return new THREE.CanvasTexture(cvs);
+      },
+
+      glassFacade() {
+        const cvs = document.createElement('canvas');
+        cvs.width = 256; cvs.height = 512;
+        const ctx = cvs.getContext('2d');
+
+        const grad = ctx.createLinearGradient(0, 0, 0, 512);
+        grad.addColorStop(0, '#0284c7');
+        grad.addColorStop(0.5, '#0369a1');
+        grad.addColorStop(1, '#0c4a6e');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 256, 512);
+
+        const cols = 6;
+        const rows = 20;
+        const cw = 256 / cols;
+        const rh = 512 / rows;
+
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const isLit = (c + r * 3) % 4 === 0;
+            ctx.fillStyle = isLit ? 'rgba(224, 242, 254, 0.92)' : 'rgba(14, 116, 144, 0.65)';
+            ctx.fillRect(c * cw + 2, r * rh + 2, cw - 4, rh - 4);
+          }
+        }
+        return new THREE.CanvasTexture(cvs);
+      },
+
+      helipad() {
+        const cvs = document.createElement('canvas');
+        cvs.width = 256; cvs.height = 256;
+        const ctx = cvs.getContext('2d');
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(0, 0, 256, 256);
+
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 14;
+        ctx.strokeRect(8, 8, 240, 240);
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.arc(128, 128, 88, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ef4444';
+        ctx.font = '900 110px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('H', 128, 128);
+
+        return new THREE.CanvasTexture(cvs);
+      },
+
+      shippingContainer(baseColor, label, code) {
+        const cvs = document.createElement('canvas');
+        cvs.width = 512; cvs.height = 256;
+        const ctx = cvs.getContext('2d');
+        ctx.fillStyle = baseColor;
+        ctx.fillRect(0, 0, 512, 256);
+
+        for (let x = 0; x < 512; x += 16) {
+          const rGrad = ctx.createLinearGradient(x, 0, x + 16, 0);
+          rGrad.addColorStop(0, 'rgba(0, 0, 0, 0.38)');
+          rGrad.addColorStop(0.4, 'rgba(255, 255, 255, 0.28)');
+          rGrad.addColorStop(0.8, 'rgba(255, 255, 255, 0.05)');
+          rGrad.addColorStop(1, 'rgba(0, 0, 0, 0.42)');
+          ctx.fillStyle = rGrad;
+          ctx.fillRect(x, 0, 16, 256);
+        }
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.font = '900 46px monospace';
+        ctx.fillText(label, 32, 90);
+
+        ctx.font = 'bold 20px monospace';
+        ctx.fillStyle = 'rgba(254, 240, 138, 0.95)';
+        ctx.fillText(code, 32, 140);
+        ctx.fillText('OHSMART.BLOG · 職興市場', 32, 185);
+
+        return new THREE.CanvasTexture(cvs);
+      },
+
+      cleanTerrainGradient() {
+        const cvs = document.createElement('canvas');
+        cvs.width = 1024; cvs.height = 1024;
+        const ctx = cvs.getContext('2d');
+
+        const grad = ctx.createRadialGradient(512, 512, 60, 512, 512, 640);
+        grad.addColorStop(0.00, '#354d37');
+        grad.addColorStop(0.18, '#445f44');
+        grad.addColorStop(0.38, '#7c6d52');
+        grad.addColorStop(0.58, '#8c775a');
+        grad.addColorStop(0.78, '#3d523b');
+        grad.addColorStop(1.00, '#223624');
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1024, 1024);
+
+        for (let y = 0; y < 1024; y += 8) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.025)';
+          ctx.fillRect(0, y, 1024, 4);
+        }
+
+        const tex = new THREE.CanvasTexture(cvs);
+        tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+        return tex;
+      }
+    };
+
+    // -------------------------------------------------------------
+    // 5.1 孤島水域與山體拓撲構建
+    // -------------------------------------------------------------
+    function buildSolitaryArchipelagoWorld() {
+      const oceanGeo = new THREE.PlaneGeometry(3800, 3800, 64, 64);
+      oceanGeo.rotateX(-Math.PI / 2);
+      const waterBumpMap = TextureGen.waterBump();
+
+      const preset = TIME_PRESETS[timeMode];
+      const oceanMat = new THREE.MeshStandardMaterial({
+        color: preset.oceanColor,
+        roughness: 0.15,
+        metalness: 0.55,
+        bumpMap: waterBumpMap,
+        bumpScale: 0.35,
+        transparent: true,
+        opacity: 0.90,
+        depthWrite: false
+      });
+
+      oceanMesh = new THREE.Mesh(oceanGeo, oceanMat);
+      oceanMesh.position.y = 0;
+      oceanMesh.receiveShadow = true;
+      scene.add(oceanMesh);
+
+      const terrainGeo = new THREE.PlaneGeometry(3600, 3600, 140, 140);
+      terrainGeo.rotateX(-Math.PI / 2);
+
+      const pos = terrainGeo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const z = pos.getZ(i);
+        pos.setY(i, getTerrainElevation(x, z));
+      }
+      terrainGeo.computeVertexNormals();
+
+      const earthTex = TextureGen.cleanTerrainGradient();
+      const terrainMat = new THREE.MeshStandardMaterial({
+        map: earthTex,
+        roughness: 0.88,
+        metalness: 0.05,
+        flatShading: true
+      });
+
+      const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
+      terrainMesh.position.y = 0;
+      terrainMesh.receiveShadow = true;
+      scene.add(terrainMesh);
+
+      buildMountainForests();
+      buildArchipelago();
+    }
+
+    function buildMountainForests() {
+      const treeMat1 = new THREE.MeshStandardMaterial({ color: 0x1f4722, roughness: 0.8, flatShading: true });
+      const treeMat2 = new THREE.MeshStandardMaterial({ color: 0x2d5a30, roughness: 0.8, flatShading: true });
+      const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5c4033, roughness: 0.9 });
+
+      const forestGroup = new THREE.Group();
+
+      const sampleZones = [
+        { name: '觀音山硬漢嶺遠山林相', cx: -440, cz: -500, radius: 150, count: 42 },
+        { name: '林口台地階崖遠景樹林', cx: -500, cz: -140, radius: 140, count: 32 },
+        { name: '大屯火山面天山坡地', cx: 260, cz: -460, radius: 130, count: 36 },
+        { name: '七星連峰遠山林海', cx: 500, cz: -560, radius: 160, count: 48 },
+        { name: '迴龍大棟山青龍嶺遠丘', cx: -400, cz: 310, radius: 130, count: 32 },
+        { name: '烘爐地土城遠山林相', cx: 390, cz: 340, radius: 120, count: 28 }
+      ];
+
+      sampleZones.forEach(zone => {
+        for (let i = 0; i < zone.count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const r = Math.random() * zone.radius;
+          const tx = zone.cx + Math.cos(angle) * r;
+          const tz = zone.cz + Math.sin(angle) * r;
+          
+          const ty = getTerrainElevation(tx, tz);
+
+          if (ty > 8) {
+            const tGroup = new THREE.Group();
+            tGroup.position.set(tx, ty, tz);
+            const scale = 1.3 + Math.random() * 1.5;
+            tGroup.scale.set(scale, scale, scale);
+
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.9, 3.5, 5), trunkMat);
+            trunk.position.y = 1.75;
+            trunk.castShadow = true;
+            tGroup.add(trunk);
+
+            const matPick = (i % 2 === 0) ? treeMat1 : treeMat2;
+            const foliage = new THREE.Mesh(new THREE.ConeGeometry(4.0, 8.5, 5), matPick);
+            foliage.position.y = 6.2;
+            foliage.castShadow = true;
+            tGroup.add(foliage);
+
+            forestGroup.add(tGroup);
+          }
+        }
+      });
+
+      scene.add(forestGroup);
+    }
+
+    function animateOcean(time) {
+      if (oceanMesh && oceanMesh.material.bumpMap) {
+        oceanMesh.material.bumpMap.offset.x = time * 0.025;
+        oceanMesh.material.bumpMap.offset.y = time * 0.018;
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 6. 微縮植被與六角島建模
+    // -------------------------------------------------------------
+    function addMicroVegetation(parentGroup, radius, height) {
+      const treeMat1 = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.7, flatShading: true });
+      const treeMat2 = new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.7, flatShading: true });
+      const trunkMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
+
+      const count = 3;
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+        const dist = radius * 0.72 + Math.random() * (radius * 0.12);
+        const tx = Math.cos(angle) * dist;
+        const tz = Math.sin(angle) * dist;
+
+        const treeGroup = new THREE.Group();
+        treeGroup.position.set(tx, height + 2.5, tz);
+
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.7, 3, 5), trunkMat);
+        trunk.position.y = 1.5;
+        trunk.castShadow = true;
+        treeGroup.add(trunk);
+
+        const c1 = new THREE.Mesh(new THREE.ConeGeometry(3, 4.5, 6), treeMat1);
+        c1.position.y = 4.2;
+        c1.castShadow = true;
+        treeGroup.add(c1);
+
+        parentGroup.add(treeGroup);
+      }
+    }
+
+    function createHexTile(radius = 28, height = 18, baseHexColor = '#0f766e', isCenter = false, isRegion = false) {
+      const group = new THREE.Group();
+
+      const baseGeo = new THREE.CylinderGeometry(radius, radius * 0.95, height, 6);
+      baseGeo.rotateY(Math.PI / 6);
+      const cliffTex = TextureGen.cliffStrata();
+      const baseMat = new THREE.MeshStandardMaterial({
+        color: 0x334155,
+        map: cliffTex,
+        bumpMap: cliffTex,
+        bumpScale: 0.6,
+        roughness: 0.85,
+        flatShading: true
+      });
+      const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+      baseMesh.position.y = height / 2;
+      baseMesh.castShadow = true;
+      baseMesh.receiveShadow = true;
+      group.add(baseMesh);
+
+      const topGeo = new THREE.CylinderGeometry(radius * 0.96, radius * 0.96, 2.5, 6);
+      topGeo.rotateY(Math.PI / 6);
+      const topTex = TextureGen.hexPlate(baseHexColor, isCenter, isRegion);
+      const topMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        map: topTex,
+        roughness: 0.35,
+        metalness: 0.25,
+        flatShading: true
+      });
+      const topMesh = new THREE.Mesh(topGeo, topMat);
+      topMesh.position.y = height + 1.25;
+      topMesh.castShadow = true;
+      topMesh.receiveShadow = true;
+      group.add(topMesh);
+
+      const foamGeo = new THREE.RingGeometry(radius * 1.05, radius * 1.15, 6);
+      foamGeo.rotateX(-Math.PI / 2);
+      foamGeo.rotateY(Math.PI / 6);
+      const foamMat = new THREE.MeshBasicMaterial({
+        color: 0x93c5fd,
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      const foam = new THREE.Mesh(foamGeo, foamMat);
+      foam.position.y = 0.5;
+      group.add(foam);
+
+      if (!isCenter && !isRegion) {
+        addMicroVegetation(group, radius, height);
+      }
+
+      return { group, topMesh, baseMesh, height };
+    }
+
+    function buildArchipelago() {
+      islandGroup = new THREE.Group();
+      scene.add(islandGroup);
+
+      synergyCurveGroup = new THREE.Group();
+      scene.add(synergyCurveGroup);
+
+      regionVectorGroup = new THREE.Group();
+      scene.add(regionVectorGroup);
+
+      ISLAND_MODULES.forEach((mod) => {
+        const isCenter = mod.id === 0;
+        const isRegion = mod.type === 'region';
+        const radius = isCenter ? 36 : (isRegion ? 22 : 26);
+        const height = isCenter ? 22 : (isRegion ? 12 : 16);
+        const baseHexColor = isCenter ? '#0369a1' : (mod.id === 7 ? '#92400e' : (isRegion ? '#1e293b' : (mod.color || '#0f766e')));
+
+        const tile = createHexTile(radius, height, baseHexColor, isCenter, isRegion);
+        tile.group.position.set(mod.gridPos.x, 0, mod.gridPos.z);
+
+        tile.group.userData = {
+          type: mod.type,
+          id: mod.id,
+          module: mod,
+          baseY: 0,
+          tile: tile
+        };
+
+        const building = buildBuildingForModule(mod, tile.height);
+        tile.group.add(building);
+
+        islandGroup.add(tile.group);
+        interactiveMeshes.push(tile.topMesh);
+        tile.topMesh.userData = tile.group.userData;
+      });
+
+      // 構建並落地守護醫師角色
+      DOCTORS.forEach(doc => {
+        const docMesh = buildDoctorCharacter(doc);
+        scene.add(docMesh);
+        interactiveDoctors.push(docMesh);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 6.2 建築建模
+    // -------------------------------------------------------------
+    function buildBuildingForModule(mod, tileHeight) {
+      const bGroup = new THREE.Group();
+      bGroup.position.y = tileHeight + 2.5;
+
+      if (mod.type === 'region') {
+        const pillarMat = new THREE.MeshStandardMaterial({
+          color: new THREE.Color(mod.color),
+          metalness: 0.6,
+          roughness: 0.25
+        });
+
+        const baseCone = new THREE.Mesh(new THREE.CylinderGeometry(2, 4.5, 6, 6), pillarMat);
+        baseCone.position.y = 3;
+        baseCone.castShadow = true;
+        bGroup.add(baseCone);
+
+        const needle = new THREE.Mesh(new THREE.OctahedronGeometry(2.8, 0), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        needle.position.y = 11;
+        bGroup.add(needle);
+
+        const ringGeo = new THREE.TorusGeometry(5, 0.5, 8, 24);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: new THREE.Color(mod.color),
+          transparent: true,
+          opacity: 0.8
+        });
+        const beaconRing = new THREE.Mesh(ringGeo, ringMat);
+        beaconRing.rotation.x = Math.PI / 2;
+        beaconRing.position.y = 11;
+        bGroup.add(beaconRing);
+
+        rotatingElements.push(
+          { mesh: beaconRing, speedY: 0.03 },
+          { mesh: needle, floatY: true, baseY: 11, speedY: 0.02 }
+        );
+
+        return bGroup;
+      }
+
+      switch (mod.id) {
+        case 0: { // 部立臺北醫院 醫療巨塔
+          const facadeTex = TextureGen.glassFacade();
+          const towerGeo = new THREE.BoxGeometry(18, 44, 18);
+          const towerMat = new THREE.MeshStandardMaterial({ map: facadeTex, roughness: 0.15, metalness: 0.35 });
+          const tower = new THREE.Mesh(towerGeo, towerMat);
+          tower.position.y = 22;
+          tower.castShadow = true;
+          tower.receiveShadow = true;
+          bGroup.add(tower);
+
+          const helipadTex = TextureGen.helipad();
+          const heliPlatform = new THREE.Mesh(
+            new THREE.BoxGeometry(16, 1.5, 16),
+            new THREE.MeshStandardMaterial({ map: helipadTex, roughness: 0.4, metalness: 0.1 })
+          );
+          heliPlatform.position.y = 44.5;
+          heliPlatform.castShadow = true;
+          bGroup.add(heliPlatform);
+
+          const crossMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.2 });
+          const ch1 = new THREE.Mesh(new THREE.BoxGeometry(3.5, 11, 18.6), crossMat);
+          const ch2 = new THREE.Mesh(new THREE.BoxGeometry(11, 3.5, 18.6), crossMat);
+          ch1.position.y = 25;
+          ch2.position.y = 25;
+          bGroup.add(ch1, ch2);
+
+          const ringGeo = new THREE.TorusGeometry(20, 1.2, 8, 32);
+          const ringMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.85, roughness: 0.15, emissive: 0x78350f });
+          const goldRing = new THREE.Mesh(ringGeo, ringMat);
+          goldRing.rotation.x = Math.PI / 2;
+          goldRing.position.y = 12;
+          bGroup.add(goldRing);
+
+          const crystalGeo = new THREE.OctahedronGeometry(6.5, 0);
+          const crystalMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.7, roughness: 0.1, metalness: 0.95 });
+          const crystal = new THREE.Mesh(crystalGeo, crystalMat);
+          crystal.position.y = 53;
+          bGroup.add(crystal);
+          rotatingElements.push({ mesh: crystal, speedY: 0.025, floatY: true, baseY: 53 });
+          break;
+        }
+
+        case 1: { // 環境探勘哨所
+          const poleGeo = new THREE.CylinderGeometry(1.5, 4, 30, 6);
+          const poleMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5, metalness: 0.3 });
+          const pole = new THREE.Mesh(poleGeo, poleMat);
+          pole.position.y = 15;
+          pole.castShadow = true;
+          bGroup.add(pole);
+
+          const dishGeo = new THREE.SphereGeometry(7.5, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+          const dishMat = new THREE.MeshStandardMaterial({ color: 0xfef3c7, side: THREE.DoubleSide, metalness: 0.4 });
+          const dish = new THREE.Mesh(dishGeo, dishMat);
+          dish.position.y = 30;
+          dish.rotation.x = Math.PI / 4;
+          bGroup.add(dish);
+          rotatingElements.push({ mesh: dish, speedY: 0.035, floatY: false });
+          break;
+        }
+
+        case 2: { // 適能選配所
+          const baseGeo = new THREE.CylinderGeometry(2, 3, 20, 8);
+          const baseMat = new THREE.MeshStandardMaterial({ color: 0x0891b2, metalness: 0.5 });
+          const p = new THREE.Mesh(baseGeo, baseMat);
+          p.position.y = 10;
+          bGroup.add(p);
+
+          const armGeo = new THREE.BoxGeometry(24, 1.8, 2);
+          const armMat = new THREE.MeshStandardMaterial({ color: 0x22d3ee, metalness: 0.6, roughness: 0.2 });
+          const arm = new THREE.Mesh(armGeo, armMat);
+          arm.position.y = 20;
+          bGroup.add(arm);
+
+          [-11, 11].forEach(ox => {
+            const pan = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 1, 2, 8), new THREE.MeshStandardMaterial({ color: 0xcffafe, metalness: 0.7 }));
+            pan.position.set(ox, 16, 0);
+            bGroup.add(pan);
+          });
+          rotatingElements.push({ mesh: arm, tiltZ: true, speedZ: 0.04 });
+          break;
+        }
+
+        case 3: { // 因果真理燈塔
+          const thGeo = new THREE.CylinderGeometry(4.5, 7.5, 38, 16);
+          const thMat = new THREE.MeshStandardMaterial({ map: TextureGen.cliffStrata(), roughness: 0.3, metalness: 0.1 });
+          const th = new THREE.Mesh(thGeo, thMat);
+          th.position.y = 19;
+          th.castShadow = true;
+          bGroup.add(th);
+
+          const roomGeo = new THREE.CylinderGeometry(5.2, 5.2, 6, 8);
+          const roomMat = new THREE.MeshStandardMaterial({ color: 0xfde047, emissive: 0xf59e0b, emissiveIntensity: 0.9 });
+          const room = new THREE.Mesh(roomGeo, roomMat);
+          room.position.y = 40;
+          bGroup.add(room);
+
+          const domeCap = new THREE.Mesh(new THREE.ConeGeometry(5.5, 4.5, 8), new THREE.MeshStandardMaterial({ color: 0xdc2626 }));
+          domeCap.position.y = 45;
+          bGroup.add(domeCap);
+
+          const lightPivot = new THREE.Group();
+          lightPivot.position.set(0, 40, 0);
+
+          const beamGeo = new THREE.ConeGeometry(16, 55, 16, 1, true);
+          beamGeo.translate(0, -27.5, 0);
+          beamGeo.rotateX(-Math.PI / 2);
+
+          const beamMat = new THREE.MeshBasicMaterial({ color: 0xfef08a, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false });
+          const beam = new THREE.Mesh(beamGeo, beamMat);
+          lightPivot.add(beam);
+
+          const bulb = new THREE.Mesh(new THREE.SphereGeometry(2, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+          lightPivot.add(bulb);
+          bGroup.add(lightPivot);
+
+          rotatingElements.push({ mesh: lightPivot, speedY: 0.024 });
+          break;
+        }
+
+        case 4: { // 復能再造基地
+          const hangarGeo = new THREE.BoxGeometry(24, 14, 26);
+          const hangarMat = new THREE.MeshStandardMaterial({ color: 0x059669, roughness: 0.4, metalness: 0.2 });
+          const hangar = new THREE.Mesh(hangarGeo, hangarMat);
+          hangar.position.y = 7;
+          hangar.castShadow = true;
+          bGroup.add(hangar);
+
+          const piston = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.2, 11, 8), new THREE.MeshStandardMaterial({ color: 0x6ee7b7, metalness: 0.85 }));
+          piston.position.y = 22;
+          bGroup.add(piston);
+          rotatingElements.push({ mesh: piston, floatY: true, baseY: 22, speedY: 0.04 });
+          break;
+        }
+
+        case 5: { // 法規防禦金鐘
+          const domeGeo = new THREE.SphereGeometry(14, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2);
+          const domeMat = new THREE.MeshStandardMaterial({ color: 0xa855f7, emissive: 0x7e22ce, emissiveIntensity: 0.45, transparent: true, opacity: 0.45, roughness: 0.1 });
+          const dome = new THREE.Mesh(domeGeo, domeMat);
+          bGroup.add(dome);
+
+          const gem = new THREE.Mesh(new THREE.BoxGeometry(6, 8, 4), new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.8 }));
+          gem.position.y = 7;
+          bGroup.add(gem);
+          rotatingElements.push({ mesh: dome, speedY: 0.015 });
+          break;
+        }
+
+        case 6: { // 公衛天樞數據塔
+          [-6, 0, 6].forEach((ox, i) => {
+            const h = 22 + (i % 2) * 6;
+            const bar = new THREE.Mesh(new THREE.BoxGeometry(4.5, h, 4.5), new THREE.MeshStandardMaterial({ color: 0xbe185d, roughness: 0.3, metalness: 0.4 }));
+            bar.position.set(ox, h / 2, 0);
+            bar.castShadow = true;
+            bGroup.add(bar);
+
+            const light = new THREE.Mesh(new THREE.SphereGeometry(1.8, 8, 8), new THREE.MeshBasicMaterial({ color: 0x34d399 }));
+            light.position.set(ox, h + 2, 0);
+            bGroup.add(light);
+          });
+          break;
+        }
+
+        case 7: { // 職興市場貨櫃門市
+          const cTex1 = TextureGen.shippingContainer('#d97706', 'OH SMART', 'BAY-01 // EVAL');
+          const container1 = new THREE.Mesh(new THREE.BoxGeometry(26, 12, 16), new THREE.MeshStandardMaterial({ map: cTex1, roughness: 0.4, metalness: 0.25 }));
+          container1.position.set(0, 6, -2);
+          container1.castShadow = true;
+          bGroup.add(container1);
+
+          const signMesh = new THREE.Mesh(new THREE.BoxGeometry(24, 6, 2), new THREE.MeshStandardMaterial({ color: 0x1e293b, emissive: 0xf59e0b, emissiveIntensity: 0.6 }));
+          signMesh.position.set(0, 27, -2);
+          bGroup.add(signMesh);
+          rotatingElements.push({ mesh: signMesh, floatY: true, baseY: 27, speedY: 0.03 });
+          break;
+        }
+      }
+
+      return bGroup;
+    }
+
+    // -------------------------------------------------------------
+    // 6.3 守護醫師角色建構（加入實體底座，嚴密定錨地表）
+    // -------------------------------------------------------------
+    function buildDoctorCharacter(doc) {
+      const g = new THREE.Group();
+      const baseY = (doc.pos && doc.pos.y !== undefined) ? doc.pos.y : 18.5;
+      g.position.set(doc.pos.x, baseY, doc.pos.z);
+
+      // 微縮模型公仔金屬底座（Pedestal Stand），確保 100% 貼合島嶼甲板，消除浮空感
+      const standGeo = new THREE.CylinderGeometry(3.6, 4.0, 0.4, 16);
+      const standMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(doc.color),
+        roughness: 0.35,
+        metalness: 0.65
+      });
+      const stand = new THREE.Mesh(standGeo, standMat);
+      stand.position.y = 0.2;
+      stand.receiveShadow = true;
+      g.add(stand);
+
+      // 白袍身軀
+      const coatGeo = new THREE.CylinderGeometry(2.2, 3.2, 8, 8);
+      const coatMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
+      const coat = new THREE.Mesh(coatGeo, coatMat);
+      coat.position.y = 4.4;
+      coat.castShadow = true;
+      g.add(coat);
+
+      // 頭部
+      const headGeo = new THREE.SphereGeometry(2.4, 12, 12);
+      const headMat = new THREE.MeshStandardMaterial({ color: 0xfcd34d });
+      const head = new THREE.Mesh(headGeo, headMat);
+      head.position.y = 10.2;
+      g.add(head);
+
+      // 髮型
+      const hairGeo = new THREE.SphereGeometry(2.5, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+      const hairMat = new THREE.MeshStandardMaterial({ color: 0x334155 });
+      const hair = new THREE.Mesh(hairGeo, hairMat);
+      hair.position.y = 10.6;
+      g.add(hair);
+
+      // 領帶
+      const tieGeo = new THREE.BoxGeometry(0.8, 3.5, 4.6);
+      const tieMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(doc.color) });
+      const tie = new THREE.Mesh(tieGeo, tieMat);
+      tie.position.set(0, 5.4, 0);
+      g.add(tie);
+
+      // 名牌立體飄浮標示
+      const canvasText = document.createElement('canvas');
+      canvasText.width = 128;
+      canvasText.height = 36;
+      const tctx = canvasText.getContext('2d');
+      tctx.fillStyle = '#0f172a';
+      tctx.fillRect(0, 0, 128, 36);
+      tctx.strokeStyle = doc.color;
+      tctx.lineWidth = 3;
+      tctx.strokeRect(2, 2, 124, 32);
+      tctx.font = 'bold 16px Inter, sans-serif';
+      tctx.fillStyle = '#ffffff';
+      tctx.textAlign = 'center';
+      tctx.textBaseline = 'middle';
+      tctx.fillText(doc.name, 64, 18);
+
+      const texture = new THREE.CanvasTexture(canvasText);
+      const spriteMat = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.position.y = 14.5;
+      sprite.scale.set(10, 3, 1);
+      g.add(sprite);
+
+      g.userData = {
+        type: 'doctor',
+        doctor: doc
+      };
+
+      return g;
+    }
+
+    // -------------------------------------------------------------
+    // 6.4 臺北醫院放射至六大地區的立體地理連線
+    // -------------------------------------------------------------
+    function buildRegionalVectors() {
+      const centerPos = new THREE.Vector3(0, 24, 0);
+
+      ISLAND_MODULES.filter(m => m.type === 'region').forEach(reg => {
+        const targetPos = new THREE.Vector3(reg.gridPos.x, 14, reg.gridPos.z);
+        const midPos = new THREE.Vector3(
+          reg.gridPos.x * 0.5,
+          Math.max(centerPos.y, targetPos.y) + 12,
+          reg.gridPos.z * 0.5
+        );
+
+        const curve = new THREE.QuadraticBezierCurve3(centerPos, midPos, targetPos);
+        const points = curve.getPoints(24);
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+        const lineMat = new THREE.LineDashedMaterial({
+          color: new THREE.Color(reg.color),
+          dashSize: 4,
+          gapSize: 3,
+          transparent: true,
+          opacity: 0.45
+        });
+
+        const line = new THREE.Line(lineGeo, lineMat);
+        line.computeLineDistances();
+        line.userData = { regionId: reg.id };
+        regionVectorGroup.add(line);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 7. 3D 空間投影懸浮標籤系統
+    // -------------------------------------------------------------
+    function setupIslandPins() {
+      const container = document.getElementById('pins-container');
+      container.innerHTML = '';
+      pinElements.length = 0;
+
+      ISLAND_MODULES.forEach((mod) => {
+        const isCenter = mod.id === 0;
+        const isRegion = mod.type === 'region';
+
+        const pin = document.createElement('div');
+
+        if (isRegion) {
+          pin.className = 'region-pin flex flex-col items-center group';
+          pin.dataset.moduleId = mod.id;
+          pin.dataset.type = 'region';
+
+          pin.innerHTML = `
+            <div class="glass-morphism px-2.5 py-1 rounded-xl border border-sky-400/30 shadow-lg flex items-center gap-1.5 group-hover:border-sky-300 group-hover:scale-105 transition-all">
+              <span class="text-xs">${mod.icon}</span>
+              <span class="text-[11px] font-bold text-white tracking-wide">${mod.name}</span>
+              <span class="text-[9px] px-1 py-0.2 rounded font-mono bg-sky-500/20 text-sky-300 font-semibold">${mod.distanceKm.replace('直線 ', '')}</span>
+            </div>
+            <div class="w-1 h-2.5 bg-gradient-to-b from-sky-400 to-transparent"></div>
+            <div class="w-2 h-2 rounded-full bg-sky-400 region-beacon shadow-md shadow-sky-500/50"></div>
+          `;
+
+          pin.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sound.init();
+            sound.playClick();
+            selectRegionNode(mod);
+          });
+
+          container.appendChild(pin);
+          pinElements.push({
+            dom: pin,
+            worldPos: new THREE.Vector3(mod.gridPos.x, 24, mod.gridPos.z),
+            type: 'region',
+            id: mod.id
+          });
+
+        } else {
+          pin.className = 'island-pin flex flex-col items-center group';
+          pin.dataset.moduleId = mod.id;
+          pin.dataset.type = 'core';
+          pin.dataset.role = mod.role;
+
+          const anchorHeight = isCenter ? 54 : 36;
+
+          pin.innerHTML = `
+            <div class="glass-morphism px-3 py-1.5 rounded-xl border border-white/20 shadow-xl flex items-center gap-1.5 group-hover:border-teal-400/80 group-hover:bg-slate-900/90 transition-all">
+              <span class="text-base">${mod.icon}</span>
+              <span class="text-xs font-bold text-white tracking-wide whitespace-nowrap">${mod.name}</span>
+              <span class="text-[9px] px-1.5 py-0.2 rounded-md font-mono bg-white/10 text-teal-300 font-semibold hidden sm:inline-block">${isCenter ? 'HUB' : '0' + mod.id}</span>
+            </div>
+            <div class="w-1.5 h-3 bg-gradient-to-b from-teal-400 to-transparent"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-teal-400 pin-beacon shadow-lg shadow-teal-500/50"></div>
+          `;
+
+          pin.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sound.init();
+            sound.playClick();
+            selectModule(mod);
+          });
+
+          container.appendChild(pin);
+          pinElements.push({
+            dom: pin,
+            worldPos: new THREE.Vector3(mod.gridPos.x, anchorHeight, mod.gridPos.z),
+            type: 'core',
+            id: mod.id,
+            role: mod.role
+          });
+        }
+      });
+
+      // 醫師專屬懸浮 Pin（高度精確對齊落地坐標）
+      DOCTORS.forEach((doc) => {
+        const pin = document.createElement('div');
+        pin.className = 'island-pin flex flex-col items-center group';
+        pin.dataset.doctorId = doc.id;
+
+        pin.innerHTML = `
+          <div class="glass-morphism px-3 py-1.5 rounded-xl border border-amber-400/40 bg-slate-900/80 shadow-xl flex items-center gap-1.5 group-hover:border-amber-400 group-hover:scale-105 transition-all">
+            <span class="text-base">${doc.avatar}</span>
+            <span class="text-xs font-bold text-amber-300 tracking-wide whitespace-nowrap">${doc.name}</span>
+          </div>
+          <div class="w-1.5 h-3 bg-gradient-to-b from-amber-400 to-transparent"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-amber-400 pin-beacon shadow-lg shadow-amber-500/50"></div>
+        `;
+
+        pin.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sound.init();
+          sound.playChime();
+          showToast(`駐島守護者：${doc.name}（${doc.title}）`);
+          document.getElementById('doctorsModal').classList.remove('hidden');
+          const docY = (doc.pos && doc.pos.y !== undefined) ? doc.pos.y : 18.5;
+          flyCameraTo(
+            { x: doc.pos.x + 30, y: docY + 20, z: doc.pos.z + 35 },
+            { x: doc.pos.x, y: docY + 6, z: doc.pos.z }
+          );
+        });
+
+        container.appendChild(pin);
+        const docBaseY = (doc.pos && doc.pos.y !== undefined) ? doc.pos.y : 18.5;
+        pinElements.push({
+          dom: pin,
+          worldPos: new THREE.Vector3(doc.pos.x, docBaseY + 16, doc.pos.z),
+          type: 'doctor',
+          id: doc.id
+        });
+      });
+    }
+
+    const tempProjVec = new THREE.Vector3();
+    function updatePinsPosition() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      pinElements.forEach(item => {
+        tempProjVec.copy(item.worldPos);
+        tempProjVec.project(camera);
+
+        if (tempProjVec.z > 1) {
+          item.dom.style.opacity = '0';
+          item.dom.style.pointerEvents = 'none';
+          return;
+        }
+
+        const screenX = (tempProjVec.x * 0.5 + 0.5) * w;
+        const screenY = (-(tempProjVec.y * 0.5) + 0.5) * h;
+
+        item.dom.style.left = `${screenX}px`;
+        item.dom.style.top = `${screenY}px`;
+
+        if (activeRole !== 'all' && item.type === 'core') {
+          if (item.role !== 'both' && item.role !== activeRole) {
+            item.dom.classList.add('dimmed');
+            item.dom.classList.remove('highlight');
+          } else {
+            item.dom.classList.remove('dimmed');
+            item.dom.classList.add('highlight');
+          }
+        } else {
+          item.dom.classList.remove('dimmed', 'highlight');
+          item.dom.style.opacity = '1';
+          item.dom.style.pointerEvents = 'auto';
+        }
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 7.1 大氣浮雲與環境微光粒子
+    // -------------------------------------------------------------
+    let dustParticles;
+    function buildAtmosphereParticles() {
+      const pCount = 200;
+      const pGeo = new THREE.BufferGeometry();
+      const posArray = new Float32Array(pCount * 3);
+
+      for (let i = 0; i < pCount * 3; i += 3) {
+        posArray[i] = (Math.random() - 0.5) * 550;
+        posArray[i + 1] = 10 + Math.random() * 85;
+        posArray[i + 2] = (Math.random() - 0.5) * 550;
+      }
+      pGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+      const pMat = new THREE.PointsMaterial({
+        color: 0x5eead4,
+        size: 2.2,
+        transparent: true,
+        opacity: 0.65,
+        blending: THREE.AdditiveBlending
+      });
+      dustParticles = new THREE.Points(pGeo, pMat);
+      scene.add(dustParticles);
+
+      for (let i = 0; i < 8; i++) {
+        const cloud = createLowPolyCloud();
+        const angle = (i / 8) * Math.PI * 2;
+        const dist = 180 + Math.random() * 90;
+        cloud.position.set(Math.cos(angle) * dist, 65 + Math.random() * 25, Math.sin(angle) * dist);
+        scene.add(cloud);
+        rotatingElements.push({ mesh: cloud, orbit: true, orbitSpeed: 0.0015 + Math.random() * 0.001 });
+      }
+    }
+
+    function createLowPolyCloud() {
+      const g = new THREE.Group();
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        roughness: 0.9,
+        flatShading: true,
+        transparent: true,
+        opacity: 0.85
+      });
+      for (let i = 0; i < 5; i++) {
+        const r = 8 + Math.random() * 8;
+        const puff = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), mat);
+        puff.position.set((Math.random() - 0.5) * 22, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 16);
+        g.add(puff);
+      }
+      return g;
+    }
+
+    // -------------------------------------------------------------
+    // 8. 協作能量光軌
+    // -------------------------------------------------------------
+    function renderSynergyFlow(flowKey) {
+      while (synergyCurveGroup.children.length > 0) {
+        const obj = synergyCurveGroup.children[0];
+        synergyCurveGroup.remove(obj);
+      }
+
+      if (!flowKey || !SCENARIOS[flowKey]) return;
+      const scenario = SCENARIOS[flowKey];
+      const pathIds = scenario.path;
+
+      for (let i = 0; i < pathIds.length - 1; i++) {
+        const m1 = ISLAND_MODULES.find(m => m.id === pathIds[i]);
+        const m2 = ISLAND_MODULES.find(m => m.id === pathIds[i + 1]);
+        if (!m1 || !m2) continue;
+
+        const p1 = new THREE.Vector3(m1.gridPos.x, 24, m1.gridPos.z);
+        const p2 = new THREE.Vector3(m2.gridPos.x, 24, m2.gridPos.z);
+        const mid = new THREE.Vector3(
+          (p1.x + p2.x) / 2,
+          Math.max(p1.y, p2.y) + 32,
+          (p1.z + p2.z) / 2
+        );
+
+        const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2);
+        const tubeGeo = new THREE.TubeGeometry(curve, 32, 1.2, 8, false);
+        const tubeMat = new THREE.MeshBasicMaterial({
+          color: scenario.color,
+          transparent: true,
+          opacity: 0.65,
+          wireframe: true
+        });
+        const tube = new THREE.Mesh(tubeGeo, tubeMat);
+        synergyCurveGroup.add(tube);
+
+        const orb = new THREE.Mesh(
+          new THREE.SphereGeometry(2.4, 12, 12),
+          new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        orb.userData = { curve: curve, progress: Math.random() };
+        synergyCurveGroup.add(orb);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 9. 渲染主迴圈
+    // -------------------------------------------------------------
+    function animate() {
+      animationFrameId = requestAnimationFrame(animate);
+
+      const delta = clock.getDelta();
+      const time = clock.getElapsedTime();
+
+      TWEEN.update();
+      controls.update();
+
+      animateOcean(time);
+
+      rotatingElements.forEach(item => {
+        if (item.speedY) item.mesh.rotation.y += item.speedY;
+        if (item.tiltZ) item.mesh.rotation.z = Math.sin(time * 3) * 0.12;
+        if (item.floatY) item.mesh.position.y = item.baseY + Math.sin(time * 2.5) * 2;
+        if (item.orbit) {
+          const r = Math.hypot(item.mesh.position.x, item.mesh.position.z);
+          const currentA = Math.atan2(item.mesh.position.z, item.mesh.position.x);
+          const newA = currentA + item.orbitSpeed;
+          item.mesh.position.x = Math.cos(newA) * r;
+          item.mesh.position.z = Math.sin(newA) * r;
+        }
+      });
+
+      if (dustParticles) {
+        dustParticles.rotation.y = time * 0.02;
+        const pos = dustParticles.geometry.attributes.position;
+        for (let i = 1; i < pos.count * 3; i += 3) {
+          pos.array[i] += Math.sin(time + i) * 0.05;
+        }
+        pos.needsUpdate = true;
+      }
+
+      synergyCurveGroup.children.forEach(child => {
+        if (child.userData && child.userData.curve) {
+          child.userData.progress = (child.userData.progress + delta * 0.45) % 1;
+          const pt = child.userData.curve.getPoint(child.userData.progress);
+          child.position.copy(pt);
+        }
+      });
+
+      updatePinsPosition();
+      renderer.render(scene, camera);
+    }
+
+    // -------------------------------------------------------------
+    // 10. 拖曳防誤觸控制機制
+    // -------------------------------------------------------------
+    function onPointerDown(e) {
+      pointerDownPos.x = e.clientX;
+      pointerDownPos.y = e.clientY;
+      isDraggingCanvas = false;
+    }
+
+    function onPointerUp(e) {
+      const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+      if (dist > 5) {
+        isDraggingCanvas = true;
+        return;
+      }
+      isDraggingCanvas = false;
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // -------------------------------------------------------------
+    // 11. 攝影機運鏡導航
+    // -------------------------------------------------------------
+    function flyCameraTo(targetPos, targetLookAt, duration = 1400) {
+      new TWEEN.Tween(camera.position)
+        .to(targetPos, duration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+
+      new TWEEN.Tween(controls.target)
+        .to(targetLookAt, duration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+    }
+
+    function flyToOverview(duration = 1400) {
+      flyCameraTo(
+        { x: OVERVIEW_CAMERA_POS.x, y: OVERVIEW_CAMERA_POS.y, z: OVERVIEW_CAMERA_POS.z },
+        { x: OVERVIEW_TARGET_POS.x, y: OVERVIEW_TARGET_POS.y, z: OVERVIEW_TARGET_POS.z },
+        duration
+      );
+    }
+
+    function selectModule(mod) {
+      closeRegionHud();
+      selectedModule = mod;
+      openDrawer(mod);
+
+      const camTarget = {
+        x: mod.gridPos.x + 40,
+        y: 45,
+        z: mod.gridPos.z + 55
+      };
+      const lookTarget = {
+        x: mod.gridPos.x,
+        y: 18,
+        z: mod.gridPos.z
+      };
+      flyCameraTo(camTarget, lookTarget);
+    }
+
+    function selectRegionNode(reg) {
+      infoDrawer.classList.add('translate-x-full');
+      selectedModule = null;
+
+      openRegionHud(reg);
+
+      const midX = reg.gridPos.x * 0.6;
+      const midZ = reg.gridPos.z * 0.6;
+      const camTarget = {
+        x: midX + 65,
+        y: 75,
+        z: midZ + 85
+      };
+      const lookTarget = {
+        x: midX,
+        y: 15,
+        z: midZ
+      };
+
+      flyCameraTo(camTarget, lookTarget, 1300);
+      showToast(`🧭 定位地理網絡：【${reg.name}】（${reg.bearing} · ${reg.distanceKm}）`);
+    }
+
+    // -------------------------------------------------------------
+    // 12. 地理方位 HUD 浮卡控制器
+    // -------------------------------------------------------------
+    const regionHudCard = document.getElementById('regionHudCard');
+    const regionHudTitle = document.getElementById('regionHudTitle');
+    const regionHudCode = document.getElementById('regionHudCode');
+    const regionHudIcon = document.getElementById('regionHudIcon');
+    const regionHudBearing = document.getElementById('regionHudBearing');
+    const regionHudDistance = document.getElementById('regionHudDistance');
+    const regionHudTransit = document.getElementById('regionHudTransit');
+    const closeRegionHudBtn = document.getElementById('closeRegionHudBtn');
+    const regionToCenterBtn = document.getElementById('regionToCenterBtn');
+
+    function openRegionHud(reg) {
+      regionHudTitle.textContent = reg.name;
+      regionHudCode.textContent = reg.code;
+      regionHudIcon.textContent = reg.icon;
+      regionHudBearing.textContent = reg.bearing;
+      regionHudDistance.textContent = reg.distanceKm;
+      regionHudTransit.textContent = reg.transit;
+
+      regionHudCard.classList.remove('hidden');
+      setTimeout(() => {
+        regionHudCard.classList.remove('opacity-0', 'translate-y-3');
+      }, 20);
+    }
+
+    function closeRegionHud() {
+      regionHudCard.classList.add('opacity-0', 'translate-y-3');
+      setTimeout(() => {
+        regionHudCard.classList.add('hidden');
+      }, 300);
+    }
+
+    closeRegionHudBtn.addEventListener('click', () => {
+      closeRegionHud();
+      flyToOverview();
+    });
+
+    regionToCenterBtn.addEventListener('click', () => {
+      closeRegionHud();
+      flyCameraTo({ x: 45, y: 56, z: 65 }, { x: 0, y: 25, z: 0 });
+      showToast('已聚焦回「部立臺北醫院 · 職醫心臟」');
+    });
+
+    // -------------------------------------------------------------
+    // 13. 故事巡航自動導覽系統
+    // -------------------------------------------------------------
+    let tourActive = false;
+    let currentTourIndex = 0;
+    let tourTimer = null;
+
+    const btnStartTour = document.getElementById('btnStartTour');
+    const btnStopTour = document.getElementById('btnStopTour');
+    const tourBanner = document.getElementById('tourBanner');
+    const tourStepBadge = document.getElementById('tourStepBadge');
+    const tourTitle = document.getElementById('tourTitle');
+    const tourSubtitle = document.getElementById('tourSubtitle');
+
+    btnStartTour.addEventListener('click', () => {
+      sound.init();
+      if (tourActive) {
+        endNarrativeTour(true);
+      } else {
+        sound.playChime();
+        startNarrativeTour();
+      }
+    });
+
+    btnStopTour.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sound.playClick();
+      endNarrativeTour(true);
+    });
+
+    function startNarrativeTour() {
+      closeRegionHud();
+      tourActive = true;
+      currentTourIndex = 0;
+      tourBanner.classList.remove('opacity-0');
+
+      btnStartTour.innerHTML = '<span>⏹️</span><span>中斷巡航</span>';
+      btnStartTour.className = 'px-3 py-1.5 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 transition-all flex items-center gap-1';
+
+      runTourStep();
+    }
+
+    function runTourStep() {
+      if (!tourActive || currentTourIndex >= TOUR_STOPS.length) {
+        endNarrativeTour(false);
+        return;
+      }
+
+      const stop = TOUR_STOPS[currentTourIndex];
+      tourStepBadge.textContent = stop.step;
+      tourTitle.textContent = stop.title;
+      tourSubtitle.textContent = stop.subtitle;
+
+      sound.playClick();
+      flyCameraTo(stop.camPos, stop.lookAt, 1600);
+
+      clearTimeout(tourTimer);
+      tourTimer = setTimeout(() => {
+        currentTourIndex++;
+        runTourStep();
+      }, 6500);
+    }
+
+    function endNarrativeTour(isManualAbort = false) {
+      tourActive = false;
+      tourBanner.classList.add('opacity-0');
+      clearTimeout(tourTimer);
+
+      btnStartTour.innerHTML = '<span>🚀</span><span>故事巡航</span>';
+      btnStartTour.className = 'px-3 py-1.5 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all flex items-center gap-1';
+
+      flyToOverview(1500);
+
+      if (isManualAbort) {
+        showToast('已中斷故事巡航，視角已平滑回歸全局');
+      } else {
+        showToast('🎉 故事巡航完畢！視角已平滑回歸全局');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 14. UI 抽屜與彈窗控制器
+    // -------------------------------------------------------------
+    const infoDrawer = document.getElementById('infoDrawer');
+    const drawerIcon = document.getElementById('drawerIcon');
+    const drawerBadge = document.getElementById('drawerBadge');
+    const drawerTitle = document.getElementById('drawerTitle');
+    const drawerOfficialName = document.getElementById('drawerOfficialName');
+    const drawerDesc = document.getElementById('drawerDesc');
+    const drawerKeypoints = document.getElementById('drawerKeypoints');
+    const drawerEmployerBenefit = document.getElementById('drawerEmployerBenefit');
+    const drawerWorkerBenefit = document.getElementById('drawerWorkerBenefit');
+    const drawerCtaAction = document.getElementById('drawerCtaAction');
+    const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+
+    function openDrawer(mod) {
+      drawerIcon.textContent = mod.icon;
+      drawerBadge.textContent = mod.badge;
+      drawerTitle.textContent = mod.name;
+      drawerOfficialName.textContent = mod.officialName;
+      drawerDesc.textContent = mod.desc;
+
+      drawerKeypoints.innerHTML = mod.keypoints
+        .map(kp => `<li class="flex items-start gap-2.5"><span class="text-teal-400 font-bold mt-0.5">✓</span><span>${kp}</span></li>`)
+        .join('');
+
+      drawerEmployerBenefit.textContent = mod.employerBenefit;
+      drawerWorkerBenefit.textContent = mod.workerBenefit;
+      drawerCtaAction.textContent = mod.cta;
+
+      infoDrawer.classList.remove('translate-x-full');
+    }
+
+    closeDrawerBtn.addEventListener('click', () => {
+      infoDrawer.classList.add('translate-x-full');
+      selectedModule = null;
+      flyToOverview();
+      showToast('已關閉詳情，視角平滑回歸全局');
+    });
+
+    drawerCtaAction.addEventListener('click', () => {
+      if (!selectedModule) return;
+      if (selectedModule.id === 0) {
+        document.getElementById('historyModal').classList.remove('hidden');
+      } else if (selectedModule.id === 7) {
+        document.getElementById('marketModal').classList.remove('hidden');
+      } else if (selectedModule.id === 3 || selectedModule.id === 4) {
+        window.open('https://www.tph.mohw.gov.tw/?aid=60&pid=225', '_blank');
+      } else {
+        document.getElementById('calcModal').classList.remove('hidden');
+      }
+    });
+
+    const roleBtns = document.querySelectorAll('.role-btn');
+    roleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sound.playClick();
+        roleBtns.forEach(b => {
+          b.classList.remove('bg-gradient-to-r', 'from-teal-500', 'to-medblue-600', 'text-white', 'shadow-md');
+          b.classList.add('text-slate-400');
+        });
+        btn.classList.add('bg-gradient-to-r', 'from-teal-500', 'to-medblue-600', 'text-white', 'shadow-md');
+        btn.classList.remove('text-slate-400');
+
+        activeRole = btn.dataset.role;
+        activeFlow = null;
+        renderSynergyFlow(null);
+        document.getElementById('clearFlowBtn').classList.add('hidden');
+
+        if (activeRole === 'employer') {
+          showToast('🏢 已聚焦「企業雇主/HR」：環境探勘、適性評估與法規金鐘高亮中！');
+        } else if (activeRole === 'worker') {
+          showToast('👷 已聚焦「勞工/傷病夥伴」：因果門診、職能復健高亮中！');
+        } else {
+          showToast('🌐 已恢復全景探索視野');
+        }
+      });
+    });
+
+    const flowBtn1 = document.getElementById('flowBtn1');
+    const flowBtn2 = document.getElementById('flowBtn2');
+    const flowBtn3 = document.getElementById('flowBtn3');
+    const clearFlowBtn = document.getElementById('clearFlowBtn');
+
+    flowBtn1.addEventListener('click', () => {
+      sound.playChime();
+      activeFlow = 'flow1';
+      renderSynergyFlow('flow1');
+      clearFlowBtn.classList.remove('hidden');
+      showToast('⚡ 啟動情境A：大數據天樞 ➔ 適性選配 ➔ 四大計畫防護');
+    });
+
+    flowBtn2.addEventListener('click', () => {
+      sound.playChime();
+      activeFlow = 'flow2';
+      renderSynergyFlow('flow2');
+      clearFlowBtn.classList.remove('hidden');
+      showToast('🔄 啟動情境B：專科診斷 ➔ 職能強化訓練 ➔ 安全復工證明');
+    });
+
+    flowBtn3.addEventListener('click', () => {
+      sound.playChime();
+      activeFlow = 'flow3';
+      renderSynergyFlow('flow3');
+      clearFlowBtn.classList.remove('hidden');
+      showToast('🏛️ 啟動創科使命：危害預防 ➔ 診斷補償 ➔ 職能復工');
+    });
+
+    clearFlowBtn.addEventListener('click', () => {
+      activeFlow = null;
+      renderSynergyFlow(null);
+      clearFlowBtn.classList.add('hidden');
+      showToast('已關閉協作流線');
+    });
+
+    document.getElementById('btnResetView').addEventListener('click', () => {
+      sound.playClick();
+      closeRegionHud();
+      flyToOverview();
+      showToast('攝影機已平滑回歸全局總覽');
+    });
+
+    const audioToggleBtn = document.getElementById('audioToggleBtn');
+    const audioStateText = document.getElementById('audioStateText');
+    audioToggleBtn.addEventListener('click', () => {
+      sound.init();
+      const isEnabled = sound.toggle();
+      audioStateText.textContent = isEnabled ? 'SOUND ON' : 'MUTE';
+      showToast(isEnabled ? '🔊 空間環境音效已開啟' : '🔇 已靜音');
+    });
+
+    document.getElementById('timeCycleBtn').addEventListener('click', () => {
+      sound.playClick();
+      const nextMode = (timeMode + 1) % TIME_PRESETS.length;
+      applyTimeMode(nextMode, true, true);
+    });
+
+    // 彈窗控制器
+    const doctorsModal = document.getElementById('doctorsModal');
+    document.getElementById('btnOpenDoctors').addEventListener('click', () => {
+      sound.playClick();
+      doctorsModal.classList.remove('hidden');
+    });
+    document.getElementById('closeDoctorsBtn').addEventListener('click', () => {
+      doctorsModal.classList.add('hidden');
+      flyToOverview();
+    });
+
+    const marketModal = document.getElementById('marketModal');
+    document.getElementById('btnOpenMarket').addEventListener('click', () => {
+      sound.playClick();
+      marketModal.classList.remove('hidden');
+    });
+    document.getElementById('closeMarketBtn').addEventListener('click', () => {
+      marketModal.classList.add('hidden');
+    });
+    document.getElementById('marketToCalcBtn').addEventListener('click', () => {
+      marketModal.classList.add('hidden');
+      calcModal.classList.remove('hidden');
+    });
+
+    const historyModal = document.getElementById('historyModal');
+    document.getElementById('btnOpenHistory').addEventListener('click', () => {
+      sound.playClick();
+      historyModal.classList.remove('hidden');
+    });
+    document.getElementById('closeHistoryBtn').addEventListener('click', () => {
+      historyModal.classList.add('hidden');
+    });
+    document.getElementById('historyToContactBtn').addEventListener('click', () => {
+      historyModal.classList.add('hidden');
+      window.location.href = 'tel:02-22765566,3242';
+    });
+
+    // 臨場計算機
+    const calcModal = document.getElementById('calcModal');
+    const workerSlider = document.getElementById('workerSlider');
+    const workerCountDisplay = document.getElementById('workerCountDisplay');
+    const riskSelect = document.getElementById('riskSelect');
+    const calcResultFreq = document.getElementById('calcResultFreq');
+    const calcResultTip = document.getElementById('calcResultTip');
+
+    document.getElementById('btnOpenCalc').addEventListener('click', () => {
+      sound.playClick();
+      calcModal.classList.remove('hidden');
+    });
+    document.getElementById('closeCalcBtn').addEventListener('click', () => {
+      calcModal.classList.add('hidden');
+    });
+
+    function recalculateCompliance() {
+      const count = parseInt(workerSlider.value, 10);
+      const isSpecial = riskSelect.value === 'special';
+      workerCountDisplay.textContent = `${count} 人`;
+
+      let freqText = '';
+      let tipText = '';
+
+      if (isSpecial) {
+        if (count >= 100) {
+          freqText = '特約專科醫師 每月至少臨場 1～2 次以上';
+          tipText = '【特別危害作業專管】需配置專職護理人員，並由職業醫學科醫師進行分級健康追蹤面談。';
+        } else {
+          freqText = '特約專科醫師 每年至少臨場 4～6 次';
+          tipText = '針對粉塵、噪音、有機溶劑等危害作業，須定期開立健康指導紀錄備查。';
+        }
+      } else {
+        if (count < 50) {
+          freqText = '依規定得由職安衛主管督導，建議諮詢專科做預防基線';
+          tipText = '雖未強制醫師定期臨場，但建議藉由臺北醫院單次專案訪視，建立健檢與人因防護基礎。';
+        } else if (count >= 50 && count <= 99) {
+          freqText = '特約醫師 每年至少臨場 1 次，特約護理師每年至少 4 次';
+          tipText = '《勞工健康保護規則》強制適用級距！部立臺北醫院提供全套合規特約醫護方案。';
+        } else if (count >= 100 && count <= 299) {
+          freqText = '特約醫師 每年至少臨場 4 次 (每季1次)，特約護理師每月至少 1 次';
+          tipText = '需啟動母性健康、過勞與不法侵害四大防範指引，並保留醫師指導紀錄。';
+        } else {
+          freqText = '特約醫師 每月至少臨場 1 次以上，常駐或專任護理人員配置';
+          tipText = '300人以上企業須建立常態化健康管理室。臺北醫院團隊可提供客製化駐廠與大數據統整。';
+        }
+      }
+
+      calcResultFreq.textContent = freqText;
+      calcResultTip.textContent = tipText;
+    }
+
+    workerSlider.addEventListener('input', recalculateCompliance);
+    riskSelect.addEventListener('change', recalculateCompliance);
+    recalculateCompliance();
+
+    document.getElementById('calcToContactBtn').addEventListener('click', () => {
+      calcModal.classList.add('hidden');
+      showToast('企業特約專線：02-22765566 分機 3242，專人為您對接！');
+      window.location.href = 'tel:02-22765566,3242';
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        let needResetCam = false;
+
+        if (tourActive) {
+          endNarrativeTour(true);
+          return;
+        }
+
+        closeRegionHud();
+
+        if (!infoDrawer.classList.contains('translate-x-full')) {
+          infoDrawer.classList.add('translate-x-full');
+          selectedModule = null;
+          needResetCam = true;
+        }
+        if (!doctorsModal.classList.contains('hidden')) {
+          doctorsModal.classList.add('hidden');
+          needResetCam = true;
+        }
+        marketModal.classList.add('hidden');
+        historyModal.classList.add('hidden');
+        calcModal.classList.add('hidden');
+
+        if (needResetCam) {
+          flyToOverview();
+        }
+      }
+    });
+
+    // Toast 提示
+    let toastTimeout;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 3600);
+    }
+
+    // 載入初始化
+    window.onload = function () {
+      initThree();
+      animate();
+      const tp = getTaipeiTime();
+      const currentPreset = TIME_PRESETS[timeMode];
+      showToast(`🏝️ 歡迎登上職醫守護島！雙北地理方位網絡已就位，啟動「${currentPreset.name}」天色`);
+    };
+  </script>
+</body>
+</html>
