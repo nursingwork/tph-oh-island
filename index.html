@@ -353,16 +353,19 @@
   <!-- ================= 底部精銳行動工具列 ================= -->
   <footer class="absolute bottom-6 right-4 md:right-8 flex flex-wrap items-center gap-2 pointer-events-auto z-10">
     <button id="btnOpenDoctors" class="glass-morphism px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold text-teal-300 hover:border-teal-400/60 hover:shadow-teal-500/10 hover:shadow-lg transition flex items-center gap-2">
-      <span>👨‍⚕️ 雙星守護陣容</span>
+      <span>👨‍⚕️ 團隊陣容</span>
     </button>
     <button id="btnOpenMarket" class="glass-morphism px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold text-amber-300 hover:border-amber-400/60 hover:shadow-amber-500/10 hover:shadow-lg transition flex items-center gap-2">
-      <span>🏪 職興市場智庫</span>
+      <span>🏪 職興市場</span>
     </button>
     <button id="btnOpenHistory" class="glass-morphism px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold text-sky-300 hover:border-sky-400/60 transition flex items-center gap-2">
-      <span>📜 創科2001沿革</span>
+      <span>📜 發展沿革</span>
     </button>
     <button id="btnOpenCalc" class="glass-morphism px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold text-emerald-300 hover:border-emerald-400/60 transition flex items-center gap-2">
-      <span>🧮 臨場次數速算</span>
+      <span>🧮 臨場次數試算</span>
+    </button>
+    <button id="btnTopDownView" class="glass-morphism px-3.5 py-2.5 rounded-2xl text-xs md:text-sm font-bold text-indigo-300 hover:border-indigo-400/60 hover:shadow-indigo-500/10 transition flex items-center gap-1.5" title="切換垂直俯瞰地圖視角">
+      <span>🗺️ 俯瞰</span>
     </button>
     <button id="btnResetView" class="glass-morphism p-2.5 rounded-2xl text-slate-300 hover:text-white hover:border-white/30 transition" title="攝影機置中歸位">
       🎯
@@ -741,7 +744,7 @@
         icon: '📡',
         badge: 'HAZARD ASSESSMENT',
         color: '#f59e0b',
-        gridPos: { x: 55, z: -35 },
+        gridPos: { x: 54, z: -31.18 },
         desc: '實地走入工廠與企業作業現場，辨識高溫、噪音、人因骨骼肌肉與化學毒性，在職業病或災害發生前消弭危機。',
         keypoints: [
           '醫師現場實地訪視，辨識物理、化學、生物及人因性危害因子',
@@ -762,7 +765,7 @@
         icon: '⚖️',
         badge: 'WORK FITNESS',
         color: '#06b6d4',
-        gridPos: { x: 60, z: 30 },
+        gridPos: { x: 54, z: 31.18 },
         desc: '為一般員工及傷病勞工進行科學化工作能力評估，落實適性選配工，讓人盡其才且無負擔，避免二次重創。',
         keypoints: [
           '特殊健康檢查異常勞工之適性評估與面談指導',
@@ -783,7 +786,7 @@
         icon: '🗼',
         badge: 'DIAGNOSIS & CLINIC',
         color: '#3b82f6',
-        gridPos: { x: 0, z: 65 },
+        gridPos: { x: 0, z: 62.35 },
         desc: '專科醫師親自坐診，嚴謹釐清病症（腕隧道、椎間盤突出、職業性聽損、化學中毒等）與工作時序因果關係。',
         keypoints: [
           '職業疾病因果關係嚴謹醫學鑑定與病歷回溯調查',
@@ -804,7 +807,7 @@
         icon: '🦾',
         badge: 'REHABILITATION',
         color: '#10b981',
-        gridPos: { x: -60, z: 30 },
+        gridPos: { x: -54, z: 31.18 },
         desc: '國家認可專門機構！提供工作強化訓練（Work Hardening）與職務再設計，協助遭遇職災勞工重建肌耐力與信心。',
         keypoints: [
           '功能性能力評估（FCE）精準量測生理做功能限',
@@ -825,7 +828,7 @@
         icon: '🛡️',
         badge: 'COMPLIANCE & SHIELD',
         color: '#8b5cf6',
-        gridPos: { x: -55, z: -35 },
+        gridPos: { x: -54, z: -31.18 },
         desc: '依《職業安全衛生法》與《勞工健康保護規則》，輔導企業推動「四大指引」（人因、過勞、母性、不法侵害）並辦理健康講座。',
         keypoints: [
           '輔導制訂異常工作負荷促發心血管疾病（過勞）預防計畫',
@@ -846,7 +849,7 @@
         icon: '📊',
         badge: 'DATA & EPI',
         color: '#ec4899',
-        gridPos: { x: 0, z: -65 },
+        gridPos: { x: 0, z: -62.35 },
         desc: '結合職業流行病學與大數據交叉比對，針對全公司年度健檢進行第一至四級分級管理，客製年度長期健康防護對策。',
         keypoints: [
           '一般健檢與特殊健檢結果之綜合統計與趨勢分析',
@@ -867,7 +870,7 @@
         icon: '🏪',
         badge: 'OH SMART MARKET',
         color: '#d97706',
-        gridPos: { x: 75, z: 80 },
+        gridPos: { x: -54, z: -93.53 },
         desc: '由主治醫師林義哲創立、科主任蔡旻翰共同推動的智庫平台。融會前台積電廠醫實務與公立醫院公信力，專精「勞動能力減損鑑定」與白話職醫專欄。',
         keypoints: [
           '創辦人林義哲醫師（曾任台積電專任廠醫、輔大職醫科主任）',
@@ -890,8 +893,8 @@
         transit: '思源路醫療大本營直通，急重症與專科門診 5 分鐘覆蓋。',
         code: 'REG-XINZHUANG',
         icon: '🏭',
-        color: '#059669',
-        gridPos: { x: -135, z: 75 }
+        color: '#64748b',
+        gridPos: { x: -165, z: 95 }
       },
       {
         id: 9,
@@ -902,8 +905,8 @@
         transit: '緊鄰新北產業園區（五股工業區），化學與機械聚落聯防。',
         code: 'REG-WUGU',
         icon: '⚙️',
-        color: '#d97706',
-        gridPos: { x: -55, z: -155 }
+        color: '#64748b',
+        gridPos: { x: -85, z: -240 }
       },
       {
         id: 10,
@@ -914,8 +917,8 @@
         transit: '跨二重疏洪道快速接軌，服務五金精密代工與物流廊道。',
         code: 'REG-SANCHONG',
         icon: '🛠️',
-        color: '#0284c7',
-        gridPos: { x: 145, z: -85 }
+        color: '#64748b',
+        gridPos: { x: 208, z: -128 }
       },
       {
         id: 11,
@@ -926,8 +929,8 @@
         transit: '跨大漢橋即刻抵達，直達新板特區旗艦總部與遠東通訊園區。',
         code: 'REG-BANQIAO',
         icon: '🏙️',
-        color: '#6366f1',
-        gridPos: { x: 15, z: 165 }
+        color: '#64748b',
+        gridPos: { x: 22, z: 214 }
       },
       {
         id: 12,
@@ -938,8 +941,8 @@
         transit: '捷運環狀線直通，串聯遠東世紀廣場生醫與高科技電子聚落。',
         code: 'REG-ZHONGHE',
         icon: '🔬',
-        color: '#8b5cf6',
-        gridPos: { x: 155, z: 165 }
+        color: '#64748b',
+        gridPos: { x: 195, z: 208 }
       },
       {
         id: 13,
@@ -950,8 +953,8 @@
         transit: '跨淡水河直通台北市政經核心，跨區提供公立教學醫院公信力支援。',
         code: 'REG-TAIPEI-CITY',
         icon: '🏛️',
-        color: '#ec4899',
-        gridPos: { x: 215, z: 20 }
+        color: '#64748b',
+        gridPos: { x: 315, z: 40 }
       }
     ];
 
@@ -973,7 +976,7 @@
         title: '職業醫學科 主治醫師',
         avatar: '👨‍💻',
         badge: '前台積電廠醫 · 職興市場創辦人',
-        pos: { x: 68, y: 18.5, z: 91 }, // 嚴格錨定在職興市場露台島面（y = 18.5，位於門市前方）
+        pos: { x: -60, y: 18.5, z: -82 }, // 嚴格錨定在職興市場露台島面（y = 18.5，位於門市前方）
         color: '#d97706',
         desc: '曾任輔大醫院職醫科主任、台積電專任廠醫。創立「職興市場 (ohsmart.blog)」，專精勞動能力減損鑑定。'
       }
@@ -984,40 +987,40 @@
         step: '01',
         title: '部立臺北醫院 · 創科樞紐 (2001)',
         subtitle: '2001年12月4日由行政院衛生署公告成立，引領雙北預防、補償與復工三大整合功能。',
-        camPos: { x: 45, y: 56, z: 65 },
-        lookAt: { x: 0, y: 25, z: 0 },
+        camPos: { x: 78, y: 68, z: 95 },
+        lookAt: { x: 0, y: 36, z: 0 },
         targetModuleId: 0
       },
       {
         step: '02',
         title: '因果真理燈塔 · 專科門診',
         subtitle: '專科醫師親自坐診，釐清病症與工作時序因果關係，開立具公立醫院最高公信力之診斷書。',
-        camPos: { x: 38, y: 52, z: 105 },
-        lookAt: { x: 0, y: 24, z: 65 },
+        camPos: { x: 50, y: 62, z: 120 },
+        lookAt: { x: 0, y: 32, z: 62.35 },
         targetModuleId: 3
       },
       {
         step: '03',
         title: '復能再造基地 · 國家級職能復健',
         subtitle: '國家認可專門機構，提供生理耐力工作強化訓練與職務再設計，保障安心復工。',
-        camPos: { x: -30, y: 48, z: 65 },
-        lookAt: { x: -60, y: 22, z: 30 },
+        camPos: { x: -6, y: 56, z: 88 },
+        lookAt: { x: -54, y: 26, z: 31.18 },
         targetModuleId: 4
       },
       {
         step: '04',
         title: '職興市場 OH Smart · 智匯港',
         subtitle: '林義哲醫師創立，融合前台積電廠醫實務與公立醫院公信力，專精勞動能力減損鑑定。',
-        camPos: { x: 115, y: 52, z: 120 },
-        lookAt: { x: 75, y: 20, z: 80 },
+        camPos: { x: -8, y: 58, z: -38 },
+        lookAt: { x: -54, y: 28, z: -93.53 },
         targetModuleId: 7
       },
       {
         step: '05',
         title: '雙北地理聯防航線 (新莊/五股/三重/板橋/中和/台北市)',
         subtitle: '以思源路部立醫院為軸心，輻射守護雙北各大產業園區與核心政經聚落。',
-        camPos: { x: 235, y: 240, z: 295 },
-        lookAt: { x: 20, y: 0, z: 15 },
+        camPos: { x: 280, y: 290, z: 350 },
+        lookAt: { x: 25, y: 0, z: 20 },
         targetModuleId: null
       }
     ];
@@ -1276,8 +1279,8 @@
     let clock = new THREE.Clock();
     let dirLight, hemiLight, ambientLight;
 
-    const OVERVIEW_CAMERA_POS = { x: 235, y: 240, z: 295 };
-    const OVERVIEW_TARGET_POS = { x: 20, y: 0, z: 15 };
+    const OVERVIEW_CAMERA_POS = { x: 280, y: 290, z: 350 };
+    const OVERVIEW_TARGET_POS = { x: 25, y: 0, z: 20 };
 
     let pointerDownPos = { x: 0, y: 0 };
     let isDraggingCanvas = false;
@@ -1296,13 +1299,13 @@
       const seaBed = -28;
 
       const islandClearingZones = [
-        { x: 0, z: 0, r: 125 },
-        { x: -135, z: 75, r: 68 },
-        { x: -55, z: -155, r: 68 },
-        { x: 145, z: -85, r: 68 },
-        { x: 15, z: 165, r: 68 },
-        { x: 155, z: 165, r: 68 },
-        { x: 215, z: 20, r: 72 }
+        { x: 0, z: 0, r: 160 },
+        { x: -165, z: 95, r: 68 },
+        { x: -85, z: -240, r: 68 },
+        { x: 208, z: -128, r: 68 },
+        { x: 22, z: 214, r: 68 },
+        { x: 195, z: 208, r: 68 },
+        { x: 315, z: 40, r: 85 }
       ];
 
       for (let i = 0; i < islandClearingZones.length; i++) {
@@ -1317,7 +1320,7 @@
                             Math.cos(theta * 5 - 1.4) * 36 +
                             Math.sin(theta * 8 + 2.1) * 20 +
                             Math.cos(theta * 12) * 9;
-      const coastRadius = 390 + coastalWiggle;
+      const coastRadius = 450 + coastalWiggle;
 
       if (distCenter < coastRadius - 75) {
         return seaBed;
@@ -1435,6 +1438,7 @@
       window.addEventListener('resize', onWindowResize);
       window.addEventListener('pointerdown', onPointerDown);
       window.addEventListener('pointerup', onPointerUp);
+      window.addEventListener('pointermove', onPointerMove);
     }
 
     function setupEnvironmentAndLighting() {
@@ -1938,9 +1942,11 @@
 
       ISLAND_MODULES.forEach((mod) => {
         const isCenter = mod.id === 0;
+        const isTaipei = mod.id === 13;
         const isRegion = mod.type === 'region';
-        const radius = isCenter ? 36 : (isRegion ? 22 : 26);
-        const height = isCenter ? 22 : (isRegion ? 12 : 16);
+        // 核心模組島嶼（Core Islands）與台北市統一採用大規格半徑 36，其他地區島維持 22
+        const radius = (!isRegion || isTaipei) ? 36 : 22;
+        const height = isCenter ? 22 : (isTaipei ? 14 : (isRegion ? 12 : 16));
         const baseHexColor = isCenter ? '#0369a1' : (mod.id === 7 ? '#92400e' : (isRegion ? '#1e293b' : (mod.color || '#0f766e')));
 
         const tile = createHexTile(radius, height, baseHexColor, isCenter, isRegion);
@@ -1958,8 +1964,13 @@
         tile.group.add(building);
 
         islandGroup.add(tile.group);
-        interactiveMeshes.push(tile.topMesh);
-        tile.topMesh.userData = tile.group.userData;
+        // 將島嶼、基座與其上建築的所有 Mesh 都註冊進可互動集合
+        tile.group.traverse(child => {
+          if (child.isMesh) {
+            child.userData = tile.group.userData;
+            interactiveMeshes.push(child);
+          }
+        });
       });
 
       // 構建並落地守護醫師角色
@@ -1971,646 +1982,708 @@
     }
 
     // -------------------------------------------------------------
-    // 6.2 建築建模
+    // 7. 建築模組程序化建構器 (Procedural Building Generator)
     // -------------------------------------------------------------
-    function buildBuildingForModule(mod, tileHeight) {
+    function buildBuildingForModule(mod, islandHeight) {
       const bGroup = new THREE.Group();
-      bGroup.position.y = tileHeight + 2.5;
+      const baseTop = islandHeight + 2.5;
 
-      if (mod.type === 'region') {
-        const pillarMat = new THREE.MeshStandardMaterial({
-          color: new THREE.Color(mod.color),
-          metalness: 0.6,
-          roughness: 0.25
+      if (mod.id === 0) {
+        // ========== 00: 部立臺北醫院 · 職醫心臟 (主塔與醫療樞紐) ==========
+        const mainMat = new THREE.MeshStandardMaterial({
+          map: TextureGen.glassFacade(),
+          roughness: 0.22,
+          metalness: 0.45,
+          flatShading: true
         });
+        const mainMesh = new THREE.Mesh(new THREE.BoxGeometry(26, 36, 20), mainMat);
+        mainMesh.position.y = baseTop + 18;
+        mainMesh.castShadow = true;
+        mainMesh.receiveShadow = true;
+        bGroup.add(mainMesh);
 
-        const baseCone = new THREE.Mesh(new THREE.CylinderGeometry(2, 4.5, 6, 6), pillarMat);
-        baseCone.position.y = 3;
-        baseCone.castShadow = true;
-        bGroup.add(baseCone);
+        // 兩側裙樓側翼 (West & East Wings)
+        const wingMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.6, flatShading: true });
+        const w1 = new THREE.Mesh(new THREE.BoxGeometry(10, 20, 16), wingMat);
+        w1.position.set(-16, baseTop + 10, 0);
+        w1.castShadow = true;
+        bGroup.add(w1);
 
-        const needle = new THREE.Mesh(new THREE.OctahedronGeometry(2.8, 0), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-        needle.position.y = 11;
+        const w2 = new THREE.Mesh(new THREE.BoxGeometry(10, 20, 16), wingMat);
+        w2.position.set(16, baseTop + 10, 0);
+        w2.castShadow = true;
+        bGroup.add(w2);
+
+        // 樓頂停機坪 (Helipad)
+        const heliGeo = new THREE.PlaneGeometry(16, 16);
+        heliGeo.rotateX(-Math.PI / 2);
+        const heliMat = new THREE.MeshBasicMaterial({ map: TextureGen.helipad(), side: THREE.DoubleSide });
+        const heliMesh = new THREE.Mesh(heliGeo, heliMat);
+        heliMesh.position.y = baseTop + 36.1;
+        bGroup.add(heliMesh);
+
+        // 懸浮旋轉綠光能量水晶 (Hospital Energy Crystal)
+        const crystalGeo = new THREE.OctahedronGeometry(3.6, 0);
+        const crystalMat = new THREE.MeshStandardMaterial({
+          color: 0x2dd4bf,
+          emissive: 0x0d9488,
+          emissiveIntensity: 0.9,
+          roughness: 0.1,
+          metalness: 0.8
+        });
+        const crystal = new THREE.Mesh(crystalGeo, crystalMat);
+        crystal.position.set(0, baseTop + 45, 0);
+        bGroup.add(crystal);
+        rotatingElements.push({ mesh: crystal, axis: 'y', speed: 0.025 });
+
+        // 通訊天線桿 (Mast)
+        const ant = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.25, 0.45, 12, 6),
+          new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8 })
+        );
+        ant.position.set(10, baseTop + 42, -7);
+        ant.castShadow = true;
+        bGroup.add(ant);
+
+      } else if (mod.id === 1) {
+        // ========== 01: 環境探勘哨所 (雷達偵測站) ==========
+        const bunker = new THREE.Mesh(
+          new THREE.CylinderGeometry(11, 13, 8, 8),
+          new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7, flatShading: true })
+        );
+        bunker.position.y = baseTop + 4;
+        bunker.castShadow = true;
+        bGroup.add(bunker);
+
+        // 雷達立柱與旋轉天線 (Rotating Radar Dish)
+        const mast = new THREE.Mesh(
+          new THREE.CylinderGeometry(1.2, 1.6, 14, 8),
+          new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.6 })
+        );
+        mast.position.y = baseTop + 14;
+        bGroup.add(mast);
+
+        const dishPivot = new THREE.Group();
+        dishPivot.position.set(0, baseTop + 21, 0);
+
+        const dish = new THREE.Mesh(
+          new THREE.CylinderGeometry(6, 1.5, 2.5, 12, 1, true),
+          new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.5, side: THREE.DoubleSide })
+        );
+        dish.rotation.x = Math.PI / 4;
+        dishPivot.add(dish);
+
+        const needle = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.2, 0.2, 5, 6),
+          new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        needle.position.set(0, 2, 2);
+        needle.rotation.x = Math.PI / 4;
+        dishPivot.add(needle);
+
+        bGroup.add(dishPivot);
+        rotatingElements.push({ mesh: dishPivot, axis: 'y', speed: 0.035 });
+
+        // 太陽能板陣列 (Solar Panels)
+        const solarMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.7, roughness: 0.2 });
+        for (let i = -1; i <= 1; i += 2) {
+          const panel = new THREE.Mesh(new THREE.BoxGeometry(6, 0.4, 4), solarMat);
+          panel.position.set(i * 12, baseTop + 3, 6);
+          panel.rotation.x = -Math.PI / 6;
+          bGroup.add(panel);
+        }
+
+      } else if (mod.id === 2) {
+        // ========== 02: 適能選配所 (天平圓廳與人因齒輪) ==========
+        const hall = new THREE.Mesh(
+          new THREE.CylinderGeometry(12, 14, 10, 16),
+          new THREE.MeshStandardMaterial({ color: 0x0891b2, roughness: 0.4, flatShading: true })
+        );
+        hall.position.y = baseTop + 5;
+        hall.castShadow = true;
+        bGroup.add(hall);
+
+        const dome = new THREE.Mesh(
+          new THREE.SphereGeometry(8, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2),
+          new THREE.MeshStandardMaterial({ color: 0x06b6d4, roughness: 0.2, metalness: 0.5, transparent: true, opacity: 0.85 })
+        );
+        dome.position.y = baseTop + 10;
+        bGroup.add(dome);
+
+        // 旋轉適能雙子環 (Spinning Fitness Rings)
+        const gearPivot = new THREE.Group();
+        gearPivot.position.set(0, baseTop + 18, 0);
+
+        const ring1 = new THREE.Mesh(
+          new THREE.TorusGeometry(5, 0.4, 8, 24),
+          new THREE.MeshStandardMaterial({ color: 0x67e8f9, emissive: 0x0891b2, emissiveIntensity: 0.5 })
+        );
+        gearPivot.add(ring1);
+
+        const balanceBeam = new THREE.Mesh(
+          new THREE.BoxGeometry(12, 0.5, 0.5),
+          new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.8 })
+        );
+        gearPivot.add(balanceBeam);
+
+        bGroup.add(gearPivot);
+        rotatingElements.push({ mesh: gearPivot, axis: 'y', speed: -0.02 });
+
+      } else if (mod.id === 3) {
+        // ========== 03: 因果真理燈塔 (專科門診與海事標竿) ==========
+        const tower = new THREE.Mesh(
+          new THREE.CylinderGeometry(4.2, 7.5, 28, 12),
+          new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4, flatShading: true })
+        );
+        tower.position.y = baseTop + 14;
+        tower.castShadow = true;
+        bGroup.add(tower);
+
+        // 經典紅色航標色環 (Red Marine Stripes)
+        const stripe1 = new THREE.Mesh(
+          new THREE.CylinderGeometry(5.2, 6.2, 5.5, 12),
+          new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.4 })
+        );
+        stripe1.position.y = baseTop + 12;
+        bGroup.add(stripe1);
+
+        const stripe2 = new THREE.Mesh(
+          new THREE.CylinderGeometry(4.4, 4.8, 4.5, 12),
+          new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.4 })
+        );
+        stripe2.position.y = baseTop + 23;
+        bGroup.add(stripe2);
+
+        // 燈室與金屬頂蓋 (Lantern Room)
+        const lantern = new THREE.Mesh(
+          new THREE.CylinderGeometry(4.5, 4.5, 4.5, 12),
+          new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8 })
+        );
+        lantern.position.y = baseTop + 29;
+        bGroup.add(lantern);
+
+        const cap = new THREE.Mesh(
+          new THREE.ConeGeometry(5.5, 3.5, 12),
+          new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.5 })
+        );
+        cap.position.y = baseTop + 33;
+        bGroup.add(cap);
+
+        // 旋轉對齊探照光錐 (Aligned Rotating Searchlight Cone)
+        const lightPivot = new THREE.Group();
+        lightPivot.position.set(0, baseTop + 29, 0);
+
+        // 燈室發光核心 (Lamp Core)
+        const lampBulb = new THREE.Mesh(
+          new THREE.SphereGeometry(1.6, 12, 12),
+          new THREE.MeshBasicMaterial({ color: 0xe0f2fe })
+        );
+        lightPivot.add(lampBulb);
+
+        // 探照光錐：窄口(半徑0.8)鎖定於燈室中心(z=0)，寬口(半徑10)朝外(+Z方向)發散投射
+        const beamLength = 54;
+        const beamRadius = 10;
+        const beamGeo = new THREE.CylinderGeometry(0.8, beamRadius, beamLength, 24, 1, true);
+        beamGeo.translate(0, -beamLength / 2, 0);
+        beamGeo.rotateX(-Math.PI / 2);
+
+        const beamMat = new THREE.MeshBasicMaterial({
+          color: 0x38bdf8,
+          transparent: true,
+          opacity: 0.32,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending
+        });
+        const beamMesh = new THREE.Mesh(beamGeo, beamMat);
+        lightPivot.add(beamMesh);
+        bGroup.add(lightPivot);
+        rotatingElements.push({ mesh: lightPivot, axis: 'y', speed: 0.028 });
+
+      } else if (mod.id === 4) {
+        // ========== 04: 復能再造基地 (職能復健機構) ==========
+        const workshop = new THREE.Mesh(
+          new THREE.BoxGeometry(20, 11, 16),
+          new THREE.MeshStandardMaterial({ color: 0x065f46, roughness: 0.5, flatShading: true })
+        );
+        workshop.position.y = baseTop + 5.5;
+        workshop.castShadow = true;
+        bGroup.add(workshop);
+
+        // 桁架起重門架 (Gantry Crane Rig)
+        const gantryMat = new THREE.MeshStandardMaterial({ color: 0x10b981, metalness: 0.6 });
+        const postL = new THREE.Mesh(new THREE.BoxGeometry(1.5, 18, 1.5), gantryMat);
+        postL.position.set(-8, baseTop + 9, 7);
+        bGroup.add(postL);
+
+        const postR = new THREE.Mesh(new THREE.BoxGeometry(1.5, 18, 1.5), gantryMat);
+        postR.position.set(8, baseTop + 9, 7);
+        bGroup.add(postR);
+
+        const crossbeam = new THREE.Mesh(new THREE.BoxGeometry(18, 1.5, 1.5), gantryMat);
+        crossbeam.position.set(0, baseTop + 17.5, 7);
+        bGroup.add(crossbeam);
+
+        // 訓練外骨骼機械臂 (Rehab Arm Rig)
+        const armPivot = new THREE.Group();
+        armPivot.position.set(0, baseTop + 17, 7);
+        const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        cable.position.y = -3;
+        armPivot.add(cable);
+        const clamp = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 2), new THREE.MeshStandardMaterial({ color: 0xfbbf24 }));
+        clamp.position.y = -6;
+        armPivot.add(clamp);
+        bGroup.add(armPivot);
+        rotatingElements.push({ mesh: armPivot, axis: 'z', speed: 0.015 });
+
+      } else if (mod.id === 5) {
+        // ========== 05: 法規防禦金鐘 (四大指引防護罩) ==========
+        const baseFort = new THREE.Mesh(
+          new THREE.CylinderGeometry(13, 15, 8, 8),
+          new THREE.MeshStandardMaterial({ color: 0x4c1d95, roughness: 0.6, flatShading: true })
+        );
+        baseFort.position.y = baseTop + 4;
+        baseFort.castShadow = true;
+        bGroup.add(baseFort);
+
+        // 發光力場半球體 (Glowing Shield Forcefield)
+        const shieldGeo = new THREE.SphereGeometry(14, 20, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+        const shieldMat = new THREE.MeshStandardMaterial({
+          color: 0x8b5cf6,
+          emissive: 0x7c3aed,
+          emissiveIntensity: 0.5,
+          transparent: true,
+          opacity: 0.38,
+          roughness: 0.1,
+          depthWrite: false
+        });
+        const shield = new THREE.Mesh(shieldGeo, shieldMat);
+        shield.position.y = baseTop + 8;
+        bGroup.add(shield);
+
+        const shieldCore = new THREE.Mesh(
+          new THREE.OctahedronGeometry(4, 0),
+          new THREE.MeshStandardMaterial({ color: 0xc4b5fd, emissive: 0x8b5cf6, emissiveIntensity: 0.8 })
+        );
+        shieldCore.position.y = baseTop + 14;
+        bGroup.add(shieldCore);
+        rotatingElements.push({ mesh: shieldCore, axis: 'y', speed: 0.03 });
+
+      } else if (mod.id === 6) {
+        // ========== 06: 公衛天樞數據塔 (伺服器陣列與全息環) ==========
+        const serverMat = new THREE.MeshStandardMaterial({ color: 0x1e1e2e, metalness: 0.7, roughness: 0.3 });
+        for (let i = -1; i <= 1; i++) {
+          const blade = new THREE.Mesh(new THREE.BoxGeometry(4.5, 18, 6), serverMat);
+          blade.position.set(i * 6, baseTop + 9, 0);
+          blade.castShadow = true;
+          bGroup.add(blade);
+        }
+
+        // 雙同心旋轉全息環 (Dual Holographic Rings)
+        const holoGroup = new THREE.Group();
+        holoGroup.position.set(0, baseTop + 22, 0);
+
+        const ringA = new THREE.Mesh(
+          new THREE.TorusGeometry(8, 0.4, 8, 32),
+          new THREE.MeshBasicMaterial({ color: 0xec4899, wireframe: true })
+        );
+        ringA.rotation.x = Math.PI / 3;
+        holoGroup.add(ringA);
+
+        const ringB = new THREE.Mesh(
+          new THREE.TorusGeometry(5, 0.35, 8, 24),
+          new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true })
+        );
+        ringB.rotation.x = -Math.PI / 4;
+        holoGroup.add(ringB);
+
+        bGroup.add(holoGroup);
+        rotatingElements.push({ mesh: holoGroup, axis: 'y', speed: 0.025 });
+
+      } else if (mod.id === 7) {
+        // ========== 07: 職興市場 OH SMART (貨櫃智庫旗艦亭) ==========
+        const lowerTex = TextureGen.shippingContainer('#b45309', 'OH SMART', 'TSMC EX-DOC');
+        const lowerMat = new THREE.MeshStandardMaterial({ map: lowerTex, roughness: 0.45, metalness: 0.35 });
+        const lowerContainer = new THREE.Mesh(new THREE.BoxGeometry(22, 7.5, 10), lowerMat);
+        lowerContainer.position.set(0, baseTop + 3.75, 0);
+        lowerContainer.castShadow = true;
+        bGroup.add(lowerContainer);
+
+        // 上層交錯貨櫃 (Upper Container with Balcony)
+        const upperTex = TextureGen.shippingContainer('#0d9488', '智匯港', 'OHSMART.BLOG');
+        const upperMat = new THREE.MeshStandardMaterial({ map: upperTex, roughness: 0.45, metalness: 0.35 });
+        const upperContainer = new THREE.Mesh(new THREE.BoxGeometry(18, 7, 9), upperMat);
+        upperContainer.position.set(-2, baseTop + 11, -1);
+        upperContainer.rotation.y = 0.12;
+        upperContainer.castShadow = true;
+        bGroup.add(upperContainer);
+
+        // 前方遮雨棚 (Awning Canopy)
+        const awningMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5 });
+        const awning = new THREE.Mesh(new THREE.BoxGeometry(16, 0.6, 6), awningMat);
+        awning.position.set(0, baseTop + 7.5, 7.5);
+        awning.rotation.x = Math.PI / 10;
+        bGroup.add(awning);
+
+        // 露台欄杆 (Railing)
+        const railing = new THREE.Mesh(
+          new THREE.BoxGeometry(20, 1.2, 0.4),
+          new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.7 })
+        );
+        railing.position.set(0, baseTop + 8, 5.5);
+        bGroup.add(railing);
+
+      } else if (mod.type === 'region') {
+        // ========== 地點島嶼幾何方位地標柱 (Minimalist Territorial Beacon) ==========
+        const isTaipei = mod.id === 13;
+        const pylonH = isTaipei ? 24 : 16;
+        const ringR = isTaipei ? 9 : 6.5;
+
+        const pylon = new THREE.Mesh(
+          new THREE.CylinderGeometry(1.6, 3.2, pylonH, 6),
+          new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.7, roughness: 0.3, flatShading: true })
+        );
+        pylon.position.y = baseTop + pylonH / 2;
+        pylon.castShadow = true;
+        bGroup.add(pylon);
+
+        // 垂直光柱指針 (Vertical Needle)
+        const needle = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.3, 0.3, 14, 6),
+          new THREE.MeshBasicMaterial({ color: 0x93c5fd })
+        );
+        needle.position.y = baseTop + pylonH + 7;
         bGroup.add(needle);
 
-        const ringGeo = new THREE.TorusGeometry(5, 0.5, 8, 24);
-        const ringMat = new THREE.MeshBasicMaterial({
-          color: new THREE.Color(mod.color),
-          transparent: true,
-          opacity: 0.8
-        });
-        const beaconRing = new THREE.Mesh(ringGeo, ringMat);
-        beaconRing.rotation.x = Math.PI / 2;
-        beaconRing.position.y = 11;
-        bGroup.add(beaconRing);
-
-        rotatingElements.push(
-          { mesh: beaconRing, speedY: 0.03 },
-          { mesh: needle, floatY: true, baseY: 11, speedY: 0.02 }
+        // 旋轉指南光環 (Rotating Compass Ring)
+        const beaconRing = new THREE.Mesh(
+          new THREE.TorusGeometry(ringR, 0.4, 8, 24),
+          new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true })
         );
-
-        return bGroup;
-      }
-
-      switch (mod.id) {
-        case 0: { // 部立臺北醫院 醫療巨塔
-          const facadeTex = TextureGen.glassFacade();
-          const towerGeo = new THREE.BoxGeometry(18, 44, 18);
-          const towerMat = new THREE.MeshStandardMaterial({ map: facadeTex, roughness: 0.15, metalness: 0.35 });
-          const tower = new THREE.Mesh(towerGeo, towerMat);
-          tower.position.y = 22;
-          tower.castShadow = true;
-          tower.receiveShadow = true;
-          bGroup.add(tower);
-
-          const helipadTex = TextureGen.helipad();
-          const heliPlatform = new THREE.Mesh(
-            new THREE.BoxGeometry(16, 1.5, 16),
-            new THREE.MeshStandardMaterial({ map: helipadTex, roughness: 0.4, metalness: 0.1 })
-          );
-          heliPlatform.position.y = 44.5;
-          heliPlatform.castShadow = true;
-          bGroup.add(heliPlatform);
-
-          const crossMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.2 });
-          const ch1 = new THREE.Mesh(new THREE.BoxGeometry(3.5, 11, 18.6), crossMat);
-          const ch2 = new THREE.Mesh(new THREE.BoxGeometry(11, 3.5, 18.6), crossMat);
-          ch1.position.y = 25;
-          ch2.position.y = 25;
-          bGroup.add(ch1, ch2);
-
-          const ringGeo = new THREE.TorusGeometry(20, 1.2, 8, 32);
-          const ringMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.85, roughness: 0.15, emissive: 0x78350f });
-          const goldRing = new THREE.Mesh(ringGeo, ringMat);
-          goldRing.rotation.x = Math.PI / 2;
-          goldRing.position.y = 12;
-          bGroup.add(goldRing);
-
-          const crystalGeo = new THREE.OctahedronGeometry(6.5, 0);
-          const crystalMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.7, roughness: 0.1, metalness: 0.95 });
-          const crystal = new THREE.Mesh(crystalGeo, crystalMat);
-          crystal.position.y = 53;
-          bGroup.add(crystal);
-          rotatingElements.push({ mesh: crystal, speedY: 0.025, floatY: true, baseY: 53 });
-          break;
-        }
-
-        case 1: { // 環境探勘哨所
-          const poleGeo = new THREE.CylinderGeometry(1.5, 4, 30, 6);
-          const poleMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5, metalness: 0.3 });
-          const pole = new THREE.Mesh(poleGeo, poleMat);
-          pole.position.y = 15;
-          pole.castShadow = true;
-          bGroup.add(pole);
-
-          const dishGeo = new THREE.SphereGeometry(7.5, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2);
-          const dishMat = new THREE.MeshStandardMaterial({ color: 0xfef3c7, side: THREE.DoubleSide, metalness: 0.4 });
-          const dish = new THREE.Mesh(dishGeo, dishMat);
-          dish.position.y = 30;
-          dish.rotation.x = Math.PI / 4;
-          bGroup.add(dish);
-          rotatingElements.push({ mesh: dish, speedY: 0.035, floatY: false });
-          break;
-        }
-
-        case 2: { // 適能選配所
-          const baseGeo = new THREE.CylinderGeometry(2, 3, 20, 8);
-          const baseMat = new THREE.MeshStandardMaterial({ color: 0x0891b2, metalness: 0.5 });
-          const p = new THREE.Mesh(baseGeo, baseMat);
-          p.position.y = 10;
-          bGroup.add(p);
-
-          const armGeo = new THREE.BoxGeometry(24, 1.8, 2);
-          const armMat = new THREE.MeshStandardMaterial({ color: 0x22d3ee, metalness: 0.6, roughness: 0.2 });
-          const arm = new THREE.Mesh(armGeo, armMat);
-          arm.position.y = 20;
-          bGroup.add(arm);
-
-          [-11, 11].forEach(ox => {
-            const pan = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 1, 2, 8), new THREE.MeshStandardMaterial({ color: 0xcffafe, metalness: 0.7 }));
-            pan.position.set(ox, 16, 0);
-            bGroup.add(pan);
-          });
-          rotatingElements.push({ mesh: arm, tiltZ: true, speedZ: 0.04 });
-          break;
-        }
-
-        case 3: { // 因果真理燈塔
-          const thGeo = new THREE.CylinderGeometry(4.5, 7.5, 38, 16);
-          const thMat = new THREE.MeshStandardMaterial({ map: TextureGen.cliffStrata(), roughness: 0.3, metalness: 0.1 });
-          const th = new THREE.Mesh(thGeo, thMat);
-          th.position.y = 19;
-          th.castShadow = true;
-          bGroup.add(th);
-
-          const roomGeo = new THREE.CylinderGeometry(5.2, 5.2, 6, 8);
-          const roomMat = new THREE.MeshStandardMaterial({ color: 0xfde047, emissive: 0xf59e0b, emissiveIntensity: 0.9 });
-          const room = new THREE.Mesh(roomGeo, roomMat);
-          room.position.y = 40;
-          bGroup.add(room);
-
-          const domeCap = new THREE.Mesh(new THREE.ConeGeometry(5.5, 4.5, 8), new THREE.MeshStandardMaterial({ color: 0xdc2626 }));
-          domeCap.position.y = 45;
-          bGroup.add(domeCap);
-
-          const lightPivot = new THREE.Group();
-          lightPivot.position.set(0, 40, 0);
-
-          const beamGeo = new THREE.ConeGeometry(16, 55, 16, 1, true);
-          beamGeo.translate(0, -27.5, 0);
-          beamGeo.rotateX(-Math.PI / 2);
-
-          const beamMat = new THREE.MeshBasicMaterial({ color: 0xfef08a, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false });
-          const beam = new THREE.Mesh(beamGeo, beamMat);
-          lightPivot.add(beam);
-
-          const bulb = new THREE.Mesh(new THREE.SphereGeometry(2, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-          lightPivot.add(bulb);
-          bGroup.add(lightPivot);
-
-          rotatingElements.push({ mesh: lightPivot, speedY: 0.024 });
-          break;
-        }
-
-        case 4: { // 復能再造基地
-          const hangarGeo = new THREE.BoxGeometry(24, 14, 26);
-          const hangarMat = new THREE.MeshStandardMaterial({ color: 0x059669, roughness: 0.4, metalness: 0.2 });
-          const hangar = new THREE.Mesh(hangarGeo, hangarMat);
-          hangar.position.y = 7;
-          hangar.castShadow = true;
-          bGroup.add(hangar);
-
-          const piston = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.2, 11, 8), new THREE.MeshStandardMaterial({ color: 0x6ee7b7, metalness: 0.85 }));
-          piston.position.y = 22;
-          bGroup.add(piston);
-          rotatingElements.push({ mesh: piston, floatY: true, baseY: 22, speedY: 0.04 });
-          break;
-        }
-
-        case 5: { // 法規防禦金鐘
-          const domeGeo = new THREE.SphereGeometry(14, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2);
-          const domeMat = new THREE.MeshStandardMaterial({ color: 0xa855f7, emissive: 0x7e22ce, emissiveIntensity: 0.45, transparent: true, opacity: 0.45, roughness: 0.1 });
-          const dome = new THREE.Mesh(domeGeo, domeMat);
-          bGroup.add(dome);
-
-          const gem = new THREE.Mesh(new THREE.BoxGeometry(6, 8, 4), new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.8 }));
-          gem.position.y = 7;
-          bGroup.add(gem);
-          rotatingElements.push({ mesh: dome, speedY: 0.015 });
-          break;
-        }
-
-        case 6: { // 公衛天樞數據塔
-          [-6, 0, 6].forEach((ox, i) => {
-            const h = 22 + (i % 2) * 6;
-            const bar = new THREE.Mesh(new THREE.BoxGeometry(4.5, h, 4.5), new THREE.MeshStandardMaterial({ color: 0xbe185d, roughness: 0.3, metalness: 0.4 }));
-            bar.position.set(ox, h / 2, 0);
-            bar.castShadow = true;
-            bGroup.add(bar);
-
-            const light = new THREE.Mesh(new THREE.SphereGeometry(1.8, 8, 8), new THREE.MeshBasicMaterial({ color: 0x34d399 }));
-            light.position.set(ox, h + 2, 0);
-            bGroup.add(light);
-          });
-          break;
-        }
-
-        case 7: { // 職興市場貨櫃門市
-          const cTex1 = TextureGen.shippingContainer('#d97706', 'OH SMART', 'BAY-01 // EVAL');
-          const container1 = new THREE.Mesh(new THREE.BoxGeometry(26, 12, 16), new THREE.MeshStandardMaterial({ map: cTex1, roughness: 0.4, metalness: 0.25 }));
-          container1.position.set(0, 6, -2);
-          container1.castShadow = true;
-          bGroup.add(container1);
-
-          const signMesh = new THREE.Mesh(new THREE.BoxGeometry(24, 6, 2), new THREE.MeshStandardMaterial({ color: 0x1e293b, emissive: 0xf59e0b, emissiveIntensity: 0.6 }));
-          signMesh.position.set(0, 27, -2);
-          bGroup.add(signMesh);
-          rotatingElements.push({ mesh: signMesh, floatY: true, baseY: 27, speedY: 0.03 });
-          break;
-        }
+        beaconRing.position.y = baseTop + pylonH + 2;
+        beaconRing.rotation.x = Math.PI / 2;
+        bGroup.add(beaconRing);
+        rotatingElements.push({ mesh: beaconRing, axis: 'z', speed: 0.02 });
       }
 
       return bGroup;
     }
 
     // -------------------------------------------------------------
-    // 6.3 守護醫師角色建構（加入實體底座，嚴密定錨地表）
+    // 8. 守護醫師 3D 角色模型建構器 (Doctor Characters)
     // -------------------------------------------------------------
     function buildDoctorCharacter(doc) {
-      const g = new THREE.Group();
-      const baseY = (doc.pos && doc.pos.y !== undefined) ? doc.pos.y : 18.5;
-      g.position.set(doc.pos.x, baseY, doc.pos.z);
+      const docGroup = new THREE.Group();
+      docGroup.position.set(doc.pos.x, doc.pos.y, doc.pos.z);
+      docGroup.userData = { doctor: doc };
 
-      // 微縮模型公仔金屬底座（Pedestal Stand），確保 100% 貼合島嶼甲板，消除浮空感
-      const standGeo = new THREE.CylinderGeometry(3.6, 4.0, 0.4, 16);
-      const standMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(doc.color),
-        roughness: 0.35,
-        metalness: 0.65
-      });
-      const stand = new THREE.Mesh(standGeo, standMat);
-      stand.position.y = 0.2;
-      stand.receiveShadow = true;
-      g.add(stand);
+      // 圓形立體公仔底座 (Pedestal Stand)
+      const pedestal = new THREE.Mesh(
+        new THREE.CylinderGeometry(3.6, 4.0, 0.8, 16),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8, roughness: 0.2 })
+      );
+      pedestal.position.y = 0.4;
+      pedestal.receiveShadow = true;
+      docGroup.add(pedestal);
 
-      // 白袍身軀
-      const coatGeo = new THREE.CylinderGeometry(2.2, 3.2, 8, 8);
-      const coatMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
-      const coat = new THREE.Mesh(coatGeo, coatMat);
-      coat.position.y = 4.4;
-      coat.castShadow = true;
-      g.add(coat);
+      const ringColor = doc.id === 'tsai' ? 0x2dd4bf : 0xf59e0b;
+      const rim = new THREE.Mesh(
+        new THREE.TorusGeometry(3.7, 0.15, 8, 24),
+        new THREE.MeshBasicMaterial({ color: ringColor })
+      );
+      rim.rotation.x = Math.PI / 2;
+      rim.position.y = 0.82;
+      docGroup.add(rim);
 
-      // 頭部
-      const headGeo = new THREE.SphereGeometry(2.4, 12, 12);
-      const headMat = new THREE.MeshStandardMaterial({ color: 0xfcd34d });
-      const head = new THREE.Mesh(headGeo, headMat);
-      head.position.y = 10.2;
-      g.add(head);
+      // 腿部與西褲 (Pants)
+      const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+      const legL = new THREE.Mesh(new THREE.BoxGeometry(1.0, 4.2, 1.0), pantsMat);
+      legL.position.set(-0.8, 2.9, 0);
+      legL.castShadow = true;
+      docGroup.add(legL);
 
-      // 髮型
-      const hairGeo = new THREE.SphereGeometry(2.5, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2);
-      const hairMat = new THREE.MeshStandardMaterial({ color: 0x334155 });
-      const hair = new THREE.Mesh(hairGeo, hairMat);
-      hair.position.y = 10.6;
-      g.add(hair);
+      const legR = new THREE.Mesh(new THREE.BoxGeometry(1.0, 4.2, 1.0), pantsMat);
+      legR.position.set(0.8, 2.9, 0);
+      legR.castShadow = true;
+      docGroup.add(legR);
 
-      // 領帶
-      const tieGeo = new THREE.BoxGeometry(0.8, 3.5, 4.6);
-      const tieMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(doc.color) });
-      const tie = new THREE.Mesh(tieGeo, tieMat);
-      tie.position.set(0, 5.4, 0);
-      g.add(tie);
+      // 醫師袍與軀幹 (White Lab Coat / Torso)
+      const coatMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4 });
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(3.0, 5.0, 2.0), coatMat);
+      torso.position.set(0, 7.5, 0);
+      torso.castShadow = true;
+      docGroup.add(torso);
 
-      // 名牌立體飄浮標示
-      const canvasText = document.createElement('canvas');
-      canvasText.width = 128;
-      canvasText.height = 36;
-      const tctx = canvasText.getContext('2d');
-      tctx.fillStyle = '#0f172a';
-      tctx.fillRect(0, 0, 128, 36);
-      tctx.strokeStyle = doc.color;
-      tctx.lineWidth = 3;
-      tctx.strokeRect(2, 2, 124, 32);
-      tctx.font = 'bold 16px Inter, sans-serif';
-      tctx.fillStyle = '#ffffff';
-      tctx.textAlign = 'center';
-      tctx.textBaseline = 'middle';
-      tctx.fillText(doc.name, 64, 18);
+      // 頭部與五官面部 (Head & Hair)
+      const headMat = new THREE.MeshStandardMaterial({ color: 0xfed7aa, roughness: 0.7 });
+      const head = new THREE.Mesh(new THREE.SphereGeometry(1.4, 12, 10), headMat);
+      head.position.set(0, 11.2, 0);
+      head.castShadow = true;
+      docGroup.add(head);
 
-      const texture = new THREE.CanvasTexture(canvasText);
-      const spriteMat = new THREE.SpriteMaterial({ map: texture });
-      const sprite = new THREE.Sprite(spriteMat);
-      sprite.position.y = 14.5;
-      sprite.scale.set(10, 3, 1);
-      g.add(sprite);
+      const hairMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.9 });
+      const hair = new THREE.Mesh(new THREE.BoxGeometry(2.9, 1.2, 2.9), hairMat);
+      hair.position.set(0, 12.3, 0);
+      docGroup.add(hair);
 
-      g.userData = {
-        type: 'doctor',
-        doctor: doc
-      };
-
-      return g;
-    }
-
-    // -------------------------------------------------------------
-    // 6.4 臺北醫院放射至六大地區的立體地理連線
-    // -------------------------------------------------------------
-    function buildRegionalVectors() {
-      const centerPos = new THREE.Vector3(0, 24, 0);
-
-      ISLAND_MODULES.filter(m => m.type === 'region').forEach(reg => {
-        const targetPos = new THREE.Vector3(reg.gridPos.x, 14, reg.gridPos.z);
-        const midPos = new THREE.Vector3(
-          reg.gridPos.x * 0.5,
-          Math.max(centerPos.y, targetPos.y) + 12,
-          reg.gridPos.z * 0.5
+      if (doc.id === 'tsai') {
+        // 蔡主任專屬：聽診器配件 (Stethoscope)
+        const stethMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+        const stethRing = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.18, 6, 12), stethMat);
+        stethRing.position.set(0, 8.8, 1.0);
+        docGroup.add(stethRing);
+      } else {
+        // 林醫師專屬：商務筆電與智庫手冊 (Laptop/Tablet)
+        const pad = new THREE.Mesh(
+          new THREE.BoxGeometry(1.8, 0.2, 1.4),
+          new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.6 })
         );
+        pad.position.set(1.4, 7.2, 1.1);
+        pad.rotation.y = -0.3;
+        docGroup.add(pad);
+      }
 
-        const curve = new THREE.QuadraticBezierCurve3(centerPos, midPos, targetPos);
-        const points = curve.getPoints(24);
-        const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-        const lineMat = new THREE.LineDashedMaterial({
-          color: new THREE.Color(reg.color),
-          dashSize: 4,
-          gapSize: 3,
-          transparent: true,
-          opacity: 0.45
-        });
-
-        const line = new THREE.Line(lineGeo, lineMat);
-        line.computeLineDistances();
-        line.userData = { regionId: reg.id };
-        regionVectorGroup.add(line);
-      });
-    }
-
-    // -------------------------------------------------------------
-    // 7. 3D 空間投影懸浮標籤系統
-    // -------------------------------------------------------------
-    function setupIslandPins() {
-      const container = document.getElementById('pins-container');
-      container.innerHTML = '';
-      pinElements.length = 0;
-
-      ISLAND_MODULES.forEach((mod) => {
-        const isCenter = mod.id === 0;
-        const isRegion = mod.type === 'region';
-
-        const pin = document.createElement('div');
-
-        if (isRegion) {
-          pin.className = 'region-pin flex flex-col items-center group';
-          pin.dataset.moduleId = mod.id;
-          pin.dataset.type = 'region';
-
-          pin.innerHTML = `
-            <div class="glass-morphism px-2.5 py-1 rounded-xl border border-sky-400/30 shadow-lg flex items-center gap-1.5 group-hover:border-sky-300 group-hover:scale-105 transition-all">
-              <span class="text-xs">${mod.icon}</span>
-              <span class="text-[11px] font-bold text-white tracking-wide">${mod.name}</span>
-              <span class="text-[9px] px-1 py-0.2 rounded font-mono bg-sky-500/20 text-sky-300 font-semibold">${mod.distanceKm.replace('直線 ', '')}</span>
-            </div>
-            <div class="w-1 h-2.5 bg-gradient-to-b from-sky-400 to-transparent"></div>
-            <div class="w-2 h-2 rounded-full bg-sky-400 region-beacon shadow-md shadow-sky-500/50"></div>
-          `;
-
-          pin.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sound.init();
-            sound.playClick();
-            selectRegionNode(mod);
-          });
-
-          container.appendChild(pin);
-          pinElements.push({
-            dom: pin,
-            worldPos: new THREE.Vector3(mod.gridPos.x, 24, mod.gridPos.z),
-            type: 'region',
-            id: mod.id
-          });
-
-        } else {
-          pin.className = 'island-pin flex flex-col items-center group';
-          pin.dataset.moduleId = mod.id;
-          pin.dataset.type = 'core';
-          pin.dataset.role = mod.role;
-
-          const anchorHeight = isCenter ? 54 : 36;
-
-          pin.innerHTML = `
-            <div class="glass-morphism px-3 py-1.5 rounded-xl border border-white/20 shadow-xl flex items-center gap-1.5 group-hover:border-teal-400/80 group-hover:bg-slate-900/90 transition-all">
-              <span class="text-base">${mod.icon}</span>
-              <span class="text-xs font-bold text-white tracking-wide whitespace-nowrap">${mod.name}</span>
-              <span class="text-[9px] px-1.5 py-0.2 rounded-md font-mono bg-white/10 text-teal-300 font-semibold hidden sm:inline-block">${isCenter ? 'HUB' : '0' + mod.id}</span>
-            </div>
-            <div class="w-1.5 h-3 bg-gradient-to-b from-teal-400 to-transparent"></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-teal-400 pin-beacon shadow-lg shadow-teal-500/50"></div>
-          `;
-
-          pin.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sound.init();
-            sound.playClick();
-            selectModule(mod);
-          });
-
-          container.appendChild(pin);
-          pinElements.push({
-            dom: pin,
-            worldPos: new THREE.Vector3(mod.gridPos.x, anchorHeight, mod.gridPos.z),
-            type: 'core',
-            id: mod.id,
-            role: mod.role
-          });
+      // 註冊子 Mesh 用於拾取
+      docGroup.traverse(child => {
+        if (child.isMesh) {
+          child.userData = docGroup.userData;
         }
       });
 
-      // 醫師專屬懸浮 Pin（高度精確對齊落地坐標）
-      DOCTORS.forEach((doc) => {
-        const pin = document.createElement('div');
-        pin.className = 'island-pin flex flex-col items-center group';
-        pin.dataset.doctorId = doc.id;
-
-        pin.innerHTML = `
-          <div class="glass-morphism px-3 py-1.5 rounded-xl border border-amber-400/40 bg-slate-900/80 shadow-xl flex items-center gap-1.5 group-hover:border-amber-400 group-hover:scale-105 transition-all">
-            <span class="text-base">${doc.avatar}</span>
-            <span class="text-xs font-bold text-amber-300 tracking-wide whitespace-nowrap">${doc.name}</span>
-          </div>
-          <div class="w-1.5 h-3 bg-gradient-to-b from-amber-400 to-transparent"></div>
-          <div class="w-2.5 h-2.5 rounded-full bg-amber-400 pin-beacon shadow-lg shadow-amber-500/50"></div>
-        `;
-
-        pin.addEventListener('click', (e) => {
-          e.stopPropagation();
-          sound.init();
-          sound.playChime();
-          showToast(`駐島守護者：${doc.name}（${doc.title}）`);
-          document.getElementById('doctorsModal').classList.remove('hidden');
-          const docY = (doc.pos && doc.pos.y !== undefined) ? doc.pos.y : 18.5;
-          flyCameraTo(
-            { x: doc.pos.x + 30, y: docY + 20, z: doc.pos.z + 35 },
-            { x: doc.pos.x, y: docY + 6, z: doc.pos.z }
-          );
-        });
-
-        container.appendChild(pin);
-        const docBaseY = (doc.pos && doc.pos.y !== undefined) ? doc.pos.y : 18.5;
-        pinElements.push({
-          dom: pin,
-          worldPos: new THREE.Vector3(doc.pos.x, docBaseY + 16, doc.pos.z),
-          type: 'doctor',
-          id: doc.id
-        });
-      });
-    }
-
-    const tempProjVec = new THREE.Vector3();
-    function updatePinsPosition() {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
-      pinElements.forEach(item => {
-        tempProjVec.copy(item.worldPos);
-        tempProjVec.project(camera);
-
-        if (tempProjVec.z > 1) {
-          item.dom.style.opacity = '0';
-          item.dom.style.pointerEvents = 'none';
-          return;
-        }
-
-        const screenX = (tempProjVec.x * 0.5 + 0.5) * w;
-        const screenY = (-(tempProjVec.y * 0.5) + 0.5) * h;
-
-        item.dom.style.left = `${screenX}px`;
-        item.dom.style.top = `${screenY}px`;
-
-        if (activeRole !== 'all' && item.type === 'core') {
-          if (item.role !== 'both' && item.role !== activeRole) {
-            item.dom.classList.add('dimmed');
-            item.dom.classList.remove('highlight');
-          } else {
-            item.dom.classList.remove('dimmed');
-            item.dom.classList.add('highlight');
-          }
-        } else {
-          item.dom.classList.remove('dimmed', 'highlight');
-          item.dom.style.opacity = '1';
-          item.dom.style.pointerEvents = 'auto';
-        }
-      });
+      return docGroup;
     }
 
     // -------------------------------------------------------------
-    // 7.1 大氣浮雲與環境微光粒子
+    // 9. 大氣微粒、3D 標籤、區域引線與能量流線 (Atmosphere & HUD)
     // -------------------------------------------------------------
-    let dustParticles;
+    let atmosphereParticles;
     function buildAtmosphereParticles() {
-      const pCount = 200;
+      const pCount = 320;
       const pGeo = new THREE.BufferGeometry();
-      const posArray = new Float32Array(pCount * 3);
+      const pPositions = new Float32Array(pCount * 3);
 
       for (let i = 0; i < pCount * 3; i += 3) {
-        posArray[i] = (Math.random() - 0.5) * 550;
-        posArray[i + 1] = 10 + Math.random() * 85;
-        posArray[i + 2] = (Math.random() - 0.5) * 550;
+        pPositions[i] = (Math.random() - 0.5) * 800;
+        pPositions[i + 1] = 10 + Math.random() * 90;
+        pPositions[i + 2] = (Math.random() - 0.5) * 800;
       }
-      pGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+      pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
 
       const pMat = new THREE.PointsMaterial({
         color: 0x5eead4,
         size: 2.2,
         transparent: true,
-        opacity: 0.65,
+        opacity: 0.5,
         blending: THREE.AdditiveBlending
       });
-      dustParticles = new THREE.Points(pGeo, pMat);
-      scene.add(dustParticles);
-
-      for (let i = 0; i < 8; i++) {
-        const cloud = createLowPolyCloud();
-        const angle = (i / 8) * Math.PI * 2;
-        const dist = 180 + Math.random() * 90;
-        cloud.position.set(Math.cos(angle) * dist, 65 + Math.random() * 25, Math.sin(angle) * dist);
-        scene.add(cloud);
-        rotatingElements.push({ mesh: cloud, orbit: true, orbitSpeed: 0.0015 + Math.random() * 0.001 });
-      }
+      atmosphereParticles = new THREE.Points(pGeo, pMat);
+      scene.add(atmosphereParticles);
     }
 
-    function createLowPolyCloud() {
-      const g = new THREE.Group();
-      const mat = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        roughness: 0.9,
-        flatShading: true,
-        transparent: true,
-        opacity: 0.85
-      });
-      for (let i = 0; i < 5; i++) {
-        const r = 8 + Math.random() * 8;
-        const puff = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), mat);
-        puff.position.set((Math.random() - 0.5) * 22, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 16);
-        g.add(puff);
-      }
-      return g;
-    }
+    function setupIslandPins() {
+      const container = document.getElementById('pins-container');
+      container.innerHTML = '';
+      pinElements.length = 0;
 
-    // -------------------------------------------------------------
-    // 8. 協作能量光軌
-    // -------------------------------------------------------------
-    function renderSynergyFlow(flowKey) {
-      while (synergyCurveGroup.children.length > 0) {
-        const obj = synergyCurveGroup.children[0];
-        synergyCurveGroup.remove(obj);
-      }
+      // 1. 各模組島嶼 Pin
+      ISLAND_MODULES.forEach(mod => {
+        const pinEl = document.createElement('div');
+        const isRegion = mod.type === 'region';
+        pinEl.className = isRegion ? 'region-pin' : 'island-pin';
 
-      if (!flowKey || !SCENARIOS[flowKey]) return;
-      const scenario = SCENARIOS[flowKey];
-      const pathIds = scenario.path;
+        if (isRegion) {
+          pinEl.innerHTML = `
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900/85 backdrop-blur-md border border-sky-400/30 text-white text-[11px] font-bold shadow-lg">
+              <span class="w-2 h-2 rounded-full bg-sky-400 region-beacon"></span>
+              <span>${mod.icon}</span>
+              <span>${mod.name}</span>
+            </div>
+          `;
+          pinEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sound.init();
+            sound.playClick();
+            selectRegionNode(mod);
+          });
+        } else {
+          const isCenter = mod.id === 0;
+          pinEl.innerHTML = `
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl ${isCenter ? 'bg-sky-950/90 border-sky-400/50 text-sky-200' : 'bg-slate-900/85 border-teal-500/30 text-slate-100'} backdrop-blur-md border text-xs font-extrabold shadow-xl">
+              <span class="w-2.5 h-2.5 rounded-full ${isCenter ? 'bg-sky-400' : 'bg-teal-400'} pin-beacon"></span>
+              <span>${mod.icon}</span>
+              <span>${mod.name}</span>
+            </div>
+          `;
+          pinEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sound.init();
+            sound.playClick();
+            selectModule(mod);
+          });
+        }
 
-      for (let i = 0; i < pathIds.length - 1; i++) {
-        const m1 = ISLAND_MODULES.find(m => m.id === pathIds[i]);
-        const m2 = ISLAND_MODULES.find(m => m.id === pathIds[i + 1]);
-        if (!m1 || !m2) continue;
-
-        const p1 = new THREE.Vector3(m1.gridPos.x, 24, m1.gridPos.z);
-        const p2 = new THREE.Vector3(m2.gridPos.x, 24, m2.gridPos.z);
-        const mid = new THREE.Vector3(
-          (p1.x + p2.x) / 2,
-          Math.max(p1.y, p2.y) + 32,
-          (p1.z + p2.z) / 2
-        );
-
-        const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2);
-        const tubeGeo = new THREE.TubeGeometry(curve, 32, 1.2, 8, false);
-        const tubeMat = new THREE.MeshBasicMaterial({
-          color: scenario.color,
-          transparent: true,
-          opacity: 0.65,
-          wireframe: true
+        container.appendChild(pinEl);
+        const pinY = isRegion ? 32 : (mod.id === 0 ? 56 : 38);
+        pinElements.push({
+          el: pinEl,
+          pos: new THREE.Vector3(mod.gridPos.x, pinY, mod.gridPos.z),
+          module: mod
         });
-        const tube = new THREE.Mesh(tubeGeo, tubeMat);
-        synergyCurveGroup.add(tube);
+      });
 
-        const orb = new THREE.Mesh(
-          new THREE.SphereGeometry(2.4, 12, 12),
-          new THREE.MeshBasicMaterial({ color: 0xffffff })
+      // 2. 守護醫師專屬 Pin
+      DOCTORS.forEach(doc => {
+        const docPinEl = document.createElement('div');
+        docPinEl.className = 'island-pin';
+        const docTheme = doc.id === 'tsai' ? 'border-teal-400/60 text-teal-300' : 'border-amber-400/60 text-amber-300';
+        docPinEl.innerHTML = `
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border ${docTheme} text-[11px] font-bold shadow-xl">
+            <span class="text-sm">${doc.avatar}</span>
+            <span>${doc.name}</span>
+          </div>
+        `;
+        docPinEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sound.init();
+          sound.playChime();
+          showToast(`駐島守護者：${doc.name}（${doc.title}）`);
+          doctorsModal.classList.remove('hidden');
+          flyCameraTo(
+            { x: doc.pos.x + 32, y: doc.pos.y + 22, z: doc.pos.z + 38 },
+            { x: doc.pos.x, y: doc.pos.y + 6, z: doc.pos.z }
+          );
+        });
+
+        container.appendChild(docPinEl);
+        pinElements.push({
+          el: docPinEl,
+          pos: new THREE.Vector3(doc.pos.x, doc.pos.y + 15, doc.pos.z),
+          doctor: doc
+        });
+      });
+    }
+
+    function updateIslandPins() {
+      const halfW = window.innerWidth / 2;
+      const halfH = window.innerHeight / 2;
+
+      pinElements.forEach(item => {
+        const temp = item.pos.clone().project(camera);
+        // 若在鏡頭背後則隱藏
+        if (temp.z > 1.0) {
+          item.el.style.display = 'none';
+          return;
+        }
+        item.el.style.display = 'block';
+        const x = (temp.x * halfW) + halfW;
+        const y = -(temp.y * halfH) + halfH;
+        item.el.style.left = `${x}px`;
+        item.el.style.top = `${y}px`;
+
+        // 依身分切換增減透明度高亮
+        if (item.module && item.module.type === 'core') {
+          if (activeRole === 'all') {
+            item.el.classList.remove('dimmed', 'highlight');
+          } else {
+            const matches = item.module.role === activeRole || item.module.role === 'both';
+            if (matches) {
+              item.el.classList.remove('dimmed');
+              item.el.classList.add('highlight');
+            } else {
+              item.el.classList.add('dimmed');
+              item.el.classList.remove('highlight');
+            }
+          }
+        }
+      });
+    }
+
+    function buildRegionalVectors() {
+      regionVectorGroup.clear();
+      const centerPos = new THREE.Vector3(0, 26, 0);
+
+      ISLAND_MODULES.filter(m => m.type === 'region').forEach(reg => {
+        const destPos = new THREE.Vector3(reg.gridPos.x, 16, reg.gridPos.z);
+        const midPos = new THREE.Vector3(
+          reg.gridPos.x * 0.5,
+          42 + Math.hypot(reg.gridPos.x, reg.gridPos.z) * 0.05,
+          reg.gridPos.z * 0.5
         );
-        orb.userData = { curve: curve, progress: Math.random() };
-        synergyCurveGroup.add(orb);
-      }
+        const curve = new THREE.QuadraticBezierCurve3(centerPos, midPos, destPos);
+        const pts = curve.getPoints(36);
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+
+        const lineMat = new THREE.LineDashedMaterial({
+          color: 0x38bdf8,
+          dashSize: 6,
+          gapSize: 4,
+          opacity: 0.55,
+          transparent: true
+        });
+        const line = new THREE.Line(lineGeo, lineMat);
+        line.computeLineDistances();
+        regionVectorGroup.add(line);
+      });
+    }
+
+    function renderSynergyFlow(flowKey) {
+      synergyCurveGroup.clear();
+      if (!flowKey || !SCENARIOS[flowKey]) return;
+
+      const scenario = SCENARIOS[flowKey];
+      const pts = scenario.path.map(id => {
+        const m = ISLAND_MODULES.find(item => item.id === id);
+        return new THREE.Vector3(m.gridPos.x, 32, m.gridPos.z);
+      });
+
+      const curve = new THREE.CatmullRomCurve3(pts);
+      const tubeGeo = new THREE.TubeGeometry(curve, 48, 1.4, 8, false);
+      const tubeMat = new THREE.MeshStandardMaterial({
+        color: scenario.color,
+        emissive: scenario.color,
+        emissiveIntensity: 0.8,
+        transparent: true,
+        opacity: 0.75
+      });
+      const tube = new THREE.Mesh(tubeGeo, tubeMat);
+      synergyCurveGroup.add(tube);
     }
 
     // -------------------------------------------------------------
-    // 9. 渲染主迴圈
+    // 主渲染動畫循環 (Animation Render Loop)
     // -------------------------------------------------------------
     function animate() {
       animationFrameId = requestAnimationFrame(animate);
-
-      const delta = clock.getDelta();
       const time = clock.getElapsedTime();
 
       TWEEN.update();
       controls.update();
 
+      // 旋轉動態組件 (雷達、探照燈、水晶、全息環)
+      rotatingElements.forEach(item => {
+        if (item.mesh) {
+          if (item.axis === 'y') item.mesh.rotation.y += item.speed;
+          else if (item.axis === 'z') item.mesh.rotation.z += item.speed;
+          else if (item.axis === 'x') item.mesh.rotation.x += item.speed;
+        }
+      });
+
+      // 海水水波推進
       animateOcean(time);
 
-      rotatingElements.forEach(item => {
-        if (item.speedY) item.mesh.rotation.y += item.speedY;
-        if (item.tiltZ) item.mesh.rotation.z = Math.sin(time * 3) * 0.12;
-        if (item.floatY) item.mesh.position.y = item.baseY + Math.sin(time * 2.5) * 2;
-        if (item.orbit) {
-          const r = Math.hypot(item.mesh.position.x, item.mesh.position.z);
-          const currentA = Math.atan2(item.mesh.position.z, item.mesh.position.x);
-          const newA = currentA + item.orbitSpeed;
-          item.mesh.position.x = Math.cos(newA) * r;
-          item.mesh.position.z = Math.sin(newA) * r;
-        }
-      });
-
-      if (dustParticles) {
-        dustParticles.rotation.y = time * 0.02;
-        const pos = dustParticles.geometry.attributes.position;
-        for (let i = 1; i < pos.count * 3; i += 3) {
-          pos.array[i] += Math.sin(time + i) * 0.05;
-        }
-        pos.needsUpdate = true;
+      // 大氣微粒飄動
+      if (atmosphereParticles) {
+        atmosphereParticles.rotation.y = time * 0.02;
       }
 
-      synergyCurveGroup.children.forEach(child => {
-        if (child.userData && child.userData.curve) {
-          child.userData.progress = (child.userData.progress + delta * 0.45) % 1;
-          const pt = child.userData.curve.getPoint(child.userData.progress);
-          child.position.copy(pt);
-        }
-      });
+      // 3D 空間懸浮標籤投影更新
+      updateIslandPins();
 
-      updatePinsPosition();
       renderer.render(scene, camera);
     }
 
     // -------------------------------------------------------------
-    // 10. 拖曳防誤觸控制機制
+    // 10. 拖曳防誤觸控制機制與 3D 方塊射線點擊
     // -------------------------------------------------------------
     function onPointerDown(e) {
       pointerDownPos.x = e.clientX;
@@ -2618,13 +2691,74 @@
       isDraggingCanvas = false;
     }
 
+    function onPointerMove(e) {
+      if (isDraggingCanvas) return;
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+
+      if (e.target === canvas) {
+        const docIntersects = raycaster.intersectObjects(interactiveDoctors, true);
+        const intersects = raycaster.intersectObjects(interactiveMeshes, true);
+        canvas.style.cursor = (docIntersects.length > 0 || intersects.length > 0) ? 'pointer' : 'default';
+      }
+    }
+
     function onPointerUp(e) {
       const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
-      if (dist > 5) {
+      if (dist > 6) {
         isDraggingCanvas = true;
         return;
       }
       isDraggingCanvas = false;
+
+      // 點擊事件且目標為 3D Canvas 時，進行射線拾取
+      if (e.target !== canvas) return;
+
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+
+      // 優先偵測醫師角色
+      const docIntersects = raycaster.intersectObjects(interactiveDoctors, true);
+      if (docIntersects.length > 0) {
+        let obj = docIntersects[0].object;
+        while (obj && !obj.userData?.doctor) {
+          obj = obj.parent;
+        }
+        if (obj?.userData?.doctor) {
+          const doc = obj.userData.doctor;
+          sound.init();
+          sound.playChime();
+          showToast(`駐島守護者：${doc.name}（${doc.title}）`);
+          document.getElementById('doctorsModal').classList.remove('hidden');
+          const docY = (doc.pos && doc.pos.y !== undefined) ? doc.pos.y : 18.5;
+          flyCameraTo(
+            { x: doc.pos.x + 32, y: docY + 22, z: doc.pos.z + 38 },
+            { x: doc.pos.x, y: docY + 6, z: doc.pos.z }
+          );
+          return;
+        }
+      }
+
+      // 偵測島嶼與建築
+      const intersects = raycaster.intersectObjects(interactiveMeshes, true);
+      if (intersects.length > 0) {
+        let obj = intersects[0].object;
+        while (obj && !obj.userData?.module) {
+          obj = obj.parent;
+        }
+        if (obj?.userData?.module) {
+          const mod = obj.userData.module;
+          sound.init();
+          sound.playClick();
+          if (mod.type === 'region') {
+            selectRegionNode(mod);
+          } else {
+            selectModule(mod);
+          }
+        }
+      }
     }
 
     function onWindowResize() {
@@ -2661,17 +2795,34 @@
       selectedModule = mod;
       openDrawer(mod);
 
-      const camTarget = {
-        x: mod.gridPos.x + 40,
-        y: 45,
-        z: mod.gridPos.z + 55
-      };
-      const lookTarget = {
-        x: mod.gridPos.x,
-        y: 18,
-        z: mod.gridPos.z
-      };
-      flyCameraTo(camTarget, lookTarget);
+      const isCenter = mod.id === 0;
+
+      // 依建築高度精密校準焦點與相機距離，確保地表基座與頂部裝置（晶體、雷達、燈塔頂）完整在視野內
+      const lookHeight = isCenter ? 36 : 28;
+      const camDist = isCenter ? 122 : 98;
+      const camHeight = isCenter ? 68 : 54;
+
+      let lookTarget = new THREE.Vector3(mod.gridPos.x, lookHeight, mod.gridPos.z);
+      let camTarget = new THREE.Vector3(
+        mod.gridPos.x + camDist * 0.65,
+        camHeight,
+        mod.gridPos.z + camDist * 0.85
+      );
+
+      // 當桌面端右側抽屜打開時，視角平移將建築精確置中於左側未遮蔽之可視區域
+      if (window.innerWidth >= 768) {
+        const fwd = new THREE.Vector3().subVectors(lookTarget, camTarget).normalize();
+        const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+        const shift = isCenter ? 16 : 14;
+        lookTarget.addScaledVector(right, shift);
+        camTarget.addScaledVector(right, shift);
+      }
+
+      flyCameraTo(
+        { x: camTarget.x, y: camTarget.y, z: camTarget.z },
+        { x: lookTarget.x, y: lookTarget.y, z: lookTarget.z },
+        1400
+      );
     }
 
     function selectRegionNode(reg) {
@@ -2680,20 +2831,32 @@
 
       openRegionHud(reg);
 
-      const midX = reg.gridPos.x * 0.6;
-      const midZ = reg.gridPos.z * 0.6;
-      const camTarget = {
-        x: midX + 65,
-        y: 75,
-        z: midZ + 85
-      };
-      const lookTarget = {
-        x: midX,
-        y: 15,
-        z: midZ
-      };
+      const isTaipei = reg.id === 13;
+      const camDist = isTaipei ? 82 : 64;
+      const camHeight = isTaipei ? 56 : 46;
+      const lookHeight = isTaipei ? 16 : 12;
 
-      flyCameraTo(camTarget, lookTarget, 1300);
+      // 精準鎖定地點島嶼最新外圈座標 (reg.gridPos.x, reg.gridPos.z)
+      let lookTarget = new THREE.Vector3(reg.gridPos.x, lookHeight, reg.gridPos.z);
+      let camTarget = new THREE.Vector3(
+        reg.gridPos.x + camDist * 0.72,
+        camHeight,
+        reg.gridPos.z + camDist * 0.88
+      );
+
+      // 桌面端稍微避開右上角 HUD 浮動卡，維持居中視界
+      if (window.innerWidth >= 768) {
+        const fwd = new THREE.Vector3().subVectors(lookTarget, camTarget).normalize();
+        const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+        lookTarget.addScaledVector(right, 8);
+        camTarget.addScaledVector(right, 8);
+      }
+
+      flyCameraTo(
+        { x: camTarget.x, y: camTarget.y, z: camTarget.z },
+        { x: lookTarget.x, y: lookTarget.y, z: lookTarget.z },
+        1300
+      );
       showToast(`🧭 定位地理網絡：【${reg.name}】（${reg.bearing} · ${reg.distanceKm}）`);
     }
 
@@ -2738,7 +2901,7 @@
 
     regionToCenterBtn.addEventListener('click', () => {
       closeRegionHud();
-      flyCameraTo({ x: 45, y: 56, z: 65 }, { x: 0, y: 25, z: 0 });
+      flyCameraTo({ x: 78, y: 68, z: 95 }, { x: 0, y: 36, z: 0 });
       showToast('已聚焦回「部立臺北醫院 · 職醫心臟」');
     });
 
@@ -2937,9 +3100,29 @@
       showToast('已關閉協作流線');
     });
 
+    // 俯瞰地圖與等角視角切換
+    let isTopDownView = false;
+    const TOPDOWN_CAMERA_POS = { x: 25, y: 740, z: 25.1 };
+    const TOPDOWN_TARGET_POS = { x: 25, y: 0, z: 25 };
+
+    document.getElementById('btnTopDownView').addEventListener('click', () => {
+      sound.playClick();
+      closeRegionHud();
+      if (!isTopDownView) {
+        flyCameraTo(TOPDOWN_CAMERA_POS, TOPDOWN_TARGET_POS, 1400);
+        showToast('🗺️ 已切換至 90° 垂直俯瞰地圖視野');
+        isTopDownView = true;
+      } else {
+        flyToOverview(1400);
+        showToast('已切換回 45° 等角全景視角');
+        isTopDownView = false;
+      }
+    });
+
     document.getElementById('btnResetView').addEventListener('click', () => {
       sound.playClick();
       closeRegionHud();
+      isTopDownView = false;
       flyToOverview();
       showToast('攝影機已平滑回歸全局總覽');
     });
