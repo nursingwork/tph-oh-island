@@ -137,6 +137,15 @@
     .audio-bar-2 { animation: barWave 0.8s infinite ease-in-out 0.2s; }
     .audio-bar-3 { animation: barWave 1.4s infinite ease-in-out 0.4s; }
 
+    /* 背景音樂暫停時的波形視覺狀態 */
+    .bgm-paused .audio-bar-1,
+    .bgm-paused .audio-bar-2,
+    .bgm-paused .audio-bar-3 {
+      animation-play-state: paused !important;
+      height: 3px !important;
+      opacity: 0.35;
+    }
+
     /* 3D 懸浮互動地標 Pin 樣式 */
     .island-pin {
       position: absolute;
@@ -229,14 +238,17 @@
 
       <!-- 控制工具：音效 & 即時台北時間天候切換 -->
       <div class="flex items-center gap-2 pl-2 border-l border-white/10">
-        <!-- 音效切換 -->
-        <button id="audioToggleBtn" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-teal-400 border border-teal-500/20 transition flex items-center gap-1.5" title="空間環境音效 (Web Audio)">
-          <div class="flex items-center gap-0.5 h-4 px-0.5">
+        <!-- 純音樂背景播放開關 (Drone, Shimmer Reverb, Deep Ocean Ambient) -->
+        <button id="bgmToggleBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-teal-300 border border-teal-500/20 transition flex items-center gap-2 group" title="純音樂背景：Ethereal Ocean, Shimmer Reverb, Floating Ambient (點擊開關)">
+          <div class="flex items-center gap-0.5 h-4 px-0.5" id="bgmVisualizer">
             <span class="w-1 bg-teal-400 rounded-full audio-bar-1"></span>
             <span class="w-1 bg-teal-400 rounded-full audio-bar-2"></span>
             <span class="w-1 bg-teal-400 rounded-full audio-bar-3"></span>
           </div>
-          <span class="text-[11px] font-mono hidden sm:inline" id="audioStateText">SOUND ON</span>
+          <div class="flex flex-col text-left leading-none">
+            <span class="text-[9px] font-mono text-slate-400 uppercase tracking-wider">ETHEREAL OCEAN</span>
+            <span class="text-[10px] font-bold text-teal-300 tracking-wide mt-0.5" id="bgmStateText">音樂播放中</span>
+          </div>
         </button>
 
         <!-- 台灣台北時間與四時辰天色切換按鈕 -->
@@ -1047,14 +1059,20 @@
     };
 
     // -------------------------------------------------------------
-    // 2. 原生合成空間音效引擎 (Web Audio API)
+    // 2. 原生合成純音樂背景引擎 (Web Audio API)
+    // 舒適度調校版：減低低頻壓迫，強化浮空透亮與深海呼吸感
+    // 風格關鍵字：Drone, Shimmer Reverb, Deep Ocean Ambient, 
+    // Hypnotic, Ethereal, Sub-bass, Timeless, Floating
     // -------------------------------------------------------------
-    class SoundEngine {
+    class AmbientMusicEngine {
       constructor() {
         this.ctx = null;
-        this.enabled = true;
-        this.oceanGain = null;
+        this.isPlaying = false;
         this.initialized = false;
+        this.masterMusicGain = null;
+        this.shimmerBus = null;
+        this.chimeTimer = null;
+        this.activeNodes = [];
       }
 
       init() {
@@ -1062,60 +1080,260 @@
         try {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioContext();
-          this.setupAmbientOcean();
+          this.setupMasterComfortBus();
+          this.setupSilkyOceanBreeze();
+          this.setupWarmAnchoringSub();
+          this.setupFloatingHarmonicBreaths();
+          this.setupAiryShimmerReverb();
+          this.startFloatingChimesLoop();
           this.initialized = true;
+          this.isPlaying = true;
         } catch (e) {
-          console.warn('Web Audio not supported');
+          console.warn('Web Audio API initialized with restriction:', e);
         }
       }
 
-      setupAmbientOcean() {
-        const bufferSize = this.ctx.sampleRate * 2;
+      // 總輸出聽覺舒適度濾波 EQ（移除極低頻隆隆震動與數位高頻毛刺）
+      setupMasterComfortBus() {
+        // 1. 去除 42Hz 以下無效重低頻震壓，保護耳膜
+        const subRumbleFilter = this.ctx.createBiquadFilter();
+        subRumbleFilter.type = 'highpass';
+        subRumbleFilter.frequency.setValueAtTime(42, this.ctx.currentTime);
+        subRumbleFilter.Q.setValueAtTime(0.7, this.ctx.currentTime);
+
+        // 2. 柔化 120Hz 易共振混濁區 (-3.5dB)
+        const lowMudDamp = this.ctx.createBiquadFilter();
+        lowMudDamp.type = 'peaking';
+        lowMudDamp.frequency.setValueAtTime(130, this.ctx.currentTime);
+        lowMudDamp.gain.setValueAtTime(-3.5, this.ctx.currentTime);
+        lowMudDamp.Q.setValueAtTime(1.0, this.ctx.currentTime);
+
+        // 3. 高頻溫潤類比化滾降 (7.5kHz 柔和暖色)
+        const highGentleRoll = this.ctx.createBiquadFilter();
+        highGentleRoll.type = 'lowshelf';
+        highGentleRoll.frequency.setValueAtTime(7500, this.ctx.currentTime);
+        highGentleRoll.gain.setValueAtTime(-2.0, this.ctx.currentTime);
+
+        this.masterMusicGain = this.ctx.createGain();
+        this.masterMusicGain.gain.setValueAtTime(0.0001, this.ctx.currentTime);
+        // 柔和淡入至舒適背景底韻音量
+        this.masterMusicGain.gain.exponentialRampToValueAtTime(0.55, this.ctx.currentTime + 3.0);
+
+        subRumbleFilter.connect(lowMudDamp);
+        lowMudDamp.connect(highGentleRoll);
+        highGentleRoll.connect(this.masterMusicGain);
+        this.masterMusicGain.connect(this.ctx.destination);
+      }
+
+      // 1. Deep Ocean Ambient（絲滑海霧粉紅潮汐，取代沉悶的重音暗湧）
+      setupSilkyOceanBreeze() {
+        const bufferSize = this.ctx.sampleRate * 4;
         const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const output = noiseBuffer.getChannelData(0);
+
+        // 生成溫和粉紅噪聲 (Pink Noise IIR Filter)，質地比布朗噪聲更通透開闊
         let b0 = 0, b1 = 0, b2 = 0;
         for (let i = 0; i < bufferSize; i++) {
           const white = Math.random() * 2 - 1;
           b0 = 0.99886 * b0 + white * 0.0555179;
           b1 = 0.99332 * b1 + white * 0.0750759;
           b2 = 0.96900 * b2 + white * 0.1538520;
-          output[i] = (b0 + b1 + b2) * 0.04;
+          output[i] = (b0 + b1 + b2) * 0.35;
         }
 
-        const whiteNoise = this.ctx.createBufferSource();
-        whiteNoise.buffer = noiseBuffer;
-        whiteNoise.loop = true;
+        const seaNoise = this.ctx.createBufferSource();
+        seaNoise.buffer = noiseBuffer;
+        seaNoise.loop = true;
 
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(320, this.ctx.currentTime);
+        // 溫和帶通水聲共振 (380Hz ~ 820Hz 緩慢潮汐)
+        const seaFilter = this.ctx.createBiquadFilter();
+        seaFilter.type = 'bandpass';
+        seaFilter.frequency.setValueAtTime(520, this.ctx.currentTime);
+        seaFilter.Q.setValueAtTime(1.1, this.ctx.currentTime);
 
-        const lfo = this.ctx.createOscillator();
-        lfo.frequency.setValueAtTime(0.12, this.ctx.currentTime);
-        const lfoGain = this.ctx.createGain();
-        lfoGain.gain.setValueAtTime(160, this.ctx.currentTime);
-        lfo.connect(lfoGain);
-        lfoGain.connect(filter.frequency);
-        lfo.start();
+        const seaLfo = this.ctx.createOscillator();
+        seaLfo.frequency.setValueAtTime(0.062, this.ctx.currentTime); // ~16秒超慢潮汐呼吸
+        const seaLfoGain = this.ctx.createGain();
+        seaLfoGain.gain.setValueAtTime(180, this.ctx.currentTime);
+        seaLfo.connect(seaLfoGain);
+        seaLfoGain.connect(seaFilter.frequency);
+        seaLfo.start();
 
-        this.oceanGain = this.ctx.createGain();
-        this.oceanGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        const seaGain = this.ctx.createGain();
+        seaGain.gain.setValueAtTime(0.045, this.ctx.currentTime); // 減至微風細語感
 
-        whiteNoise.connect(filter);
-        filter.connect(this.oceanGain);
-        this.oceanGain.connect(this.ctx.destination);
-        whiteNoise.start();
+        seaNoise.connect(seaFilter);
+        seaFilter.connect(seaGain);
+        seaGain.connect(this.masterMusicGain);
+        seaNoise.start();
       }
 
-      playTone(freq, type = 'sine', duration = 0.4, gainLevel = 0.06) {
-        if (!this.enabled || !this.ctx) return;
+      // 2. Sub-bass & Warm Grounding（溫和打底暖音，音量大幅收斂不壓耳）
+      setupWarmAnchoringSub() {
+        // 單純純淨暖音 65.41Hz (C2)，不再使用會產生強烈顱內共振的極限 40Hz
+        const subOsc = this.ctx.createOscillator();
+        subOsc.type = 'sine';
+        subOsc.frequency.setValueAtTime(65.41, this.ctx.currentTime);
+
+        // 微漂移
+        const pitchLfo = this.ctx.createOscillator();
+        pitchLfo.frequency.setValueAtTime(0.035, this.ctx.currentTime);
+        const pitchGain = this.ctx.createGain();
+        pitchGain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+        pitchLfo.connect(pitchGain);
+        pitchGain.connect(subOsc.frequency);
+        pitchLfo.start();
+
+        const subFilter = this.ctx.createBiquadFilter();
+        subFilter.type = 'lowpass';
+        subFilter.frequency.setValueAtTime(80, this.ctx.currentTime);
+
+        // 音量收斂至原先的 1/4 (0.05)，純粹提供舒適的溫暖包覆基底
+        const subGain = this.ctx.createGain();
+        subGain.gain.setValueAtTime(0.048, this.ctx.currentTime);
+
+        subOsc.connect(subFilter);
+        subFilter.connect(subGain);
+        subGain.connect(this.masterMusicGain);
+        subOsc.start();
+      }
+
+      // 3. Ethereal Floating Harmony（雙和弦動態呼吸微編曲，消滅單一長音的枯燥感）
+      setupFloatingHarmonicBreaths() {
+        // 和弦組 A：Fmaj9#11 (透亮懸浮感)
+        const chordA = [174.61, 261.63, 329.63, 392.00, 493.88]; // F3, C4, E4, G4, B4
+        // 和弦組 B：Cmaj9 / Am11 (深邃平靜感)
+        const chordB = [220.00, 261.63, 329.63, 392.00, 587.33]; // A3, C4, E4, G4, D5
+
+        const createVoiceGroup = (freqs, lfoPhaseOffset, baseVol) => {
+          const groupGain = this.ctx.createGain();
+          groupGain.gain.setValueAtTime(baseVol, this.ctx.currentTime);
+
+          // 24秒呼吸漸變 LFO (和弦 A 與和弦 B 互相交疊淡入淡出)
+          const breatheLfo = this.ctx.createOscillator();
+          breatheLfo.frequency.setValueAtTime(0.042, this.ctx.currentTime);
+          const breatheGain = this.ctx.createGain();
+          breatheGain.gain.setValueAtTime(baseVol * 0.7, this.ctx.currentTime);
+          breatheLfo.connect(breatheGain);
+          breatheGain.connect(groupGain.gain);
+          breatheLfo.start();
+
+          freqs.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            osc.type = 'sine'; // 純淨柔和的正弦音色，杜絕粗糙鋸齒
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            osc.detune.setValueAtTime((idx % 2 === 0 ? 2.5 : -2.5), this.ctx.currentTime);
+
+            const vFilter = this.ctx.createBiquadFilter();
+            vFilter.type = 'lowpass';
+            vFilter.frequency.setValueAtTime(1100 + idx * 80, this.ctx.currentTime);
+
+            const voiceGain = this.ctx.createGain();
+            voiceGain.gain.setValueAtTime(0.016, this.ctx.currentTime); // 各聲部極低負荷
+
+            osc.connect(vFilter);
+            vFilter.connect(voiceGain);
+            voiceGain.connect(groupGain);
+            osc.start();
+          });
+
+          groupGain.connect(this.masterMusicGain);
+        };
+
+        createVoiceGroup(chordA, 0.0, 0.042);
+        createVoiceGroup(chordB, Math.PI, 0.038);
+      }
+
+      // 4. Shimmer Reverb Network（通透空氣殘響延遲鏈）
+      setupAiryShimmerReverb() {
+        this.shimmerBus = this.ctx.createGain();
+        this.shimmerBus.gain.setValueAtTime(0.28, this.ctx.currentTime);
+
+        const delayA = this.ctx.createDelay();
+        delayA.delayTime.setValueAtTime(0.42, this.ctx.currentTime);
+
+        const delayB = this.ctx.createDelay();
+        delayB.delayTime.setValueAtTime(0.68, this.ctx.currentTime);
+
+        // 高通提升至 600Hz，過濾掉任何低頻反射混濁
+        const shimmerHighpass = this.ctx.createBiquadFilter();
+        shimmerHighpass.type = 'highpass';
+        shimmerHighpass.frequency.setValueAtTime(600, this.ctx.currentTime);
+
+        const shimmerLowpass = this.ctx.createBiquadFilter();
+        shimmerLowpass.type = 'lowpass';
+        shimmerLowpass.frequency.setValueAtTime(3800, this.ctx.currentTime);
+
+        const feedback = this.ctx.createGain();
+        feedback.gain.setValueAtTime(0.55, this.ctx.currentTime);
+
+        this.shimmerBus.connect(delayA);
+        delayA.connect(delayB);
+        delayB.connect(shimmerHighpass);
+        shimmerHighpass.connect(shimmerLowpass);
+        shimmerLowpass.connect(feedback);
+        feedback.connect(delayA);
+
+        delayA.connect(this.masterMusicGain);
+        delayB.connect(this.masterMusicGain);
+      }
+
+      // 5. Floating Celestial Crystals（偶發星芒微音晶：柔和慢起音，無刺耳敲擊）
+      startFloatingChimesLoop() {
+        const chimePitches = [783.99, 880.0, 1046.5, 1174.66, 1318.51, 1567.98]; // G5 ~ G6 空靈高八度
+
+        const triggerChime = () => {
+          if (!this.isPlaying || !this.ctx) return;
+          const freq = chimePitches[Math.floor(Math.random() * chimePitches.length)];
+          const now = this.ctx.currentTime;
+
+          const chimeOsc = this.ctx.createOscillator();
+          chimeOsc.type = 'sine';
+          chimeOsc.frequency.setValueAtTime(freq, now);
+
+          const chimeGain = this.ctx.createGain();
+          chimeGain.gain.setValueAtTime(0.0001, now);
+          // 80ms 柔和慢起音，消除點擊突波，保留水晶通透感
+          chimeGain.gain.linearRampToValueAtTime(0.022, now + 0.08);
+          chimeGain.gain.exponentialRampToValueAtTime(0.00001, now + 4.2);
+
+          chimeOsc.connect(chimeGain);
+          chimeGain.connect(this.shimmerBus);
+          chimeGain.connect(this.masterMusicGain);
+
+          chimeOsc.start(now);
+          chimeOsc.stop(now + 4.5);
+
+          const nextInterval = 4500 + Math.random() * 5500;
+          this.chimeTimer = setTimeout(triggerChime, nextInterval);
+        };
+
+        this.chimeTimer = setTimeout(triggerChime, 3000);
+      }
+
+      // 互動式音效 (保留按鈕點擊回饋)
+      playHover() {
+        this.playTone(523.25, 'sine', 0.18, 0.015);
+      }
+
+      playClick() {
+        this.playTone(659.25, 'triangle', 0.22, 0.025);
+      }
+
+      playChime() {
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+          setTimeout(() => this.playTone(f, 'sine', 0.7, 0.02), i * 90);
+        });
+      }
+
+      playTone(freq, type = 'sine', duration = 0.4, gainLevel = 0.02) {
+        if (!this.ctx) return;
         if (this.ctx.state === 'suspended') this.ctx.resume();
 
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-
         gain.gain.setValueAtTime(gainLevel, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
 
@@ -1125,31 +1343,33 @@
         osc.stop(this.ctx.currentTime + duration);
       }
 
-      playHover() {
-        this.playTone(523.25, 'sine', 0.25, 0.025);
-      }
-
-      playClick() {
-        this.playTone(659.25, 'triangle', 0.35, 0.05);
-        setTimeout(() => this.playTone(783.99, 'sine', 0.45, 0.04), 80);
-      }
-
-      playChime() {
-        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
-          setTimeout(() => this.playTone(f, 'sine', 0.8, 0.04), i * 90);
-        });
-      }
-
-      toggle() {
-        this.enabled = !this.enabled;
-        if (this.oceanGain) {
-          this.oceanGain.gain.setValueAtTime(this.enabled ? 0.04 : 0, this.ctx.currentTime);
+      // 背景音樂播放/暫停平滑淡入淡出
+      toggleMusic() {
+        if (!this.initialized) {
+          this.init();
+          return true;
         }
-        return this.enabled;
+
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+
+        this.isPlaying = !this.isPlaying;
+        const now = this.ctx.currentTime;
+        if (this.isPlaying) {
+          this.masterMusicGain.gain.cancelScheduledValues(now);
+          this.masterMusicGain.gain.linearRampToValueAtTime(0.55, now + 1.2);
+          this.startFloatingChimesLoop();
+        } else {
+          this.masterMusicGain.gain.cancelScheduledValues(now);
+          this.masterMusicGain.gain.linearRampToValueAtTime(0.0001, now + 1.2);
+          clearTimeout(this.chimeTimer);
+        }
+        return this.isPlaying;
       }
     }
 
-    const sound = new SoundEngine();
+    const sound = new AmbientMusicEngine();
 
     // -------------------------------------------------------------
     // 3. 台灣台北時間 (UTC+8) 與四時辰天色光影系統
@@ -3127,14 +3347,36 @@
       showToast('攝影機已平滑回歸全局總覽');
     });
 
-    const audioToggleBtn = document.getElementById('audioToggleBtn');
-    const audioStateText = document.getElementById('audioStateText');
-    audioToggleBtn.addEventListener('click', () => {
+    // 背景音樂 (Deep Ocean Ambient) 播放/暫停按鈕控制器
+    const bgmToggleBtn = document.getElementById('bgmToggleBtn');
+    const bgmVisualizer = document.getElementById('bgmVisualizer');
+    const bgmStateText = document.getElementById('bgmStateText');
+
+    bgmToggleBtn.addEventListener('click', () => {
       sound.init();
-      const isEnabled = sound.toggle();
-      audioStateText.textContent = isEnabled ? 'SOUND ON' : 'MUTE';
-      showToast(isEnabled ? '🔊 空間環境音效已開啟' : '🔇 已靜音');
+      const isPlaying = sound.toggleMusic();
+      if (isPlaying) {
+        bgmVisualizer.classList.remove('bgm-paused');
+        bgmStateText.textContent = '音樂播放中';
+        showToast('🎵 背景音樂已啟動：Deep Ocean Ambient & Shimmer Reverb');
+      } else {
+        bgmVisualizer.classList.add('bgm-paused');
+        bgmStateText.textContent = '音樂已暫停';
+        showToast('🔇 背景音樂已暫停');
+      }
     });
+
+    // 訪客首次與頁面互動時自動解鎖 Web Audio Context 播放
+    const unlockAudioOnFirstInteraction = () => {
+      sound.init();
+      if (sound.ctx && sound.ctx.state === 'suspended') {
+        sound.ctx.resume();
+      }
+      window.removeEventListener('pointerdown', unlockAudioOnFirstInteraction);
+      window.removeEventListener('keydown', unlockAudioOnFirstInteraction);
+    };
+    window.addEventListener('pointerdown', unlockAudioOnFirstInteraction);
+    window.addEventListener('keydown', unlockAudioOnFirstInteraction);
 
     document.getElementById('timeCycleBtn').addEventListener('click', () => {
       sound.playClick();
