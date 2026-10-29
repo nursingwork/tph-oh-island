@@ -238,16 +238,16 @@
 
       <!-- 控制工具：音效 & 即時台北時間天候切換 -->
       <div class="flex items-center gap-2 pl-2 border-l border-white/10">
-        <!-- 純音樂背景播放開關：深海沉沒神殿鋼琴環境音 (Sunken Temple · Deep Sea Piano) -->
-        <button id="bgmToggleBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-teal-300 border border-teal-500/20 transition flex items-center gap-2 group" title="深海神殿 · 空靈鋼琴純音樂 (Ambient Piano · Deep Sea · Sunken Temple) 點擊開關">
+        <!-- 純音樂背景播放開關 (Drone, Shimmer Reverb, Deep Ocean Ambient) -->
+        <button id="bgmToggleBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-teal-300 border border-teal-500/20 transition flex items-center gap-2 group" title="純音樂背景 (點擊開關)">
           <div class="flex items-center gap-0.5 h-4 px-0.5" id="bgmVisualizer">
             <span class="w-1 bg-teal-400 rounded-full audio-bar-1"></span>
             <span class="w-1 bg-teal-400 rounded-full audio-bar-2"></span>
             <span class="w-1 bg-teal-400 rounded-full audio-bar-3"></span>
           </div>
           <div class="flex flex-col text-left leading-none">
-            <span class="text-[9px] font-mono text-slate-400 uppercase tracking-wider">SUNKEN TEMPLE</span>
-            <span class="text-[10px] font-bold text-teal-300 tracking-wide mt-0.5" id="bgmStateText">深海鋼琴 · 播放中</span>
+            <span class="text-[9px] font-mono text-slate-400 uppercase tracking-wider">BGM AUDIO</span>
+            <span class="text-[10px] font-bold text-teal-300 tracking-wide mt-0.5" id="bgmStateText">音樂播放中</span>
           </div>
         </button>
 
@@ -1060,9 +1060,8 @@
 
     // -------------------------------------------------------------
     // 2. 原生合成純音樂背景引擎 (Web Audio API)
-    // 主題：Sunken Temple · Deep Sea Piano (沉沒神殿 · 失落文明)
-    // 風格：Ambient, Piano Music, Instrumental, Fantasy, Relaxing, Cinematic
-    // 氛圍：Tranquil, Ethereal, Melancholic, Submerged, Sacred, Calm
+    // 鎖定版本：Ethereal Ocean, Shimmer Reverb, Floating Ambient
+    // 特點：無爆音交叉平滑循環、無感自動播放、高舒適度不疲勞
     // -------------------------------------------------------------
     class AmbientMusicEngine {
       constructor() {
@@ -1070,156 +1069,10 @@
         this.isPlaying = false;
         this.initialized = false;
         this.masterMusicGain = null;
-        this.pianoBus = null;
-        this.templeReverbBus = null;
-        this.padBus = null;
-        this.schedulerTimer = null;
-
-        this.loopStartTime = 0;
-        this.loopDuration = 68.57; // 16 小節週期 (~56 BPM 慢板冥想呼吸)
-        this.scheduledNotes = new Set();
-        this.scheduledPads = new Set();
-        this.scheduledChimes = new Set();
-
-        // 16 小節鋼琴樂譜 (Dm9 -> Bbmaj7#11 -> Fmaj7 -> C(add9) -> A7(b13) -> Gm9 -> Asus4)
-        this.PIANO_SCORE = [
-          // Bar 1: Dm9 (深海神殿入口的沉寂)
-          { t: 0.0, f: 73.42, d: 4.8, v: 0.52 }, // D2
-          { t: 0.6, f: 110.00, d: 4.2, v: 0.42 }, // A2
-          { t: 1.1, f: 174.61, d: 3.6, v: 0.40 }, // F3
-          { t: 2.1, f: 261.63, d: 3.2, v: 0.42 }, // C4
-          { t: 2.7, f: 329.63, d: 2.8, v: 0.48 }, // E4
-          { t: 3.6, f: 293.66, d: 2.4, v: 0.44 }, // D4
-
-          // Bar 2: Dm9 旋律延伸
-          { t: 4.3, f: 73.42, d: 4.5, v: 0.48 }, // D2
-          { t: 5.2, f: 440.00, d: 3.4, v: 0.52 }, // A4
-          { t: 6.4, f: 349.23, d: 2.5, v: 0.46 }, // F4
-          { t: 7.3, f: 329.63, d: 2.8, v: 0.44 }, // E4
-
-          // Bar 3: Bbmaj7#11 (陽光穿透海面照耀水下巨石柱)
-          { t: 8.57, f: 58.27, d: 4.8, v: 0.52 }, // Bb1
-          { t: 9.15, f: 87.31, d: 4.2, v: 0.42 }, // F2
-          { t: 9.8, f: 146.83, d: 3.6, v: 0.40 }, // D3
-          { t: 10.6, f: 220.00, d: 3.4, v: 0.42 }, // A3
-          { t: 11.3, f: 329.63, d: 3.2, v: 0.50 }, // E4 (#11)
-          { t: 12.3, f: 293.66, d: 2.4, v: 0.45 }, // D4
-
-          // Bar 4: Bbmaj7 寧靜消散
-          { t: 13.4, f: 261.63, d: 3.0, v: 0.46 }, // C4
-          { t: 14.6, f: 220.00, d: 3.2, v: 0.44 }, // A3
-          { t: 15.8, f: 174.61, d: 2.8, v: 0.40 }, // F3
-
-          // Bar 5: Fmaj7 / A (失落文明的古老神聖感)
-          { t: 17.14, f: 55.00, d: 4.8, v: 0.50 }, // A1
-          { t: 17.75, f: 82.41, d: 4.2, v: 0.42 }, // E2
-          { t: 18.3, f: 130.81, d: 3.6, v: 0.40 }, // C3
-          { t: 19.1, f: 196.00, d: 3.2, v: 0.42 }, // G3
-          { t: 19.8, f: 261.63, d: 3.0, v: 0.48 }, // C4
-          { t: 20.7, f: 329.63, d: 2.8, v: 0.52 }, // E4
-          { t: 21.9, f: 392.00, d: 2.6, v: 0.48 }, // G4
-
-          // Bar 6: Fmaj7 柔和呼吸
-          { t: 22.7, f: 349.23, d: 3.2, v: 0.50 }, // F4
-          { t: 23.9, f: 329.63, d: 2.5, v: 0.44 }, // E4
-          { t: 24.9, f: 261.63, d: 3.0, v: 0.45 }, // C4
-
-          // Bar 7: C(add9)/E (懷舊與歲月漣漪)
-          { t: 25.71, f: 82.41, d: 4.8, v: 0.48 }, // E2
-          { t: 26.3, f: 123.47, d: 4.2, v: 0.42 }, // B2
-          { t: 26.9, f: 196.00, d: 3.6, v: 0.40 }, // G3
-          { t: 27.7, f: 293.66, d: 3.4, v: 0.48 }, // D4
-          { t: 28.4, f: 329.63, d: 3.0, v: 0.50 }, // E4
-          { t: 29.4, f: 392.00, d: 2.8, v: 0.52 }, // G4
-
-          // Bar 8: A7(b13)/C# (神秘的古文明回聲)
-          { t: 30.00, f: 55.00, d: 4.8, v: 0.52 }, // A1
-          { t: 30.6, f: 82.41, d: 4.2, v: 0.44 }, // E2
-          { t: 31.3, f: 196.00, d: 3.6, v: 0.40 }, // G3
-          { t: 32.1, f: 277.18, d: 3.2, v: 0.44 }, // C#4
-          { t: 32.8, f: 349.23, d: 3.0, v: 0.50 }, // F4
-          { t: 33.7, f: 329.63, d: 2.6, v: 0.46 }, // E4
-          { t: 34.6, f: 277.18, d: 3.0, v: 0.42 }, // C#4
-
-          // Bar 9: Gm9 (深海深處的安詳)
-          { t: 35.28, f: 49.00, d: 4.8, v: 0.50 }, // G1
-          { t: 35.9, f: 73.42, d: 4.2, v: 0.42 }, // D2
-          { t: 36.5, f: 116.54, d: 3.6, v: 0.40 }, // Bb2
-          { t: 37.3, f: 174.61, d: 3.2, v: 0.42 }, // F3
-          { t: 38.0, f: 220.00, d: 3.0, v: 0.48 }, // A3
-          { t: 38.8, f: 233.08, d: 2.8, v: 0.50 }, // Bb3
-          { t: 39.8, f: 293.66, d: 3.0, v: 0.53 }, // D4
-
-          // Bar 10: Gm9 慢板
-          { t: 40.7, f: 349.23, d: 3.2, v: 0.52 }, // F4
-          { t: 41.9, f: 293.66, d: 2.6, v: 0.46 }, // D4
-          { t: 42.9, f: 233.08, d: 3.0, v: 0.44 }, // Bb3
-
-          // Bar 11: Dm9/F (被淹沒的聖殿遺跡)
-          { t: 43.85, f: 87.31, d: 4.8, v: 0.50 }, // F2
-          { t: 44.4, f: 130.81, d: 4.2, v: 0.44 }, // C3
-          { t: 45.0, f: 220.00, d: 3.6, v: 0.42 }, // A3
-          { t: 45.8, f: 329.63, d: 3.2, v: 0.48 }, // E4
-          { t: 46.5, f: 349.23, d: 3.0, v: 0.50 }, // F4
-          { t: 47.5, f: 440.00, d: 2.8, v: 0.54 }, // A4
-
-          // Bar 12: Dm9
-          { t: 48.6, f: 392.00, d: 2.6, v: 0.48 }, // G4
-          { t: 49.6, f: 349.23, d: 2.4, v: 0.45 }, // F4
-          { t: 50.6, f: 293.66, d: 3.0, v: 0.44 }, // D4
-
-          // Bar 13: Bbmaj7 (海溝深處的安息)
-          { t: 51.42, f: 58.27, d: 4.8, v: 0.52 }, // Bb1
-          { t: 52.0, f: 87.31, d: 4.2, v: 0.44 }, // F2
-          { t: 52.6, f: 146.83, d: 3.6, v: 0.40 }, // D3
-          { t: 53.4, f: 220.00, d: 3.2, v: 0.46 }, // A3
-          { t: 54.1, f: 293.66, d: 3.0, v: 0.50 }, // D4
-          { t: 55.1, f: 261.63, d: 2.6, v: 0.48 }, // C4
-          { t: 56.1, f: 220.00, d: 3.0, v: 0.44 }, // A3
-
-          // Bar 14: C(add9) (輕柔海潮湧動)
-          { t: 57.0, f: 65.41, d: 4.8, v: 0.50 }, // C2
-          { t: 57.6, f: 98.00, d: 4.2, v: 0.44 }, // G2
-          { t: 58.2, f: 164.81, d: 3.6, v: 0.40 }, // E3
-          { t: 58.9, f: 293.66, d: 3.2, v: 0.48 }, // D4
-          { t: 59.6, f: 392.00, d: 3.0, v: 0.52 }, // G4
-          { t: 60.6, f: 329.63, d: 2.8, v: 0.48 }, // E4
-
-          // Bar 15: Asus4 -> A (神聖的祈願)
-          { t: 61.5, f: 55.00, d: 4.8, v: 0.52 }, // A1
-          { t: 62.1, f: 82.41, d: 4.2, v: 0.44 }, // E2
-          { t: 62.7, f: 110.00, d: 3.6, v: 0.40 }, // A2
-          { t: 63.4, f: 146.83, d: 3.2, v: 0.44 }, // D3
-          { t: 64.1, f: 329.63, d: 3.0, v: 0.50 }, // E4
-          { t: 65.0, f: 293.66, d: 2.4, v: 0.46 }, // D4
-          { t: 65.9, f: 277.18, d: 3.2, v: 0.44 }, // C#4
-
-          // Bar 16: 循環前的空靈微嘆
-          { t: 67.0, f: 220.00, d: 3.4, v: 0.42 }  // A3
-        ];
-
-        // 水下神殿聖詠底墊 (Sunken Sanctuary Chord Pads)
-        this.PAD_SCORE = [
-          { t: 0.0, freqs: [146.83, 174.61, 220.00], d: 8.5 }, // Dm
-          { t: 8.57, freqs: [116.54, 146.83, 174.61, 220.00], d: 8.5 }, // Bbmaj7
-          { t: 17.14, freqs: [130.81, 174.61, 220.00], d: 8.5 }, // F
-          { t: 25.71, freqs: [130.81, 164.81, 196.00], d: 4.2 }, // C
-          { t: 30.00, freqs: [110.00, 138.59, 164.81], d: 5.2 }, // A
-          { t: 35.28, freqs: [98.00, 116.54, 146.83, 174.61], d: 8.5 }, // Gm
-          { t: 43.85, freqs: [146.83, 174.61, 220.00], d: 7.5 }, // Dm
-          { t: 51.42, freqs: [116.54, 146.83, 174.61], d: 5.5 }, // Bb
-          { t: 57.00, freqs: [130.81, 164.81, 196.00], d: 4.5 }, // C
-          { t: 61.50, freqs: [110.00, 138.59, 164.81], d: 6.8 }  // A
-        ];
-
-        // 水滴鐘鳴泛音 (Ethereal Temple Droplets)
-        this.CHIME_SCORE = [
-          { t: 11.5, f: 1174.66 }, // D6
-          { t: 21.0, f: 1318.51 }, // E6
-          { t: 33.0, f: 1396.91 }, // F6
-          { t: 47.0, f: 1760.00 }, // A6
-          { t: 59.8, f: 1567.98 }  // G6
-        ];
+        this.masterLimiter = null;
+        this.shimmerBus = null;
+        this.chimeTimer = null;
+        this.activeNodes = [];
       }
 
       init() {
@@ -1227,10 +1080,12 @@
         try {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioContext();
-          this.setupMasterComfortChain();
-          this.setupTempleReverbNetwork();
-          this.setupDeepOceanCurrent();
-          this.startSchedulerLoop();
+          this.setupMasterComfortBus();
+          this.setupSilkyOceanBreeze();
+          this.setupWarmAnchoringSub();
+          this.setupFloatingHarmonicBreaths();
+          this.setupAiryShimmerReverb();
+          this.startFloatingChimesLoop();
           this.initialized = true;
           this.isPlaying = true;
         } catch (e) {
@@ -1238,73 +1093,54 @@
         }
       }
 
-      // 總輸出聽覺舒適度濾波與安全動態限制
-      setupMasterComfortChain() {
-        // 1. 去除 38Hz 以下無效低頻隆隆震壓
+      // 總輸出聽覺舒適度濾波 EQ + 動態安全防破音壓限器
+      setupMasterComfortBus() {
+        // 1. 去除 42Hz 以下無效重低頻震壓
         const subRumbleFilter = this.ctx.createBiquadFilter();
         subRumbleFilter.type = 'highpass';
-        subRumbleFilter.frequency.setValueAtTime(38, this.ctx.currentTime);
+        subRumbleFilter.frequency.setValueAtTime(42, this.ctx.currentTime);
         subRumbleFilter.Q.setValueAtTime(0.7, this.ctx.currentTime);
 
-        // 2. 抑制 130Hz 易混濁共振頻段 (-2.5dB)
+        // 2. 柔化 130Hz 混濁區
         const lowMudDamp = this.ctx.createBiquadFilter();
         lowMudDamp.type = 'peaking';
         lowMudDamp.frequency.setValueAtTime(130, this.ctx.currentTime);
-        lowMudDamp.gain.setValueAtTime(-2.5, this.ctx.currentTime);
+        lowMudDamp.gain.setValueAtTime(-3.5, this.ctx.currentTime);
         lowMudDamp.Q.setValueAtTime(1.0, this.ctx.currentTime);
 
-        // 3. 類比暖調高頻平滑滾降 (6.5kHz)
-        const warmRoll = this.ctx.createBiquadFilter();
-        warmRoll.type = 'lowshelf';
-        warmRoll.frequency.setValueAtTime(6500, this.ctx.currentTime);
-        warmRoll.gain.setValueAtTime(-2.0, this.ctx.currentTime);
+        // 3. 高頻溫潤類比化滾降
+        const highGentleRoll = this.ctx.createBiquadFilter();
+        highGentleRoll.type = 'lowshelf';
+        highGentleRoll.frequency.setValueAtTime(7500, this.ctx.currentTime);
+        highGentleRoll.gain.setValueAtTime(-2.0, this.ctx.currentTime);
+
+        // 4. 動態壓限器（徹底阻絕任何疊音峰值破音）
+        this.masterLimiter = this.ctx.createDynamicsCompressor();
+        this.masterLimiter.threshold.setValueAtTime(-6.0, this.ctx.currentTime);
+        this.masterLimiter.knee.setValueAtTime(8.0, this.ctx.currentTime);
+        this.masterLimiter.ratio.setValueAtTime(12.0, this.ctx.currentTime);
+        this.masterLimiter.attack.setValueAtTime(0.003, this.ctx.currentTime);
+        this.masterLimiter.release.setValueAtTime(0.25, this.ctx.currentTime);
 
         this.masterMusicGain = this.ctx.createGain();
-        this.masterMusicGain.gain.setValueAtTime(0.0001, this.ctx.currentTime);
-        this.masterMusicGain.gain.exponentialRampToValueAtTime(0.55, this.ctx.currentTime + 3.0);
+        this.masterMusicGain.gain.setValueAtTime(0.55, this.ctx.currentTime);
 
         subRumbleFilter.connect(lowMudDamp);
-        lowMudDamp.connect(warmRoll);
-        warmRoll.connect(this.masterMusicGain);
+        lowMudDamp.connect(highGentleRoll);
+        highGentleRoll.connect(this.masterLimiter);
+        this.masterLimiter.connect(this.masterMusicGain);
         this.masterMusicGain.connect(this.ctx.destination);
       }
 
-      // 深海沉沒神殿殿堂殘響網絡 (Submerged Temple Reverb Network)
-      setupTempleReverbNetwork() {
-        this.templeReverbBus = this.ctx.createGain();
-        this.templeReverbBus.gain.setValueAtTime(0.32, this.ctx.currentTime);
-
-        const delayA = this.ctx.createDelay();
-        delayA.delayTime.setValueAtTime(0.48, this.ctx.currentTime);
-
-        const delayB = this.ctx.createDelay();
-        delayB.delayTime.setValueAtTime(0.76, this.ctx.currentTime);
-
-        // 水下高頻吸收濾波 (水深吸收高頻迅速，保留如石窟般溫潤回音)
-        const underwaterDamp = this.ctx.createBiquadFilter();
-        underwaterDamp.type = 'lowpass';
-        underwaterDamp.frequency.setValueAtTime(1800, this.ctx.currentTime);
-
-        const feedback = this.ctx.createGain();
-        feedback.gain.setValueAtTime(0.52, this.ctx.currentTime);
-
-        this.templeReverbBus.connect(delayA);
-        delayA.connect(delayB);
-        delayB.connect(underwaterDamp);
-        underwaterDamp.connect(feedback);
-        feedback.connect(delayA);
-
-        delayA.connect(this.masterMusicGain);
-        delayB.connect(this.masterMusicGain);
-      }
-
-      // 深海暗湧與柔和海流微浪 (Deep Sea Ambiance)
-      setupDeepOceanCurrent() {
-        const bufferSize = this.ctx.sampleRate * 4;
-        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      // 1. Deep Ocean Ambient（8秒平滑交叉漸變循環，徹底消除接縫喀噠爆音）
+      setupSilkyOceanBreeze() {
+        const sampleRate = this.ctx.sampleRate;
+        const duration = 8.0;
+        const bufferSize = Math.floor(sampleRate * duration);
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, sampleRate);
         const output = noiseBuffer.getChannelData(0);
 
-        // 生成絲滑粉紅噪聲
+        // 生成粉紅噪聲
         let b0 = 0, b1 = 0, b2 = 0;
         for (let i = 0; i < bufferSize; i++) {
           const white = Math.random() * 2 - 1;
@@ -1314,217 +1150,192 @@
           output[i] = (b0 + b1 + b2) * 0.35;
         }
 
+        // 首尾 1 秒交叉淡入淡出（Crossfade），使循環首尾毫無數值跳耀突波
+        const fadeLength = Math.floor(sampleRate * 1.0);
+        for (let i = 0; i < fadeLength; i++) {
+          const t = i / fadeLength;
+          output[i] = output[i] * t + output[bufferSize - fadeLength + i] * (1 - t);
+        }
+
         const seaNoise = this.ctx.createBufferSource();
         seaNoise.buffer = noiseBuffer;
         seaNoise.loop = true;
 
-        // 水下帶通濾波 (~340Hz - 680Hz 潮汐呼吸)
         const seaFilter = this.ctx.createBiquadFilter();
         seaFilter.type = 'bandpass';
-        seaFilter.frequency.setValueAtTime(450, this.ctx.currentTime);
-        seaFilter.Q.setValueAtTime(1.2, this.ctx.currentTime);
+        seaFilter.frequency.setValueAtTime(520, this.ctx.currentTime);
+        seaFilter.Q.setValueAtTime(1.1, this.ctx.currentTime);
 
-        const tideLfo = this.ctx.createOscillator();
-        tideLfo.frequency.setValueAtTime(0.045, this.ctx.currentTime); // ~22秒極緩慢潮汐
-        const tideGain = this.ctx.createGain();
-        tideGain.gain.setValueAtTime(140, this.ctx.currentTime);
-        tideLfo.connect(tideGain);
-        tideGain.connect(seaFilter.frequency);
-        tideLfo.start();
+        const seaLfo = this.ctx.createOscillator();
+        seaLfo.frequency.setValueAtTime(0.062, this.ctx.currentTime);
+        const seaLfoGain = this.ctx.createGain();
+        seaLfoGain.gain.setValueAtTime(160, this.ctx.currentTime);
+        seaLfo.connect(seaLfoGain);
+        seaLfoGain.connect(seaFilter.frequency);
+        seaLfo.start();
 
-        const seaVol = this.ctx.createGain();
-        seaVol.gain.setValueAtTime(0.032, this.ctx.currentTime);
+        const seaGain = this.ctx.createGain();
+        seaGain.gain.setValueAtTime(0.038, this.ctx.currentTime);
 
         seaNoise.connect(seaFilter);
-        seaFilter.connect(seaVol);
-        seaVol.connect(this.masterMusicGain);
+        seaFilter.connect(seaGain);
+        seaGain.connect(this.masterLimiter);
         seaNoise.start();
       }
 
-      // 羊毛氈聲學鋼琴合成器 (Submerged Felt Acoustic Piano Synthesis)
-      playPianoNote(freq, time, duration = 3.8, velocity = 0.5) {
-        if (!this.ctx) return;
+      // 2. Sub-bass & Warm Grounding（溫和暖音基底，無顱內震壓）
+      setupWarmAnchoringSub() {
+        const subOsc = this.ctx.createOscillator();
+        subOsc.type = 'sine';
+        subOsc.frequency.setValueAtTime(65.41, this.ctx.currentTime);
 
-        // 琴弦泛音模型 (Fundamental + Harmonics with acoustic damping)
-        const partials = [
-          { mult: 1.00, gain: 1.00, decay: duration },
-          { mult: 2.00, gain: 0.42, decay: duration * 0.72 },
-          { mult: 3.01, gain: 0.16, decay: duration * 0.50 },
-          { mult: 4.02, gain: 0.07, decay: duration * 0.35 },
-          { mult: 5.04, gain: 0.02, decay: duration * 0.22 }
-        ];
+        const pitchLfo = this.ctx.createOscillator();
+        pitchLfo.frequency.setValueAtTime(0.035, this.ctx.currentTime);
+        const pitchGain = this.ctx.createGain();
+        pitchGain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+        pitchLfo.connect(pitchGain);
+        pitchGain.connect(subOsc.frequency);
+        pitchLfo.start();
 
-        const noteGain = this.ctx.createGain();
+        const subFilter = this.ctx.createBiquadFilter();
+        subFilter.type = 'lowpass';
+        subFilter.frequency.setValueAtTime(80, this.ctx.currentTime);
 
-        // 柔和水下羊毛氈打擊濾波 (Felt Hammer Low-Pass)
-        const feltFilter = this.ctx.createBiquadFilter();
-        feltFilter.type = 'lowpass';
-        const cutoff = Math.min(2100, Math.max(480, freq * 2.2 + velocity * 900));
-        feltFilter.frequency.setValueAtTime(cutoff, time);
+        const subGain = this.ctx.createGain();
+        subGain.gain.setValueAtTime(0.045, this.ctx.currentTime);
 
-        // 自然琴弦包絡：14ms 溫潤起音 ➔ 長指數衰減
-        const peak = velocity * 0.13;
-        noteGain.gain.setValueAtTime(0.0001, time);
-        noteGain.gain.linearRampToValueAtTime(peak, time + 0.014);
-        noteGain.gain.exponentialRampToValueAtTime(0.00001, time + duration);
-
-        partials.forEach(p => {
-          const osc = this.ctx.createOscillator();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq * p.mult, time);
-
-          const pGain = this.ctx.createGain();
-          pGain.gain.setValueAtTime(p.gain, time);
-          pGain.gain.exponentialRampToValueAtTime(0.0001, time + p.decay);
-
-          osc.connect(pGain);
-          pGain.connect(noteGain);
-
-          osc.start(time);
-          osc.stop(time + duration + 0.1);
-        });
-
-        // 鋼琴琴鍵敲擊的微弱機械木質厚度感 (Acoustic Felt Thump)
-        if (velocity > 0.38) {
-          const thumpOsc = this.ctx.createOscillator();
-          thumpOsc.type = 'sine';
-          thumpOsc.frequency.setValueAtTime(85, time);
-          thumpOsc.frequency.exponentialRampToValueAtTime(32, time + 0.04);
-
-          const thumpGain = this.ctx.createGain();
-          thumpGain.gain.setValueAtTime(velocity * 0.018, time);
-          thumpGain.gain.exponentialRampToValueAtTime(0.00001, time + 0.045);
-
-          thumpOsc.connect(thumpGain);
-          thumpGain.connect(noteGain);
-
-          thumpOsc.start(time);
-          thumpOsc.stop(time + 0.05);
-        }
-
-        noteGain.connect(feltFilter);
-        feltFilter.connect(this.masterMusicGain);
-        feltFilter.connect(this.templeReverbBus);
+        subOsc.connect(subFilter);
+        subFilter.connect(subGain);
+        subGain.connect(this.masterLimiter);
+        subOsc.start();
       }
 
-      // 水下神殿聖詠底墊 (Sacred Submerged Ambient Pad)
-      playPadChord(freqs, time, duration = 8.0) {
-        if (!this.ctx) return;
+      // 3. Ethereal Floating Harmony（雙和弦慢速呼吸循環）
+      setupFloatingHarmonicBreaths() {
+        const chordA = [174.61, 261.63, 329.63, 392.00, 493.88]; // F3, C4, E4, G4, B4
+        const chordB = [220.00, 261.63, 329.63, 392.00, 587.33]; // A3, C4, E4, G4, D5
 
-        const chordGain = this.ctx.createGain();
-        chordGain.gain.setValueAtTime(0.0001, time);
-        chordGain.gain.linearRampToValueAtTime(0.038, time + 2.4); // 2.4秒超柔和慢起音
-        chordGain.gain.exponentialRampToValueAtTime(0.00001, time + duration);
+        const createVoiceGroup = (freqs, lfoPhaseOffset, baseVol) => {
+          const groupGain = this.ctx.createGain();
+          groupGain.gain.setValueAtTime(baseVol, this.ctx.currentTime);
 
-        const padFilter = this.ctx.createBiquadFilter();
-        padFilter.type = 'lowpass';
-        padFilter.frequency.setValueAtTime(420, time);
+          const breatheLfo = this.ctx.createOscillator();
+          breatheLfo.frequency.setValueAtTime(0.042, this.ctx.currentTime);
+          const breatheGain = this.ctx.createGain();
+          breatheGain.gain.setValueAtTime(baseVol * 0.7, this.ctx.currentTime);
+          breatheLfo.connect(breatheGain);
+          breatheGain.connect(groupGain.gain);
+          breatheLfo.start();
 
-        freqs.forEach((f, idx) => {
-          const osc = this.ctx.createOscillator();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(f, time);
-          osc.detune.setValueAtTime((idx % 2 === 0 ? 3.0 : -3.0), time);
+          freqs.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            osc.detune.setValueAtTime((idx % 2 === 0 ? 2.5 : -2.5), this.ctx.currentTime);
 
-          osc.connect(chordGain);
-          osc.start(time);
-          osc.stop(time + duration + 0.2);
-        });
+            const vFilter = this.ctx.createBiquadFilter();
+            vFilter.type = 'lowpass';
+            vFilter.frequency.setValueAtTime(1100 + idx * 80, this.ctx.currentTime);
 
-        chordGain.connect(padFilter);
-        padFilter.connect(this.masterMusicGain);
-      }
+            const voiceGain = this.ctx.createGain();
+            voiceGain.gain.setValueAtTime(0.015, this.ctx.currentTime);
 
-      // 水滴鐘鳴泛音 (Ethereal Temple Droplets)
-      playChimeDrop(freq, time) {
-        if (!this.ctx) return;
-
-        const chimeOsc = this.ctx.createOscillator();
-        chimeOsc.type = 'sine';
-        chimeOsc.frequency.setValueAtTime(freq, time);
-
-        const chimeGain = this.ctx.createGain();
-        chimeGain.gain.setValueAtTime(0.0001, time);
-        chimeGain.gain.linearRampToValueAtTime(0.026, time + 0.06);
-        chimeGain.gain.exponentialRampToValueAtTime(0.00001, time + 4.5);
-
-        chimeOsc.connect(chimeGain);
-        chimeGain.connect(this.templeReverbBus);
-        chimeGain.connect(this.masterMusicGain);
-
-        chimeOsc.start(time);
-        chimeOsc.stop(time + 4.8);
-      }
-
-      // Lookahead 排程器：實現無縫、無時間漂移之無限循環
-      startSchedulerLoop() {
-        this.loopStartTime = this.ctx.currentTime + 0.2;
-
-        const scheduleCheck = () => {
-          if (!this.isPlaying || !this.ctx) return;
-
-          const now = this.ctx.currentTime;
-          const cycleAge = now - this.loopStartTime;
-
-          // 當前週期即將結束時，平滑推進至下一輪循環
-          if (cycleAge >= this.loopDuration) {
-            this.loopStartTime += this.loopDuration;
-            this.scheduledNotes.clear();
-            this.scheduledPads.clear();
-            this.scheduledChimes.clear();
-          }
-
-          const lookaheadHorizon = 0.45;
-
-          // 1. 排程鋼琴音符
-          this.PIANO_SCORE.forEach((note, idx) => {
-            const noteAbsTime = this.loopStartTime + note.t;
-            if (noteAbsTime >= now && noteAbsTime < now + lookaheadHorizon) {
-              if (!this.scheduledNotes.has(idx)) {
-                this.scheduledNotes.add(idx);
-                this.playPianoNote(note.f, noteAbsTime, note.d, note.v);
-              }
-            }
+            osc.connect(vFilter);
+            vFilter.connect(voiceGain);
+            voiceGain.connect(groupGain);
+            osc.start();
           });
 
-          // 2. 排程水下聖詠墊音
-          this.PAD_SCORE.forEach((pad, idx) => {
-            const padAbsTime = this.loopStartTime + pad.t;
-            if (padAbsTime >= now && padAbsTime < now + lookaheadHorizon) {
-              if (!this.scheduledPads.has(idx)) {
-                this.scheduledPads.add(idx);
-                this.playPadChord(pad.freqs, padAbsTime, pad.d);
-              }
-            }
-          });
-
-          // 3. 排程水滴鐘鳴
-          this.CHIME_SCORE.forEach((chime, idx) => {
-            const chimeAbsTime = this.loopStartTime + chime.t;
-            if (chimeAbsTime >= now && chimeAbsTime < now + lookaheadHorizon) {
-              if (!this.scheduledChimes.has(idx)) {
-                this.scheduledChimes.add(idx);
-                this.playChimeDrop(chime.f, chimeAbsTime);
-              }
-            }
-          });
+          groupGain.connect(this.masterLimiter);
         };
 
-        this.schedulerTimer = setInterval(scheduleCheck, 80);
+        createVoiceGroup(chordA, 0.0, 0.042);
+        createVoiceGroup(chordB, Math.PI, 0.038);
       }
 
-      // 互動式短音效 (與 D 小調神殿背景調性和諧共鳴)
+      // 4. Shimmer Reverb Network（空靈殘響迴音鏈）
+      setupAiryShimmerReverb() {
+        this.shimmerBus = this.ctx.createGain();
+        this.shimmerBus.gain.setValueAtTime(0.26, this.ctx.currentTime);
+
+        const delayA = this.ctx.createDelay();
+        delayA.delayTime.setValueAtTime(0.42, this.ctx.currentTime);
+
+        const delayB = this.ctx.createDelay();
+        delayB.delayTime.setValueAtTime(0.68, this.ctx.currentTime);
+
+        const shimmerHighpass = this.ctx.createBiquadFilter();
+        shimmerHighpass.type = 'highpass';
+        shimmerHighpass.frequency.setValueAtTime(600, this.ctx.currentTime);
+
+        const shimmerLowpass = this.ctx.createBiquadFilter();
+        shimmerLowpass.type = 'lowpass';
+        shimmerLowpass.frequency.setValueAtTime(3800, this.ctx.currentTime);
+
+        const feedback = this.ctx.createGain();
+        feedback.gain.setValueAtTime(0.52, this.ctx.currentTime);
+
+        this.shimmerBus.connect(delayA);
+        delayA.connect(delayB);
+        delayB.connect(shimmerHighpass);
+        shimmerHighpass.connect(shimmerLowpass);
+        shimmerLowpass.connect(feedback);
+        feedback.connect(delayA);
+
+        delayA.connect(this.masterLimiter);
+        delayB.connect(this.masterLimiter);
+      }
+
+      // 5. Floating Celestial Crystals（柔和慢起音星芒微音晶，安全排程防突波）
+      startFloatingChimesLoop() {
+        const chimePitches = [783.99, 880.0, 1046.5, 1174.66, 1318.51, 1567.98];
+
+        const triggerChime = () => {
+          if (!this.isPlaying || !this.ctx) return;
+          const freq = chimePitches[Math.floor(Math.random() * chimePitches.length)];
+          const safeTime = Math.max(this.ctx.currentTime, this.ctx.currentTime + 0.05);
+
+          const chimeOsc = this.ctx.createOscillator();
+          chimeOsc.type = 'sine';
+          chimeOsc.frequency.setValueAtTime(freq, safeTime);
+
+          const chimeGain = this.ctx.createGain();
+          chimeGain.gain.setValueAtTime(0.0000, safeTime);
+          chimeGain.gain.linearRampToValueAtTime(0.020, safeTime + 0.09);
+          chimeGain.gain.exponentialRampToValueAtTime(0.00001, safeTime + 4.2);
+          chimeGain.gain.linearRampToValueAtTime(0, safeTime + 4.5);
+
+          chimeOsc.connect(chimeGain);
+          chimeGain.connect(this.shimmerBus);
+          chimeGain.connect(this.masterLimiter);
+
+          chimeOsc.start(safeTime);
+          chimeOsc.stop(safeTime + 4.6);
+
+          chimeOsc.onended = () => {
+            chimeOsc.disconnect();
+            chimeGain.disconnect();
+          };
+
+          const nextInterval = 4500 + Math.random() * 5500;
+          this.chimeTimer = setTimeout(triggerChime, nextInterval);
+        };
+
+        this.chimeTimer = setTimeout(triggerChime, 3000);
+      }
+
+      // 互動式音效
       playHover() {
-        this.playTone(587.33, 'sine', 0.18, 0.015); // D5
+        this.playTone(523.25, 'sine', 0.18, 0.015);
       }
 
       playClick() {
-        this.playTone(440.00, 'triangle', 0.20, 0.022); // A4
+        this.playTone(659.25, 'triangle', 0.22, 0.025);
       }
 
       playChime() {
-        [440.00, 587.33, 698.46, 880.00].forEach((f, i) => {
-          setTimeout(() => this.playTone(f, 'sine', 0.7, 0.018), i * 90);
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+          setTimeout(() => this.playTone(f, 'sine', 0.7, 0.02), i * 90);
         });
       }
 
@@ -1532,20 +1343,27 @@
         if (!this.ctx) return;
         if (this.ctx.state === 'suspended') this.ctx.resume();
 
+        const safeTime = Math.max(this.ctx.currentTime, this.ctx.currentTime + 0.02);
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        gain.gain.setValueAtTime(gainLevel, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+        osc.frequency.setValueAtTime(freq, safeTime);
+        gain.gain.setValueAtTime(gainLevel, safeTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, safeTime + duration);
+        gain.gain.linearRampToValueAtTime(0, safeTime + duration + 0.05);
 
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + duration);
+        osc.start(safeTime);
+        osc.stop(safeTime + duration + 0.06);
+
+        osc.onended = () => {
+          osc.disconnect();
+          gain.disconnect();
+        };
       }
 
-      // 背景音樂切換與平滑淡入淡出
+      // 背景音樂播放/暫停平滑切換
       toggleMusic() {
         if (!this.initialized) {
           this.init();
@@ -1560,14 +1378,12 @@
         const now = this.ctx.currentTime;
         if (this.isPlaying) {
           this.masterMusicGain.gain.cancelScheduledValues(now);
-          this.masterMusicGain.gain.linearRampToValueAtTime(0.55, now + 1.2);
-          this.loopStartTime = this.ctx.currentTime;
-          this.scheduledNotes.clear();
-          this.scheduledPads.clear();
-          this.scheduledChimes.clear();
+          this.masterMusicGain.gain.linearRampToValueAtTime(0.55, now + 1.0);
+          this.startFloatingChimesLoop();
         } else {
           this.masterMusicGain.gain.cancelScheduledValues(now);
-          this.masterMusicGain.gain.linearRampToValueAtTime(0.0001, now + 1.2);
+          this.masterMusicGain.gain.linearRampToValueAtTime(0.0001, now + 1.0);
+          clearTimeout(this.chimeTimer);
         }
         return this.isPlaying;
       }
@@ -3546,12 +3362,17 @@
     document.getElementById('btnResetView').addEventListener('click', () => {
       sound.playClick();
       closeRegionHud();
+      if (tourActive) endNarrativeTour(true);
+      if (!infoDrawer.classList.contains('translate-x-full')) {
+        infoDrawer.classList.add('translate-x-full');
+        selectedModule = null;
+      }
       isTopDownView = false;
-      flyToOverview();
-      showToast('攝影機已平滑回歸全局總覽');
+      flyToOverview(1400);
+      showToast('🎯 視角已平滑置中歸位');
     });
 
-    // 背景音樂 (Deep Ocean Ambient) 播放/暫停按鈕控制器
+    // 背景音樂播放/暫停按鈕控制器（無曲名/風格對話框）
     const bgmToggleBtn = document.getElementById('bgmToggleBtn');
     const bgmVisualizer = document.getElementById('bgmVisualizer');
     const bgmStateText = document.getElementById('bgmStateText');
@@ -3561,8 +3382,8 @@
       const isPlaying = sound.toggleMusic();
       if (isPlaying) {
         bgmVisualizer.classList.remove('bgm-paused');
-        bgmStateText.textContent = '深海鋼琴 · 播放中';
-        showToast('🎹 背景音樂已啟動：Sunken Temple · Deep Sea Piano (沉沒神殿 · 失落文明)');
+        bgmStateText.textContent = '音樂播放中';
+        showToast('🎵 背景音樂已開啟');
       } else {
         bgmVisualizer.classList.add('bgm-paused');
         bgmStateText.textContent = '音樂已暫停';
@@ -3579,21 +3400,27 @@
         if (sound.ctx && sound.ctx.state === 'suspended') {
           sound.ctx.resume().then(() => {
             sound.isPlaying = true;
+            if (sound.masterMusicGain) {
+              sound.masterMusicGain.gain.setValueAtTime(0.55, sound.ctx.currentTime);
+            }
             bgmVisualizer.classList.remove('bgm-paused');
-            bgmStateText.textContent = '深海鋼琴 · 播放中';
+            bgmStateText.textContent = '音樂播放中';
           }).catch(() => {});
         } else if (sound.ctx && sound.ctx.state === 'running') {
           sound.isPlaying = true;
+          if (sound.masterMusicGain) {
+            sound.masterMusicGain.gain.setValueAtTime(0.55, sound.ctx.currentTime);
+          }
           bgmVisualizer.classList.remove('bgm-paused');
-          bgmStateText.textContent = '深海鋼琴 · 播放中';
+          bgmStateText.textContent = '音樂播放中';
         }
       };
 
-      // 1. 頁面載入當下立即嘗試播放
+      // 1. 頁面載入當下立即啟動
       resumeAndPlay();
 
-      // 2. 若遇瀏覽器政策限制未解鎖，在滑鼠移動、觸控、滾動或點擊的瞬間立即無縫解鎖播放
-      const autoUnlockEvents = ['pointerdown', 'touchstart', 'mousedown', 'wheel', 'keydown', 'scroll'];
+      // 2. 瀏覽器自動播放政策全方位無感解鎖
+      const autoUnlockEvents = ['pointerdown', 'touchstart', 'mousedown', 'wheel', 'keydown', 'scroll', 'pointermove'];
       const onFirstInteraction = () => {
         resumeAndPlay();
         autoUnlockEvents.forEach(evt => window.removeEventListener(evt, onFirstInteraction, true));
@@ -3760,7 +3587,7 @@
       triggerImmediateAutoplay();
       const tp = getTaipeiTime();
       const currentPreset = TIME_PRESETS[timeMode];
-      showToast(`🏝️ 歡迎登上職醫守護島！啟動「${currentPreset.name}」天色 · 伴隨深海沉沒神殿鋼琴曲`);
+      showToast(`🏝️ 歡迎登上職醫守護島！雙北地理方位網絡已就位，啟動「${currentPreset.name}」天色`);
     };
   </script>
 </body>
