@@ -1,0 +1,21 @@
+# 衛生福利部臺北醫院 職業醫學科｜職醫守護島
+User-agent: *
+Allow: /
+
+# 明確允許主要 AI 搜尋與模型的爬蟲（提高在 AI 搜尋結果中被引用的機會）
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://nursingwork.github.io/sitemap.xml
