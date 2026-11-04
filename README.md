@@ -11,7 +11,7 @@
 | `tailwind.css` | 預先編譯好的樣式，不要手動修改 | 自動產生 |
 | `tailwind.config.js`、`tailwind.input.css` | 重新產生 `tailwind.css` 用的設定 | 負責網站的人 |
 | `services.html`、`llms.txt`、`sitemap.xml` | 文字版服務說明、給 AI 搜尋的網站摘要、網站地圖。**由 `build-text-page.js` 自動產生，不要手動改**；改完 island-data.js 後執行 `node build-text-page.js` 重新產生 | 自動產生 |
-| `robots.txt` | 允許搜尋引擎與 AI 爬蟲讀取，並指向 sitemap | 負責網站的人 |
+| `robots.txt` | 允許搜尋引擎與 AI 爬蟲讀取的範本。注意：網站在子路徑 `/tph-oh-island/` 下，這個檔案不會生效，要生效需另建 `nursingwork.github.io` repository 放在根目錄 | 負責網站的人 |
 | `assets/` | 院徽（`logo-mark.png`、`logo-lockup.png`）、網站圖示（`favicon.png`、`apple-touch-icon.png`）、社群分享預覽圖（`og-cover.jpg`） | 負責網站的人 |
 
 所有檔案放在同一個資料夾，`assets` 資料夾也要一起上傳。網站實際運作需要 `index.html`、`island-data.js`、`tailwind.css` 與 `assets/` 資料夾。
@@ -63,7 +63,7 @@ verifiedAt: '2026-11-03',
 
 ## 分享預覽圖
 
-`assets/og-cover.jpg` 是分享到 LINE、Facebook 時出現的大圖（1200×630）。要換圖時覆蓋同名檔案即可；`index.html` 開頭的 `og:image` 已指向 https://nursingwork.github.io/assets/og-cover.jpg，網址若改變請一併修改。
+`assets/og-cover.jpg` 是分享到 LINE、Facebook 時出現的大圖（1200×630）。要換圖時覆蓋同名檔案即可；`index.html` 開頭的 `og:image` 已指向 https://nursingwork.github.io/tph-oh-island/assets/og-cover.jpg，網址若改變請一併修改。
 
 ## 重新產生文字版頁面（改內容後）
 

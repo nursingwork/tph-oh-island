@@ -29,7 +29,7 @@
 - 門診掛號：https://nreg.tph.mohw.gov.tw/OReg/OpoDoctorsVisitListPage?sectcategory=%E5%85%A7%E7%A7%91%E7%B3%BB&sectid=0106&sectname=%E8%81%B7%E6%A5%AD%E9%86%AB%E5%AD%B8%E7%A7%91&showcd=N
 
 ## 頁面
-- 3D 地圖版：https://nursingwork.github.io/
-- 文字版服務說明與常見問題：https://nursingwork.github.io/services.html
+- 3D 地圖版：https://nursingwork.github.io/tph-oh-island/
+- 文字版服務說明與常見問題：https://nursingwork.github.io/tph-oh-island/services.html
 
 資料更新日期：2026-11-04

@@ -9,7 +9,8 @@ const vm = require('vm');
 const path = require('path');
 
 const ROOT = __dirname;
-const SITE = 'https://nursingwork.github.io';
+// 網站正式網址（專案網站放在子路徑下）；若網址改變，這裡與 index.html 開頭的網址都要改
+const SITE = 'https://nursingwork.github.io/tph-oh-island';
 const sandbox = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(ROOT, 'island-data.js'), 'utf8'), sandbox);
 const D = sandbox.window.ISLAND_DATA;

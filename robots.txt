@@ -1,3 +1,6 @@
+# 注意：robots.txt 只有放在網域根目錄（https://nursingwork.github.io/robots.txt）才會生效。
+# 本網站在子路徑 /tph-oh-island/ 下，這個檔案不會被搜尋引擎讀取；保留作為範本。
+# 若要啟用，請另建名為 nursingwork.github.io 的 repository，把此檔放在它的根目錄。
 # 衛生福利部臺北醫院 職業醫學科｜職醫守護島
 User-agent: *
 Allow: /
@@ -18,4 +21,4 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
-Sitemap: https://nursingwork.github.io/sitemap.xml
+Sitemap: https://nursingwork.github.io/tph-oh-island/sitemap.xml
