@@ -49,6 +49,7 @@ verifiedAt: '2026-11-03',
 
 ### 需要寫程式的修改
 
+- 建築入口位置在 `index.html` 的 `ENTRANCES`（門在建築面向畫面的那一側，`doorZ` 是門離島中心的距離）；換建築造型時要一併調整。
 - 新增一座服務島：除了資料，還要在 `index.html` 的 `buildBuildingForModule` 加上建築造型。
 
 - 在 `index.html` 用了以前沒用過的 Tailwind class：要重新產生 `tailwind.css`（見下方）。

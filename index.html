@@ -561,7 +561,7 @@
       </div>
 
       <div class="flex items-center gap-1.5 md:gap-2 pl-2 border-l border-white/10 shrink-0">
-        <button id="bgmToggleBtn" type="button" aria-pressed="false" aria-label="播放背景音樂" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-brand-300 border border-brand-500/20 transition flex items-center gap-2 group" title="背景音樂開關">
+        <button id="bgmToggleBtn" type="button" aria-pressed="false" aria-label="播放背景音樂" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-brand-300 border border-brand-500/20 transition flex items-center gap-2 group" title="背景音樂：《沉沒的神殿》Ambient Piano（程式即時合成）">
           <div class="flex items-center gap-0.5 h-4 px-0.5 bgm-paused" id="bgmVisualizer" aria-hidden="true">
             <span class="w-1 bg-brand-400 rounded-full audio-bar-1"></span>
             <span class="w-1 bg-brand-400 rounded-full audio-bar-2"></span>
@@ -1343,14 +1343,25 @@
     }
 
     // =============================================================
-    // 2. 背景音樂引擎 (Web Audio API)
-    // [修正重點]
-    //  - 不在頁面載入時建立 AudioContext（瀏覽器會擋並噴警告），改在第一次真正的使用者手勢才啟動
-    //  - 舊版在 context 暫停時仍持續排程「星芒音晶」，恢復播放瞬間會全部疊在一起爆音 → 改為只在 running 時排程
-    //  - 噪聲循環的交叉淡化接點算錯（首樣本接到錯誤位置仍有喀聲）→ 以 loopEnd 修正
-    //  - 「高頻滾降」誤用 lowshelf（實際是把 7.5kHz 以下全部壓 2dB）→ 改為 highshelf
-    //  - 兩組和弦的呼吸 LFO 相位參數宣告了卻沒用 → 以延遲啟動實現半週期錯位
-    //  - 暫停時 suspend() 整個 context，不再空轉耗電；分頁隱藏時也自動暫停
+    // 2. 背景音樂引擎 (Web Audio API) — 全部以程式即時合成，不載入任何音檔
+    //
+    // 曲目設定：《沉沒的神殿》Ambient Piano
+    //   風格：Ambient、鋼琴純音樂、電影感、療癒
+    //   主題：深海、沉沒的神殿、失落文明、懷舊、神聖
+    //   氛圍：靜謐、空靈、感傷、深埋、平靜
+    //
+    // 編曲結構
+    //   1. 深海底床：D2 次低音 + 慢速起伏的濾波噪聲（海流），讓整體「埋在水下」
+    //   2. 神殿和聲：D 小調八小節進行（Dm9 → B♭maj7 → Fmaj7 → Am7 → Gm9 → B♭maj7 → Csus2 → Dm9），
+    //      每個和弦約 8.5 秒，前後和弦交叉淡入淡出，像管風琴般持續
+    //   3. 鋼琴旋律：以 D 小調五聲音階為主，偏向和弦音，節奏稀疏、力度輕，
+    //      經長殘響與低通濾波，像在水中聽見遠處的琴聲
+    //   4. 遠方低鳴：每隔一段時間一聲緩慢下滑的純音（鯨鳴般），強化深海感
+    //   5. 空間：合成的 4 秒長殘響 + 水底回聲延遲；輸出端低通，去掉刺耳高頻
+    //
+    // 技術要點
+    //   - 只在使用者手勢後建立 AudioContext；暫停時 suspend() 省電；排程器只在 running 時工作
+    //   - 所有音量由限幅器統一管理，不會爆音
     // =============================================================
     class AmbientMusicEngine {
       constructor() {
@@ -1359,11 +1370,34 @@
         this.isPlaying = false;
         this.masterMusicGain = null;
         this.masterLimiter = null;
-        this.shimmerBus = null;
+        this.reverbSend = null;
+        this.echoSend = null;
         this.sfxGain = null;
-        this.chimeTimer = null;
+        this.timers = { chord: null, melody: null, whale: null };
         this.suspendTimer = null;
         this.MUSIC_LEVEL = 0.55;
+        this.chordIndex = 0;
+        this.padVoices = [];
+        // D 小調和弦進行。pad：持續和聲的音（避開會互相打架的延伸音）；
+        // tones：該和弦底下可用的旋律音，全部取自對應的五聲音階，對著和聲都協和，
+        //        並刻意排除與和聲差半音的「避用音」（例如 Fmaj7 的 E 旁邊不放 F4、B♭maj7 上不放 B♭4）
+        const DPENT = [293.66, 349.23, 392.00, 440.00, 523.25, 587.33, 698.46];   // D F G A C D F
+        const APENT = [329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99];   // E G A C D E G
+        const FPENT = [392.00, 440.00, 523.25, 587.33, 659.25, 698.46, 783.99];   // G A C D E F G
+        const CPENT = [329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99];   // E G A C D E G
+        this.CHORDS = [
+          { name: 'Dm',     pad: [146.83, 220.00, 261.63, 349.23], tones: DPENT },
+          { name: 'Bbmaj7', pad: [116.54, 174.61, 220.00, 293.66], tones: DPENT },
+          { name: 'Fmaj7',  pad: [174.61, 220.00, 261.63, 329.63], tones: FPENT },
+          { name: 'Am7',    pad: [110.00, 164.81, 196.00, 261.63], tones: APENT },
+          { name: 'Gm',     pad: [98.00, 146.83, 174.61, 220.00],  tones: DPENT },
+          { name: 'Bbmaj7', pad: [116.54, 174.61, 220.00, 293.66], tones: DPENT },
+          { name: 'Csus2',  pad: [130.81, 196.00, 293.66, 392.00], tones: CPENT },
+          { name: 'Dm',     pad: [146.83, 220.00, 261.63, 349.23], tones: DPENT }
+        ];
+        this.CHORD_SECONDS = 8.5;
+        this.nextChordAt = 0;
+        this.lastNote = 440;
       }
 
       init() {
@@ -1372,11 +1406,9 @@
         if (!AC) return false;
         try {
           this.ctx = new AC();
-          this.setupMasterComfortBus();
-          this.setupSilkyOceanBreeze();
-          this.setupWarmAnchoringSub();
-          this.setupFloatingHarmonicBreaths();
-          this.setupAiryShimmerReverb();
+          this.setupMasterBus();
+          this.setupSpace();
+          this.setupDeepSeaBed();
           this.initialized = true;
           return true;
         } catch (e) {
@@ -1386,237 +1418,210 @@
         }
       }
 
-      setupMasterComfortBus() {
-        const t = this.ctx.currentTime;
-
-        const subRumbleFilter = this.ctx.createBiquadFilter();
-        subRumbleFilter.type = 'highpass';
-        subRumbleFilter.frequency.setValueAtTime(42, t);
-        subRumbleFilter.Q.setValueAtTime(0.7, t);
-
-        const lowMudDamp = this.ctx.createBiquadFilter();
-        lowMudDamp.type = 'peaking';
-        lowMudDamp.frequency.setValueAtTime(130, t);
-        lowMudDamp.gain.setValueAtTime(-3.5, t);
-        lowMudDamp.Q.setValueAtTime(1.0, t);
-
-        const highGentleRoll = this.ctx.createBiquadFilter();
-        highGentleRoll.type = 'highshelf';
-        highGentleRoll.frequency.setValueAtTime(7500, t);
-        highGentleRoll.gain.setValueAtTime(-2.0, t);
-
-        this.masterLimiter = this.ctx.createDynamicsCompressor();
-        this.masterLimiter.threshold.setValueAtTime(-6.0, t);
-        this.masterLimiter.knee.setValueAtTime(8.0, t);
-        this.masterLimiter.ratio.setValueAtTime(12.0, t);
-        this.masterLimiter.attack.setValueAtTime(0.003, t);
-        this.masterLimiter.release.setValueAtTime(0.25, t);
-
-        this.masterMusicGain = this.ctx.createGain();
-        this.masterMusicGain.gain.setValueAtTime(0, t); // 由 play() 淡入
-
-        // 音樂來源 → masterLimiter → EQ → 音量 → 輸出
-        this.musicInput = subRumbleFilter;
-        this.masterLimiter.connect(subRumbleFilter);
-        subRumbleFilter.connect(lowMudDamp);
-        lowMudDamp.connect(highGentleRoll);
-        highGentleRoll.connect(this.masterMusicGain);
-        this.masterMusicGain.connect(this.ctx.destination);
-
-        this.sfxGain = this.ctx.createGain();
-        this.sfxGain.gain.setValueAtTime(1, t);
-        this.sfxGain.connect(this.ctx.destination);
+      // 輸出端：高通去除無效重低頻 → 輕微壓低中低頻混濁 → 低通營造水下感 → 限幅 → 音量
+      setupMasterBus() {
+        const c = this.ctx, t = c.currentTime;
+        const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.setValueAtTime(38, t); hp.Q.setValueAtTime(0.7, t);
+        const mud = c.createBiquadFilter(); mud.type = 'peaking'; mud.frequency.setValueAtTime(180, t); mud.gain.setValueAtTime(-2.5, t); mud.Q.setValueAtTime(1.0, t);
+        const sub = c.createBiquadFilter(); sub.type = 'lowpass'; sub.frequency.setValueAtTime(5200, t); sub.Q.setValueAtTime(0.5, t); // 「埋在水下」的柔化
+        this.masterLimiter = c.createDynamicsCompressor();
+        this.masterLimiter.threshold.setValueAtTime(-8, t);
+        this.masterLimiter.knee.setValueAtTime(10, t);
+        this.masterLimiter.ratio.setValueAtTime(12, t);
+        this.masterLimiter.attack.setValueAtTime(0.004, t);
+        this.masterLimiter.release.setValueAtTime(0.35, t);
+        this.masterMusicGain = c.createGain(); this.masterMusicGain.gain.setValueAtTime(0, t);
+        this.masterLimiter.connect(hp); hp.connect(mud); mud.connect(sub); sub.connect(this.masterMusicGain); this.masterMusicGain.connect(c.destination);
+        this.sfxGain = c.createGain(); this.sfxGain.gain.setValueAtTime(1, t); this.sfxGain.connect(c.destination);
       }
 
-      setupSilkyOceanBreeze() {
-        const sampleRate = this.ctx.sampleRate;
-        const bufferSize = Math.floor(sampleRate * 8.0);
-        const fadeLength = Math.floor(sampleRate * 1.0);
-        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, sampleRate);
-        const output = noiseBuffer.getChannelData(0);
+      // 空間：合成長殘響（4 秒指數衰減的立體噪聲）＋ 水底回聲延遲
+      setupSpace() {
+        const c = this.ctx, t = c.currentTime;
+        const sr = c.sampleRate, len = Math.floor(sr * 4.2);
+        const ir = c.createBuffer(2, len, sr);
+        for (let ch = 0; ch < 2; ch++) {
+          const d = ir.getChannelData(ch);
+          for (let i = 0; i < len; i++) {
+            const x = i / len;
+            d[i] = (Math.random() * 2 - 1) * Math.pow(1 - x, 2.6) * (1 - Math.exp(-i / 400)); // 柔和起音 + 長尾
+          }
+        }
+        const conv = c.createConvolver(); conv.buffer = ir; conv.normalize = true;
+        const wetLp = c.createBiquadFilter(); wetLp.type = 'lowpass'; wetLp.frequency.setValueAtTime(3600, t);
+        const wet = c.createGain(); wet.gain.setValueAtTime(0.6, t);
+        this.reverbSend = c.createGain(); this.reverbSend.gain.setValueAtTime(1, t);
+        this.reverbSend.connect(conv); conv.connect(wetLp); wetLp.connect(wet); wet.connect(this.masterLimiter);
 
+        const delay = c.createDelay(2); delay.delayTime.setValueAtTime(0.52, t);
+        const fb = c.createGain(); fb.gain.setValueAtTime(0.22, t);
+        const dLp = c.createBiquadFilter(); dLp.type = 'lowpass'; dLp.frequency.setValueAtTime(1500, t);
+        const echoWet = c.createGain(); echoWet.gain.setValueAtTime(0.18, t);
+        this.echoSend = c.createGain(); this.echoSend.gain.setValueAtTime(1, t);
+        this.echoSend.connect(delay); delay.connect(dLp); dLp.connect(fb); fb.connect(delay); dLp.connect(echoWet); echoWet.connect(this.reverbSend);
+      }
+
+      // 深海底床：D2 次低音（緩慢顫動）＋ 濾波噪聲模擬海流
+      setupDeepSeaBed() {
+        const c = this.ctx, t = c.currentTime;
+        const sub = c.createOscillator(); sub.type = 'sine'; sub.frequency.setValueAtTime(73.42, t);
+        const wob = c.createOscillator(); wob.frequency.setValueAtTime(0.03, t);
+        const wobG = c.createGain(); wobG.gain.setValueAtTime(0.4, t);
+        wob.connect(wobG); wobG.connect(sub.frequency); wob.start();
+        const subLp = c.createBiquadFilter(); subLp.type = 'lowpass'; subLp.frequency.setValueAtTime(110, t);
+        const subG = c.createGain(); subG.gain.setValueAtTime(0.02, t);
+        sub.connect(subLp); subLp.connect(subG); subG.connect(this.masterLimiter); sub.start();
+
+        const sr = c.sampleRate, size = Math.floor(sr * 8), fade = Math.floor(sr * 1);
+        const buf = c.createBuffer(1, size, sr), out = buf.getChannelData(0);
         let b0 = 0, b1 = 0, b2 = 0;
-        for (let i = 0; i < bufferSize; i++) {
-          const white = Math.random() * 2 - 1;
-          b0 = 0.99886 * b0 + white * 0.0555179;
-          b1 = 0.99332 * b1 + white * 0.0750759;
-          b2 = 0.96900 * b2 + white * 0.1538520;
-          output[i] = (b0 + b1 + b2) * 0.35;
+        for (let i = 0; i < size; i++) {
+          const w = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.96900 * b2 + w * 0.1538520;
+          out[i] = (b0 + b1 + b2) * 0.35;
         }
-
-        // 交叉淡化：開頭 1 秒與 [L, L+fade) 混合，循環終點設在 L = size - fade，
-        // 使 out[L-1] 之後接到 out[0] ≈ in[L]，波形連續無喀聲
-        const loopLen = bufferSize - fadeLength;
-        for (let i = 0; i < fadeLength; i++) {
-          const k = i / fadeLength;
-          output[i] = output[i] * k + output[loopLen + i] * (1 - k);
-        }
-
-        const seaNoise = this.ctx.createBufferSource();
-        seaNoise.buffer = noiseBuffer;
-        seaNoise.loop = true;
-        seaNoise.loopStart = 0;
-        seaNoise.loopEnd = loopLen / sampleRate;
-
-        const t = this.ctx.currentTime;
-        const seaFilter = this.ctx.createBiquadFilter();
-        seaFilter.type = 'bandpass';
-        seaFilter.frequency.setValueAtTime(520, t);
-        seaFilter.Q.setValueAtTime(1.1, t);
-
-        const seaLfo = this.ctx.createOscillator();
-        seaLfo.frequency.setValueAtTime(0.062, t);
-        const seaLfoGain = this.ctx.createGain();
-        seaLfoGain.gain.setValueAtTime(160, t);
-        seaLfo.connect(seaLfoGain);
-        seaLfoGain.connect(seaFilter.frequency);
-        seaLfo.start();
-
-        const seaGain = this.ctx.createGain();
-        seaGain.gain.setValueAtTime(0.038, t);
-
-        seaNoise.connect(seaFilter);
-        seaFilter.connect(seaGain);
-        seaGain.connect(this.masterLimiter);
-        seaNoise.start();
+        const loopLen = size - fade;
+        for (let i = 0; i < fade; i++) { const k = i / fade; out[i] = out[i] * k + out[loopLen + i] * (1 - k); }
+        const sea = c.createBufferSource(); sea.buffer = buf; sea.loop = true; sea.loopStart = 0; sea.loopEnd = loopLen / sr;
+        const seaBp = c.createBiquadFilter(); seaBp.type = 'bandpass'; seaBp.frequency.setValueAtTime(240, t); seaBp.Q.setValueAtTime(0.8, t);
+        const seaLfo = c.createOscillator(); seaLfo.frequency.setValueAtTime(0.045, t);
+        const seaLfoG = c.createGain(); seaLfoG.gain.setValueAtTime(110, t);
+        seaLfo.connect(seaLfoG); seaLfoG.connect(seaBp.frequency); seaLfo.start();
+        const seaG = c.createGain(); seaG.gain.setValueAtTime(0.022, t);
+        sea.connect(seaBp); seaBp.connect(seaG); seaG.connect(this.masterLimiter); seaG.connect(this.reverbSend); sea.start();
       }
 
-      setupWarmAnchoringSub() {
-        const t = this.ctx.currentTime;
-        const subOsc = this.ctx.createOscillator();
-        subOsc.type = 'sine';
-        subOsc.frequency.setValueAtTime(65.41, t);
-
-        const pitchLfo = this.ctx.createOscillator();
-        pitchLfo.frequency.setValueAtTime(0.035, t);
-        const pitchGain = this.ctx.createGain();
-        pitchGain.gain.setValueAtTime(0.35, t);
-        pitchLfo.connect(pitchGain);
-        pitchGain.connect(subOsc.frequency);
-        pitchLfo.start();
-
-        const subFilter = this.ctx.createBiquadFilter();
-        subFilter.type = 'lowpass';
-        subFilter.frequency.setValueAtTime(80, t);
-
-        const subGain = this.ctx.createGain();
-        subGain.gain.setValueAtTime(0.045, t);
-
-        subOsc.connect(subFilter);
-        subFilter.connect(subGain);
-        subGain.connect(this.masterLimiter);
-        subOsc.start();
-      }
-
-      setupFloatingHarmonicBreaths() {
-        const chordA = [174.61, 261.63, 329.63, 392.00, 493.88]; // F3, C4, E4, G4, B4
-        const chordB = [220.00, 261.63, 329.63, 392.00, 587.33]; // A3, C4, E4, G4, D5
-        const LFO_HZ = 0.042;
-        const halfPeriod = 0.5 / LFO_HZ;
-
-        const createVoiceGroup = (freqs, lfoDelaySec, baseVol) => {
-          const t = this.ctx.currentTime;
-          const groupGain = this.ctx.createGain();
-          groupGain.gain.setValueAtTime(baseVol, t);
-
-          const breatheLfo = this.ctx.createOscillator();
-          breatheLfo.frequency.setValueAtTime(LFO_HZ, t);
-          const breatheGain = this.ctx.createGain();
-          breatheGain.gain.setValueAtTime(baseVol * 0.7, t);
-          breatheLfo.connect(breatheGain);
-          breatheGain.connect(groupGain.gain);
-          breatheLfo.start(t + lfoDelaySec); // 延遲啟動 = 相位錯開，兩組和弦交替呼吸
-
-          freqs.forEach((freq, idx) => {
-            const osc = this.ctx.createOscillator();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, t);
-            osc.detune.setValueAtTime(idx % 2 === 0 ? 2.5 : -2.5, t);
-
-            const vFilter = this.ctx.createBiquadFilter();
-            vFilter.type = 'lowpass';
-            vFilter.frequency.setValueAtTime(1100 + idx * 80, t);
-
-            const voiceGain = this.ctx.createGain();
-            voiceGain.gain.setValueAtTime(0.015, t);
-
-            osc.connect(vFilter);
-            vFilter.connect(voiceGain);
-            voiceGain.connect(groupGain);
-            osc.start();
+      // ---- 神殿和聲：每個和弦一組持續音，前後交叉淡入淡出 ----
+      playChord(chord, at) {
+        const c = this.ctx, fadeIn = 2.2, fadeOut = 2.4;
+        this.padVoices.forEach(v => {
+          v.gain.gain.cancelScheduledValues(at);
+          v.gain.gain.setValueAtTime(v.gain.gain.value, at);
+          v.gain.gain.linearRampToValueAtTime(0, at + fadeOut);
+          v.oscs.forEach(o => o.stop(at + fadeOut + 0.1));
+        });
+        this.padVoices = [];
+        const group = c.createGain(); group.gain.setValueAtTime(0, at); group.gain.linearRampToValueAtTime(0.075, at + fadeIn);
+        const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(900, at);
+        group.connect(lp); lp.connect(this.masterLimiter); lp.connect(this.reverbSend);
+        const oscs = [];
+        chord.pad.forEach((f, idx) => {
+          [['sine', 0.5, 0], ['triangle', 0.22, idx % 2 ? 4 : -4]].forEach(([type, amp, detune]) => {
+            const o = c.createOscillator(); o.type = type; o.frequency.setValueAtTime(f, at); o.detune.setValueAtTime(detune, at);
+            const g = c.createGain(); g.gain.setValueAtTime(amp / chord.pad.length, at);
+            o.connect(g); g.connect(group); o.start(at); oscs.push(o);
+            o.onended = () => { o.disconnect(); g.disconnect(); };
           });
-
-          groupGain.connect(this.masterLimiter);
-        };
-
-        createVoiceGroup(chordA, 0, 0.042);
-        createVoiceGroup(chordB, halfPeriod, 0.038);
+        });
+        this.padVoices.push({ gain: group, oscs });
       }
 
-      setupAiryShimmerReverb() {
-        const t = this.ctx.currentTime;
-        this.shimmerBus = this.ctx.createGain();
-        this.shimmerBus.gain.setValueAtTime(0.26, t);
-
-        const delayA = this.ctx.createDelay();
-        delayA.delayTime.setValueAtTime(0.42, t);
-        const delayB = this.ctx.createDelay();
-        delayB.delayTime.setValueAtTime(0.68, t);
-
-        const shimmerHighpass = this.ctx.createBiquadFilter();
-        shimmerHighpass.type = 'highpass';
-        shimmerHighpass.frequency.setValueAtTime(600, t);
-
-        const shimmerLowpass = this.ctx.createBiquadFilter();
-        shimmerLowpass.type = 'lowpass';
-        shimmerLowpass.frequency.setValueAtTime(3800, t);
-
-        const feedback = this.ctx.createGain();
-        feedback.gain.setValueAtTime(0.52, t);
-
-        this.shimmerBus.connect(delayA);
-        delayA.connect(delayB);
-        delayB.connect(shimmerHighpass);
-        shimmerHighpass.connect(shimmerLowpass);
-        shimmerLowpass.connect(feedback);
-        feedback.connect(delayA);
-
-        delayA.connect(this.masterLimiter);
-        delayB.connect(this.masterLimiter);
-      }
-
-      startChimes() {
-        clearTimeout(this.chimeTimer);
-        const chimePitches = [783.99, 880.0, 1046.5, 1174.66, 1318.51, 1567.98];
-
+      startChords() {
+        clearTimeout(this.timers.chord);
         const tick = () => {
           if (!this.isPlaying || !this.ctx) return;
           if (this.ctx.state === 'running') {
-            const freq = chimePitches[Math.floor(Math.random() * chimePitches.length)];
-            const t0 = this.ctx.currentTime + 0.05;
-
-            const osc = this.ctx.createOscillator();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, t0);
-
-            const g = this.ctx.createGain();
-            g.gain.setValueAtTime(0, t0);
-            g.gain.linearRampToValueAtTime(0.020, t0 + 0.09);
-            g.gain.exponentialRampToValueAtTime(0.00001, t0 + 4.2);
-            g.gain.linearRampToValueAtTime(0, t0 + 4.5);
-
-            osc.connect(g);
-            g.connect(this.shimmerBus);
-            g.connect(this.masterLimiter);
-            osc.start(t0);
-            osc.stop(t0 + 4.6);
-            osc.onended = () => { osc.disconnect(); g.disconnect(); };
+            this.playChord(this.CHORDS[this.chordIndex % this.CHORDS.length], this.ctx.currentTime + 0.05);
+            this.chordIndex++;
+            this.nextChordAt = this.ctx.currentTime + this.CHORD_SECONDS;
           }
-          this.chimeTimer = setTimeout(tick, 4500 + Math.random() * 5500);
+          this.timers.chord = setTimeout(tick, this.CHORD_SECONDS * 1000);
         };
-
-        this.chimeTimer = setTimeout(tick, 3000);
+        tick();
       }
+
+      // ---- 鋼琴：加法合成（基音 + 泛音），快起音、長衰減，經低通、回聲與長殘響 ----
+      piano(freq, at, vel = 0.5, dur = 3.0) {
+        const c = this.ctx;
+        const env = c.createGain();
+        env.gain.setValueAtTime(0, at);
+        env.gain.linearRampToValueAtTime(0.26 * vel, at + 0.006);
+        env.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+        env.gain.linearRampToValueAtTime(0, at + dur + 0.05);
+        const tone = c.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.setValueAtTime(2000 + vel * 900, at); tone.frequency.exponentialRampToValueAtTime(800, at + dur);
+        env.connect(tone); tone.connect(this.masterLimiter); tone.connect(this.reverbSend); tone.connect(this.echoSend);
+        [[1, 1, 1], [2, 0.42, 0.55], [3, 0.16, 0.35], [4.01, 0.07, 0.25], [5.98, 0.03, 0.18]].forEach(([mul, amp, decay]) => {
+          const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(freq * mul, at);
+          const g = c.createGain(); g.gain.setValueAtTime(amp, at); g.gain.exponentialRampToValueAtTime(amp * 0.02 + 0.0001, at + dur * decay);
+          o.connect(g); g.connect(env); o.start(at); o.stop(at + dur + 0.1);
+          o.onended = () => { o.disconnect(); g.disconnect(); };
+        });
+      }
+
+      startMelody() {
+        clearTimeout(this.timers.melody);
+        const tick = () => {
+          if (!this.isPlaying || !this.ctx) return;
+          let next = 1.6 + Math.random() * 2.6;
+          if (this.ctx.state === 'running' && Math.random() > 0.08) {   // 偶爾留白
+            const n = this.CHORDS.length;
+            const chord = this.CHORDS[(this.chordIndex - 1 + n) % n];
+            const nextChord = this.CHORDS[this.chordIndex % n];
+            const t0 = this.ctx.currentTime + 0.05;
+            // 快換和弦時，只用兩個和弦都適合的音，避免餘音與下一個和弦打架
+            let tones = chord.tones;
+            if (this.nextChordAt - t0 < 1.6) {
+              const shared = chord.tones.filter(f => nextChord.tones.some(g => Math.abs(g - f) < 1));
+              if (shared.length >= 3) tones = shared;
+            }
+            // 以級進為主：從上一個音的位置往上或往下走一格；三成機率跳到和弦音
+            const nearest = tones.reduce((best, f, i) => Math.abs(f - this.lastNote) < Math.abs(tones[best] - this.lastNote) ? i : best, 0);
+            let idx;
+            if (Math.random() < 0.3) {
+              const chordTones = tones.filter(f => chord.pad.some(p => Math.abs(f / p - Math.round(f / p)) < 0.02));
+              const pick = chordTones.length ? chordTones[Math.floor(Math.random() * chordTones.length)] : tones[nearest];
+              idx = tones.indexOf(pick);
+            } else {
+              const dir = Math.random() < 0.5 ? 1 : -1;
+              idx = nearest + dir;
+              if (idx < 0 || idx >= tones.length) idx = nearest - dir;   // 到了音域邊界就折返，不跨越
+            }
+            const note = tones[idx];
+            const vel = 0.3 + Math.random() * 0.35;
+            this.piano(note, t0, vel);
+            this.lastNote = note;
+            const r = Math.random();
+            if (r < 0.3) {
+              // 小樂句：順著音階再走兩格，方向一致，碰到邊界就折返
+              let dir = Math.random() < 0.5 ? 1 : -1, j = idx;
+              [1, 2].forEach(k => {
+                if (j + dir < 0 || j + dir >= tones.length) dir = -dir;
+                j += dir;
+                this.piano(tones[j], t0 + 0.6 * k, vel * (0.85 - k * 0.15));
+                this.lastNote = tones[j];
+              });
+            } else if (r < 0.5) {
+              this.piano(note * 2, t0 + 0.45, vel * 0.5);   // 高八度的回應（只用八度，不用五度，避免產生不協和音）
+            } else if (r < 0.75) {
+              this.piano(chord.pad[0], t0 + 0.7, vel * 0.45, 4.0);   // 低音根音，像左手輕按
+            }
+            next = 1.0 + Math.random() * 1.5;
+          }
+          this.timers.melody = setTimeout(tick, next * 1000);
+        };
+        this.timers.melody = setTimeout(tick, 1800);
+      }
+
+      // ---- 遠方低鳴：緩慢下滑的純音 ----
+      startWhale() {
+        clearTimeout(this.timers.whale);
+        const tick = () => {
+          if (!this.isPlaying || !this.ctx) return;
+          if (this.ctx.state === 'running') {
+            const c = this.ctx, at = c.currentTime + 0.05, dur = 5 + Math.random() * 3;
+            const o = c.createOscillator(); o.type = 'sine';
+            const f0 = 150 + Math.random() * 90;
+            o.frequency.setValueAtTime(f0, at); o.frequency.exponentialRampToValueAtTime(f0 * 0.72, at + dur);
+            const g = c.createGain(); g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(0.03, at + dur * 0.4); g.gain.linearRampToValueAtTime(0, at + dur);
+            o.connect(g); g.connect(this.reverbSend); g.connect(this.masterLimiter); o.start(at); o.stop(at + dur + 0.1);
+            o.onended = () => { o.disconnect(); g.disconnect(); };
+          }
+          this.timers.whale = setTimeout(tick, (28 + Math.random() * 30) * 1000);
+        };
+        this.timers.whale = setTimeout(tick, 18000);
+      }
+
+      stopSchedulers() { Object.keys(this.timers).forEach(k => clearTimeout(this.timers[k])); }
 
       /** 必須在使用者手勢的呼叫堆疊中呼叫（resume 會同步觸發） */
       async play() {
@@ -1626,42 +1631,40 @@
           try { await this.ctx.resume(); } catch (e) { /* 被瀏覽器拒絕 */ }
         }
         if (this.ctx.state !== 'running') return false;
-
         const now = this.ctx.currentTime;
         const g = this.masterMusicGain.gain;
         g.cancelScheduledValues(now);
         g.setValueAtTime(g.value, now);
-        g.linearRampToValueAtTime(this.MUSIC_LEVEL, now + 1.2);
-
+        g.linearRampToValueAtTime(this.MUSIC_LEVEL, now + 1.5);
         if (!this.isPlaying) {
           this.isPlaying = true;
-          this.startChimes();
+          this.startChords();
+          this.startMelody();
+          this.startWhale();
         }
         return true;
       }
 
       pause() {
         this.isPlaying = false;
-        clearTimeout(this.chimeTimer);
+        this.stopSchedulers();
         if (!this.initialized) return;
-
         const now = this.ctx.currentTime;
         const g = this.masterMusicGain.gain;
         g.cancelScheduledValues(now);
         g.setValueAtTime(g.value, now);
-        g.linearRampToValueAtTime(0, now + 0.8);
-
+        g.linearRampToValueAtTime(0, now + 1.0);
         clearTimeout(this.suspendTimer);
         this.suspendTimer = setTimeout(() => {
           if (!this.isPlaying && this.ctx.state === 'running') this.ctx.suspend();
-        }, 1000);
+        }, 1200);
       }
 
-      playClick() { this.playTone(659.25, 'triangle', 0.22, 0.025); }
+      playClick() { this.playTone(659.25, 'triangle', 0.22, 0.02); }
 
       playChime() {
         [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
-          setTimeout(() => this.playTone(f, 'sine', 0.7, 0.02), i * 90);
+          setTimeout(() => this.playTone(f, 'sine', 0.7, 0.018), i * 90);
         });
       }
 
@@ -3118,6 +3121,15 @@
       const put = (r, deg, fn, face = 0) => { const [x, z] = polar(r, deg); fn(C.at(x, z, face)); };
       const lampsAt = (degs) => degs.forEach(d => put(pathR + 2.2, d, Props.lamp));
 
+      // 建築入口：門、門墊與通往步道的岔路（服務路徑的小人會從這裡進出）
+      if (!isRegion && ENTRANCES[mod.id]) {
+        const dz = ENTRANCES[mod.id].doorZ;
+        C.hbox(0, 0, dz + 0.1, 2.4, 3.2, 0.18, '#1f2937');            // 門
+        C.hbox(0, 2.9, dz + 0.12, 2.8, 0.3, 0.1, '#e2e8f0');           // 門楣
+        C.glowbox(0, 3.3, dz + 0.14, 1.0, 0.22, 0.06, '#fde68a');      // 門上的小燈
+        C.box(0, 0, dz + 1.2, 3.2, 0.12, 1.6, '#e7d7c1');              // 門墊
+        C.hbox(0, 0.05, (dz + 1.8 + pathR + 0.6) / 2, 2.6, 0.08, pathR + 0.6 - dz - 1.8, '#f1ebe1'); // 岔路步道
+      }
       switch (mod.id) {
         case 0: // 部立臺北醫院：救護車、候診長椅、旗桿、花台
           put(0, 0, (c) => Props.ambulance(c.at(-9, 17)));
@@ -3144,8 +3156,8 @@
           put(15, 215, Props.clinicHut, Math.PI / 5);
           put(13, 330, Props.bench, Math.PI / 3);
           put(13, 30, Props.bench, -Math.PI / 3 + Math.PI);
-          [100, 125, 290].forEach(d => put(15, d, Props.planter));
-          put(19, 80, Props.signpost);
+          [112, 135, 290].forEach(d => put(15, d, Props.planter));
+          put(19, 68, Props.signpost);
           lampsAt([0, 180]);
           break;
         case 4: // 職能復健與重返職場：平行桿、階梯、治療球、跑步機、地墊
@@ -3204,6 +3216,7 @@
         for (let i = 0; i < 6; i++) {
           const [x, z] = polar(pathR - 3.2, i * 60 + 15 + mod.id * 7);
           if (mod.id === 0 && Math.abs(x) < 23 && Math.abs(z) < 12) continue;
+          if (Math.abs(x) < 4.5 && z > 0) continue; // 讓開通往門口的岔路
           C.bush(x, z, 0.6 + Math.random() * 0.35);
         }
       }
@@ -3936,6 +3949,10 @@
     //   原本的光軌懸在半空、還會穿過建築；改成貼著地面、繞著步道走，並標出每一站的順序
     // =============================================================
     const ROUTE_WALK_R = 26;
+    // 各服務島建築的入口：門在建築面向畫面（+z）的那一側，doorZ 是門離島中心的距離
+    // 服務路徑的小人會從步道轉進門口、走進建築、停留後再走出來
+    const ENTRANCES = { 0: { doorZ: 10 }, 1: { doorZ: 13 }, 2: { doorZ: 14 }, 3: { doorZ: 7.5 }, 4: { doorZ: 8 }, 5: { doorZ: 15 }, 6: { doorZ: 3 }, 7: { doorZ: 5 } };
+    const DOOR_DWELL_SECONDS = 2.4; // 小人在建築裡停留的時間
     const modById = (id) => ISLAND_MODULES.find(m => m.id === id);
     const tileTop = (m) => (m.id === 0 ? 22 : (m.type === 'region' ? (m.id === 13 ? 14 : 12) : 16)) + 2.5;
     let routeArrowMat = null;
@@ -3965,9 +3982,22 @@
       const n = ids.length;
       const mods = ids.map(modById);
       const angleTo = (a, b) => Math.atan2(b.gridPos.z - a.gridPos.z, b.gridPos.x - a.gridPos.x);
-      const pts = [];
-      const stopIdx = [];
+      const pts = [];        // 小人實際走的路（含進出建築的岔路）
+      const ribbonPts = [];  // 畫在步道上的路線（不含岔路，避免折返處打結）
+      const stopIdx = [];    // 每個停留站的門口在 pts 裡的位置
+      const doorPts = [];
       let nextStop = 0;
+      const wrap = (d) => { while (d > Math.PI) d -= Math.PI * 2; while (d <= -Math.PI) d += Math.PI * 2; return d; };
+      const pushArc = (m, y, fromAng, toAng, both) => {
+        const delta = wrap(toAng - fromAng);
+        const steps = Math.max(3, Math.ceil(Math.abs(delta) / (Math.PI / 16)));
+        for (let k = 0; k <= steps; k++) {
+          const a = fromAng + delta * (k / steps);
+          const p = new THREE.Vector3(m.gridPos.x + Math.cos(a) * ROUTE_WALK_R, y, m.gridPos.z + Math.sin(a) * ROUTE_WALK_R);
+          pts.push(p);
+          if (both) ribbonPts.push(p);
+        }
+      };
       for (let i = 0; i < n; i++) {
         const m = mods[i];
         const prev = loop ? mods[(i - 1 + n) % n] : mods[i - 1];
@@ -3976,23 +4006,36 @@
         let outAng = next ? angleTo(m, next) : null;
         if (inAng === null) inAng = outAng + Math.PI * 0.6;   // 起點：先在第一座島上走一小段
         if (outAng === null) outAng = inAng - Math.PI * 0.6;  // 終點：在最後一座島上多走一小段
-        let delta = outAng - inAng;
-        while (delta > Math.PI) delta -= Math.PI * 2;
-        while (delta <= -Math.PI) delta += Math.PI * 2;
-        const steps = Math.max(3, Math.ceil(Math.abs(delta) / (Math.PI / 16)));
         const y = tileTop(m) + 0.3;
-        const start = pts.length;
-        for (let k = 0; k <= steps; k++) {
-          const a = inAng + delta * (k / steps);
-          pts.push(new THREE.Vector3(m.gridPos.x + Math.cos(a) * ROUTE_WALK_R, y, m.gridPos.z + Math.sin(a) * ROUTE_WALK_R));
-        }
         const stop = scenario.stops[nextStop];
-        if (stop && stop.id === m.id) {
-          stopIdx.push(start + Math.floor(steps / 2)); // 停留站標在這段弧的中間
-          nextStop++;
+        const entrance = stop && stop.id === m.id ? ENTRANCES[m.id] : null;
+        if (!entrance) {
+          pushArc(m, y, inAng, outAng, true);
+          continue;
         }
+        // 停留站：門在 +z 側。一般路徑的起點只「走出來」、終點只「走進去」；中間站與循環路徑是進去再出來
+        const doorAng = Math.PI / 2;
+        const door = new THREE.Vector3(m.gridPos.x, y, m.gridPos.z + entrance.doorZ + 0.8);
+        const spurIn = [0.35, 0.7, 1].map(f => new THREE.Vector3(m.gridPos.x, y, m.gridPos.z + ROUTE_WALK_R - (ROUTE_WALK_R - door.z + m.gridPos.z) * f));
+        const spurOut = spurIn.slice(0, -1).reverse().map(p => p.clone());
+        const isStart = !loop && i === 0, isEnd = !loop && i === n - 1;
+        doorPts.push(door);
+        if (isStart) {
+          pts.push(door.clone());           // 路徑從門口開始
+          stopIdx.push(0);
+          spurOut.forEach(p => pts.push(p));
+        } else {
+          pushArc(m, y, inAng, doorAng, true);
+          spurIn.forEach(p => pts.push(p));
+          stopIdx.push(pts.length - 1);
+        }
+        if (!isEnd) {
+          if (!isStart) spurOut.forEach(p => pts.push(p));
+          pushArc(m, y, doorAng, outAng, true);
+        }
+        nextStop++;
       }
-      return { pts, stopIdx, loop };
+      return { pts, ribbonPts, stopIdx, doorPts, loop };
     }
 
     // 沿曲線產生平貼地面的帶狀幾何（寬度 width），UV 的 u 依長度遞增，讓箭頭貼圖等距重複
@@ -4036,10 +4079,26 @@
       if (!flowKey || !SCENARIOS[flowKey]) return;
 
       const scenario = SCENARIOS[flowKey];
-      const { pts, stopIdx, loop } = buildRoutePoints(scenario);
-      const curve = new THREE.CatmullRomCurve3(pts, loop, 'centripetal');
+      const { pts, ribbonPts, stopIdx, doorPts, loop } = buildRoutePoints(scenario);
+      const walkCurve = new THREE.CatmullRomCurve3(pts, loop, 'centripetal');
+      const curve = new THREE.CatmullRomCurve3(ribbonPts, loop, 'centripetal');
       const length = curve.getLength();
       const geo = buildRibbonGeometry(curve, loop, 2.4, length);
+
+      // 每個停留站：從步道到門口的岔路也塗上路線顏色
+      doorPts.forEach(door => {
+        const m = scenario.stops.map(st => modById(st.id)).find(x => ENTRANCES[x.id] && Math.abs(x.gridPos.x - door.x) < 1 && Math.abs(x.gridPos.z + ENTRANCES[x.id].doorZ + 0.8 - door.z) < 0.5);
+        if (!m) return;
+        const z0 = door.z - 0.4, z1 = m.gridPos.z + ROUTE_WALK_R;
+        const strip = new THREE.Mesh(new THREE.PlaneGeometry(2.0, z1 - z0), new THREE.MeshBasicMaterial({
+          color: scenario.color, transparent: true, opacity: 0.9, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -8
+        }));
+        strip.rotation.x = -Math.PI / 2;
+        strip.position.set(door.x, door.y + 0.12, (z0 + z1) / 2);
+        strip.renderOrder = 2;
+        prepColors(strip);
+        synergyCurveGroup.add(strip);
+      });
 
       // 貼在步道上的彩色帶 + 往前流動的白色箭頭
       const base = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
@@ -4061,9 +4120,10 @@
       const cum = [0];
       for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + pts[i].distanceTo(pts[i - 1]));
       const total = cum[cum.length - 1] + (loop ? pts[pts.length - 1].distanceTo(pts[0]) : 0);
-      scenario._stopU = stopIdx.map(i => cum[i] / total);
+      scenario._stopU = stopIdx.map(i => cum[i] / total); // 門口的位置
+      scenario._doorPts = doorPts;
       scenario._loop = loop;
-      scenario._length = length;
+      scenario._length = walkCurve.getLength();
 
       // 島嶼標籤前加上站序
       scenario.stops.forEach((st, k) => {
@@ -4078,7 +4138,7 @@
         routeStepBadges.push(badge);
       });
 
-      activeFlowCurve = curve;
+      activeFlowCurve = walkCurve;
       activeScenario = scenario;
       spawnFlowWalkers(scenario);
     }
@@ -4187,13 +4247,28 @@
       const legs = sc.carries.length;
       const tripSeconds = Math.max(WALKER_TRIP_SECONDS, sc._length / 8); // 步行速度約每秒 8 單位
       for (const w of flowWalkers) {
+        // 在建築裡：不動、不顯示，時間到再出來
+        if (w.inside > 0) {
+          w.inside -= dt;
+          if (w.inside > 0) continue;
+          w.group.visible = true;
+        }
+        const prevT = w.t;
+        const enter = () => { w.inside = DOOR_DWELL_SECONDS; w.group.visible = false; w.pinItem.anchor.style.opacity = '0'; w.seg = -1; };
+        // 一般路徑：走到終點的門口 → 進入建築，停留後從起點的門口重新出發
+        if (!sc._loop && prevT + dt / tripSeconds >= 1) { w.t = 0; enter(); continue; }
         w.t = (w.t + dt / tripSeconds) % 1;
+        // 中途的門口（循環路徑則是每一站）→ 進入建築
+        const crossed = sc._stopU.findIndex(u => u > 0 && u < 0.999 && (prevT < u ? (w.t >= u || w.t < prevT) : (w.t < prevT && w.t >= u)));
+        if (crossed >= 0) { w.t = sc._stopU[crossed] + 0.0005; enter(); continue; }
         w.phase += dt * 9;
         const p = activeFlowCurve.getPointAt(w.t, _walkPos.p);
         const tan = activeFlowCurve.getTangentAt(w.t, _walkPos.tan);
-        // 一般路徑：走到兩端縮小消失；循環路徑：一直繞圈
-        const edge = Math.min(w.t, 1 - w.t);
-        const scale = sc._loop ? 1 : THREE.MathUtils.smoothstep(edge, 0, 0.05);
+        let scale = 1;
+        // 靠近門口時縮小，像走進門裡／從門裡走出來（起點的門只出、終點的門只進）
+        let doorDist = Infinity;
+        for (const d of sc._doorPts) doorDist = Math.min(doorDist, p.distanceTo(d));
+        scale *= THREE.MathUtils.smoothstep(doorDist, 0.4, 3.2);
         w.group.visible = scale > 0.02;
         w.group.scale.setScalar(Math.max(scale, 0.001) * WALKER_SIZE);
         w.group.position.set(p.x, p.y - 0.3 + Math.abs(Math.sin(w.phase)) * 0.2, p.z);
