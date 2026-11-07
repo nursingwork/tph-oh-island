@@ -31,5 +31,6 @@
 ## 頁面
 - 3D 地圖版：https://nursingwork.github.io/tph-oh-island/
 - 文字版服務說明與常見問題：https://nursingwork.github.io/tph-oh-island/services.html
+- 互動演示「搬抬時的腰椎負荷」：https://nursingwork.github.io/tph-oh-island/#lift（研究摘要見 https://nursingwork.github.io/tph-oh-island/services.html#lifting）
 
 資料更新日期：2026-11-04

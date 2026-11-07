@@ -707,7 +707,7 @@
       <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-scroll-text"></use></svg><span class="md:hidden">科室</span><span class="hidden md:inline">科室介紹</span>
     </button>
     <button id="btnOpenCalc" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-brand-300 hover:border-brand-400/60 transition flex items-center gap-2">
-      <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-calculator"></use></svg><span class="md:hidden">試算</span><span class="hidden md:inline">臨場次數試算</span>
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-wrench"></use></svg><span class="md:hidden">工具</span><span class="hidden md:inline">互動工具</span>
     </button>
     <button id="btnTopDownView" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-3.5 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-indigo-300 hover:border-indigo-400/60 hover:shadow-indigo-500/10 transition flex items-center gap-1.5" title="切換垂直俯瞰地圖視角">
       <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-map"></use></svg><span class="hidden md:inline">俯瞰</span>
@@ -748,6 +748,11 @@
         <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">服務內容</h4>
         <ul id="drawerKeypoints" class="space-y-2.5 text-xs md:text-sm text-slate-300"></ul>
       </div>
+
+      <button id="drawerLiftBtn" type="button" class="hidden w-full flex items-center gap-3 p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-left transition">
+        <span class="w-10 h-10 shrink-0 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-activity"></use></svg></span>
+        <span><span class="block text-sm font-bold text-white">互動演示：搬抬時的腰椎負荷</span><span class="block text-xs text-slate-400 mt-0.5">拉動姿勢、距離與重量，看腰椎怎麼受力；附研究證據與建議</span></span>
+      </button>
 
       <!-- [新增] 資料來源：模組資料有 sources 時才顯示 -->
       <div id="drawerSources" class="hidden">
@@ -1107,6 +1112,123 @@
     </div>
   </div>
 
+  <!-- ================= 彈出面板：互動工具選單 ================= -->
+  <div id="toolsModal" role="dialog" aria-modal="true" aria-labelledby="toolsModalTitle" class="modal fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div class="glass-morphism w-full max-w-md rounded-3xl p-6 relative border border-white/20">
+      <button type="button" data-close aria-label="關閉" class="absolute top-5 right-5 text-slate-400 hover:text-white flex"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
+      <h2 id="toolsModalTitle" class="text-lg font-extrabold text-white mb-1">互動工具</h2>
+      <p class="text-xs text-slate-400 mb-4">給企業人資、職安人員與勞工使用的小工具。</p>
+      <div class="space-y-2.5">
+        <button id="toolsToCalc" type="button" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-700/70 border border-white/10 text-left transition">
+          <span class="w-10 h-10 shrink-0 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-calculator"></use></svg></span>
+          <span><span class="block text-sm font-bold text-white">臨場服務頻率試算</span><span class="block text-xs text-slate-400 mt-0.5">依勞工人數與事業分類，查《勞工健康保護規則》規定的醫護臨場次數</span></span>
+        </button>
+        <button id="toolsToLift" type="button" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-700/70 border border-white/10 text-left transition">
+          <span class="w-10 h-10 shrink-0 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-activity"></use></svg></span>
+          <span><span class="block text-sm font-bold text-white">搬抬時的腰椎負荷</span><span class="block text-xs text-slate-400 mt-0.5">互動演示：姿勢、物品距離與重量怎麼影響腰椎，附研究證據與建議</span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 彈出面板：搬抬時的腰椎負荷（互動演示） ================= -->
+  <div id="liftModal" role="dialog" aria-modal="true" aria-labelledby="liftModalTitle" class="modal fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div class="glass-morphism w-full max-w-3xl max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl p-5 md:p-7 relative border border-white/20">
+      <button type="button" data-close aria-label="關閉" class="absolute top-5 right-5 text-slate-400 hover:text-white flex"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
+      <div class="flex items-center gap-3.5 mb-4 pr-8">
+        <div class="w-12 h-12 shrink-0 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center border border-amber-500/30" aria-hidden="true"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-activity"></use></svg></div>
+        <div>
+          <h2 id="liftModalTitle" class="text-xl font-extrabold text-white">搬抬時的腰椎負荷</h2>
+          <p class="text-xs text-slate-400 mt-0.5">互動演示：仿照教學用的搬抬示範模型，加上研究證據</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <!-- 側面圖 -->
+        <div class="md:col-span-3 rounded-2xl bg-slate-900/70 border border-white/10 p-2">
+          <div id="liftStage" class="relative w-full aspect-[520/340] rounded-xl overflow-hidden bg-[#0b1220]">
+            <canvas id="liftCanvas" class="absolute inset-0 w-full h-full touch-none" role="img" aria-label="3D 人形與腰椎，顯示不同搬抬姿勢下腰椎的彎曲與椎間盤受壓情形；可用滑鼠或手指拖曳旋轉"></canvas>
+            <svg id="liftSvg" viewBox="0 0 520 340" class="absolute inset-0 w-full h-full hidden" role="img" aria-label="側面的人形與腰椎，顯示不同搬抬姿勢下腰椎的彎曲與椎間盤受壓情形"></svg>
+            <div class="absolute left-2 top-2 text-[10px] text-slate-400 pointer-events-none">拖曳可旋轉視角</div>
+            <button id="liftResetView" type="button" class="absolute right-2 top-2 px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-800/80 border border-white/10 text-slate-300 hover:text-white">重設視角</button>
+          </div>
+          <div class="flex flex-wrap gap-1.5 px-1 pb-1">
+            <button type="button" data-lift-preset="0" class="lift-preset px-2.5 py-1 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">彎腰搬抬</button>
+            <button type="button" data-lift-preset="0.5" class="lift-preset px-2.5 py-1 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">半蹲（常見的自然姿勢）</button>
+            <button type="button" data-lift-preset="1" class="lift-preset px-2.5 py-1 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">屈膝直背</button>
+          </div>
+        </div>
+        <!-- 控制與讀數 -->
+        <div class="md:col-span-2 space-y-3 text-xs">
+          <label class="block">
+            <span class="flex justify-between text-slate-300 font-bold"><span>姿勢</span><span id="liftPostureText" class="text-slate-400 font-normal"></span></span>
+            <input id="liftPosture" type="range" min="0" max="100" value="0" class="w-full mt-1 accent-amber-400" aria-label="姿勢：彎腰到屈膝">
+            <span class="flex justify-between text-[10px] text-slate-500"><span>彎腰</span><span>屈膝</span></span>
+          </label>
+          <label class="block">
+            <span class="flex justify-between text-slate-300 font-bold"><span>物品離身體的距離</span><span id="liftDistText" class="text-slate-400 font-normal"></span></span>
+            <input id="liftDist" type="range" min="0" max="100" value="40" class="w-full mt-1 accent-amber-400" aria-label="物品離身體的距離">
+            <span class="flex justify-between text-[10px] text-slate-500"><span>貼近</span><span>伸長手臂</span></span>
+          </label>
+          <label class="block">
+            <span class="flex justify-between text-slate-300 font-bold"><span>物品重量</span><span id="liftWeightText" class="text-slate-400 font-normal"></span></span>
+            <input id="liftWeight" type="range" min="2" max="25" value="10" class="w-full mt-1 accent-amber-400" aria-label="物品重量（公斤）">
+          </label>
+          <div class="rounded-2xl bg-slate-800/70 border border-white/10 p-3 space-y-3">
+            <div>
+              <div class="flex justify-between text-slate-300"><span class="font-bold">腰部承受的力矩</span><span id="liftMomentText" class="text-slate-400"></span></div>
+              <div class="h-2 mt-1.5 rounded-full bg-slate-700 overflow-hidden"><div id="liftMomentBar" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#84c845"></div></div>
+              <p class="text-[10px] text-slate-500 mt-1">相對值：以「彎腰、伸長手臂、25 公斤」為 100%</p>
+            </div>
+            <div>
+              <div class="flex justify-between text-slate-300"><span class="font-bold">腰椎彎曲與椎間盤前緣受壓</span><span id="liftFlexText" class="text-slate-400"></span></div>
+              <div class="h-2 mt-1.5 rounded-full bg-slate-700 overflow-hidden"><div id="liftFlexBar" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#84c845"></div></div>
+            </div>
+            <p id="liftInsight" class="text-slate-200 leading-relaxed"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 space-y-2 text-xs text-slate-300 leading-relaxed">
+        <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4" open>
+          <summary class="cursor-pointer font-bold text-white">這個演示在模仿什麼</summary>
+          <p class="mt-2">醫學教學常用一種桌上型的搬抬示範模型：人偶可以從「彎腰」與「屈膝直背」兩種姿勢舉起重物，側面看得到脊椎。彎腰搬抬時腰椎向前彎，椎間盤前緣被壓扁、後緣張開；屈膝直背時椎骨排列整齊，負荷平均落在整個椎體上。上面的側面圖重現了這個對比，並多加了兩個教具沒有的變數：物品離身體的距離，以及重量。</p>
+        </details>
+        <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+          <summary class="cursor-pointer font-bold text-white">什麼最影響腰部負荷</summary>
+          <p class="mt-2">腰部承受的力矩約等於「重量 × 物品與腰椎的水平距離」，再加上上半身本身的重量乘以它前傾的距離。拉動「物品離身體的距離」會發現：物品離身體越遠，力矩上升得比換姿勢還快。研究也指出，作用在腰椎上的力主要受負荷力矩、搬抬速度與加速度影響；物品的寬度與放置高度，比搬抬姿勢更關鍵。物品窄到可以放在雙腳之間時，屈膝搬抬才能真正降低脊椎的壓縮力。</p>
+        </details>
+        <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+          <summary class="cursor-pointer font-bold text-white">研究怎麼說：屈膝不一定比較好</summary>
+          <ul class="mt-2 list-disc pl-5 space-y-1.5">
+            <li>比較彎腰與屈膝搬抬的生物力學研究顯示，腰椎的壓縮力兩者相近，屈膝甚至略高；屈膝能降低的是剪力與彎曲力矩。回顧的結論是：現有證據不足以把「屈膝搬抬」當作預防下背痛的方法。（van Dieën 等，<em>Clinical Biomechanics</em>，1999）</li>
+            <li>用動作擷取與肌肉骨骼模型的研究發現，彎腰搬抬的總負荷與壓縮負荷低於屈膝；剪力多半是彎腰較高，但在 L5/S1 這一節反而是屈膝較高。（Von Arx 等，<em>Frontiers in Bioengineering and Biotechnology</em>，2021）</li>
+            <li>Cochrane 系統性回顧納入 9 篇隨機試驗、兩萬多名員工：單純的搬抬姿勢訓練，不論有沒有搭配輔具，都沒有減少腰痛、失能或病假。（Verbeek 等，<em>Cochrane Database of Systematic Reviews</em>，2011）</li>
+            <li>綜合分析也沒有找到「搬抬時腰椎彎曲較多的人比較容易腰痛」的一致證據。（Saraceni 等，<em>JOSPT</em>，2020）</li>
+          </ul>
+          <p class="mt-2 text-slate-400">所以教具展示的「彎腰時椎間盤前緣受壓」在力學上是真的，但「一定要蹲著搬」和「教會姿勢就能預防腰痛」都不是目前的共識。沒有哪一種姿勢對所有人都最好：腰部不適的人常覺得屈膝比較舒服，膝蓋不好或需要反覆搬抬的人則覺得彎腰省力。</p>
+        </details>
+        <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+          <summary class="cursor-pointer font-bold text-white">實際上怎麼做比較有效</summary>
+          <ul class="mt-2 list-disc pl-5 space-y-1.5">
+            <li><strong class="text-slate-100">讓物品靠近身體</strong>：這是影響最大的一件事。能放在雙腳之間最好。</li>
+            <li><strong class="text-slate-100">避免扭轉</strong>：先轉腳，再轉身，不要只轉腰。</li>
+            <li><strong class="text-slate-100">改變物品的高度</strong>：把常搬的東西放在膝蓋到胸口之間，不要放地上。</li>
+            <li><strong class="text-slate-100">減少重量與次數</strong>：分批搬、兩人搬，或用推車、吊具、升降台。</li>
+            <li><strong class="text-slate-100">從作業設計著手</strong>：把「要搬」變成「不用搬」，效果大過任何姿勢訓練。</li>
+          </ul>
+          <p class="mt-2 text-slate-400">本科在臨場服務時，會用 KIM、OWAS、RULA 等工具到現場評估搬抬作業的負荷，並提出改善建議；這也是人因性危害預防計畫的一部分。</p>
+        </details>
+      </div>
+
+      <div class="mt-4 flex flex-col sm:flex-row gap-2">
+        <button id="liftToService" type="button" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-medblue-600 to-brand-500 text-white font-bold text-sm transition">查看「工作環境危害評估」服務</button>
+        <button id="liftToContact" type="button" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-100 font-bold text-sm text-center transition">企業臨場健康服務說明</button>
+      </div>
+      <p class="text-[10px] text-slate-500 mt-3">本演示為衛教用途，數值為相對比較，不是個人或作業的評估結果。有搬抬相關的不適，請就醫評估。</p>
+    </div>
+  </div>
+
   <!-- ================= 彈出面板：臨場頻率試算（依 115.06.26 修正《勞工健康保護規則》） ================= -->
   <div id="calcModal" role="dialog" aria-modal="true" aria-labelledby="calcModalTitle" class="modal fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
     <div class="glass-morphism w-full max-w-2xl max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl p-6 md:p-8 relative border border-white/20">
@@ -1341,6 +1463,346 @@
       }
       return problems;
     }
+
+    // =============================================================
+    // 1.9 搬抬時的腰椎負荷：2D 側面演示
+    //   以簡化的連桿模型畫出側面人形：腳踝→膝→髖→骶骨→腰椎 L5～L1→胸椎→頭，手臂連到物品。
+    //   姿勢 0（彎腰）→ 1（屈膝）：膝蓋彎曲增加、軀幹前傾減少、腰椎彎曲由約 40° 降到約 12°
+    //   腰椎彎曲分配到五個椎間關節（下段較多），椎間盤畫成楔形：前緣壓扁、後緣張開
+    //   力矩 = 9.81 ×（上半身 35 kg × 上半身重心的水平距離 ＋ 物品重量 × 物品的水平距離），只顯示相對值
+    // =============================================================
+    const LiftDemo = (() => {
+      const NS = 'http://www.w3.org/2000/svg';
+      const PX_PER_M = 190;                     // 2D 備援圖的比例：1 公尺 = 190 px；3D 直接用公尺
+      const L = { shank: 85, thigh: 85, sacrum: 14, vert: 11, disc: 4.5, thorax: 22, headR: 16, arm: 118 };
+      const SHARE = [0.26, 0.24, 0.2, 0.16, 0.14]; // L5→L1 的彎曲分配
+      const state = { p: 0, d: 0.4, w: 10 };    // 目標值
+      const cur = { p: 0, d: 0.4 };             // 顯示值（平滑追上目標）
+      let svg = null, els = null, raf = 0, inited = false, mode = '3d';
+      const G = {};                             // 3D 物件
+      const rad = (deg) => deg * Math.PI / 180;
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent || svg).appendChild(e); return e; };
+      const fmt = (x, y) => `${x.toFixed(1)},${y.toFixed(1)}`;
+
+      // ---- 共用：連桿姿勢（像素座標，y 向下，地面 y = 320）----
+      function pose(p, d) {
+        const A = { x: 140, y: 320 };
+        const shankLean = rad(lerp(4, 38, p));
+        const K = { x: A.x + Math.sin(shankLean) * L.shank, y: A.y - Math.cos(shankLean) * L.shank };
+        const thighAng = rad(lerp(-6, -82, p));      // 從垂直量起，負值 = 髖在膝的後方
+        const H = { x: K.x + Math.sin(thighAng) * L.thigh, y: K.y - Math.cos(thighAng) * L.thigh };
+        const trunkLean = rad(lerp(88, 32, p));      // 軀幹前傾（從垂直量起）
+        const lumbarFlex = rad(lerp(40, 12, p));
+        let ang = trunkLean - lumbarFlex;            // 骶骨（骨盆）的傾斜
+        let x = H.x + Math.sin(ang) * L.sacrum, y = H.y - Math.cos(ang) * L.sacrum;
+        const segs = [];
+        for (let i = 0; i < 5; i++) {
+          const joint = lumbarFlex * SHARE[i];
+          ang += joint;
+          segs.push({ bx: x, by: y, ang, flex: joint });
+          x += Math.sin(ang) * L.disc; y -= Math.cos(ang) * L.disc;
+          segs[i].vx = x; segs[i].vy = y;
+          x += Math.sin(ang) * L.vert; y -= Math.cos(ang) * L.vert;
+        }
+        const top = { x, y };
+        const S = { x: top.x + Math.sin(trunkLean) * L.thorax, y: top.y - Math.cos(trunkLean) * L.thorax };
+        const headC = { x: S.x + Math.sin(trunkLean) * (L.headR + 10) + 4, y: S.y - Math.cos(trunkLean) * (L.headR + 10) };
+        const base = lerp(62, 30, p);
+        const box = { x: H.x + base + d * 100, y: 320 };
+        const hand = { x: box.x, y: box.y - 40 };
+        const dx = hand.x - S.x, dy = hand.y - S.y, dl = Math.hypot(dx, dy);
+        if (dl > L.arm) { hand.x = S.x + dx / dl * L.arm; hand.y = S.y + dy / dl * L.arm; box.x = hand.x; box.y = Math.min(hand.y + 40, 320); }
+        const mid = { x: (S.x + hand.x) / 2, y: (S.y + hand.y) / 2 };
+        const reach = Math.hypot(hand.x - S.x, hand.y - S.y);
+        const bend = Math.sqrt(Math.max(0, (L.arm / 2) ** 2 - (reach / 2) ** 2)) * 0.9;
+        const nx = -(hand.y - S.y) / (reach || 1), ny = (hand.x - S.x) / (reach || 1);
+        const elbow = { x: mid.x - nx * bend, y: mid.y - ny * bend };
+        return { A, K, H, S, headC, segs, top, box, hand, elbow, trunkLean, lumbarFlex };
+      }
+      function moment(w, P) {
+        const dLoad = Math.max(0.05, (P.box.x - P.H.x) / PX_PER_M);
+        const dTrunk = Math.max(0.02, (P.S.x - P.H.x) / PX_PER_M) * 0.55;
+        return 9.81 * (35 * dTrunk + w * dLoad);
+      }
+      function colorRgb(t) {
+        const c = t < 0.5 ? [[132, 200, 69], [245, 158, 11], t / 0.5] : [[245, 158, 11], [239, 68, 68], (t - 0.5) / 0.5];
+        return c[0].map((v, i) => Math.round(lerp(v, c[1][i], c[2])));
+      }
+      const color = (t) => `rgb(${colorRgb(t).join(',')})`;
+
+      // ---- 初始化 ----
+      function init() {
+        if (inited) return;
+        inited = true;
+        const posture = document.getElementById('liftPosture'), dist = document.getElementById('liftDist'), weight = document.getElementById('liftWeight');
+        posture.addEventListener('input', () => { state.p = posture.value / 100; });
+        dist.addEventListener('input', () => { state.d = dist.value / 100; });
+        weight.addEventListener('input', () => { state.w = +weight.value; });
+        document.querySelectorAll('.lift-preset').forEach(b => b.addEventListener('click', () => { state.p = +b.dataset.liftPreset; posture.value = state.p * 100; }));
+        state.p = posture.value / 100; state.d = dist.value / 100; state.w = +weight.value;
+        if (canRender3D()) {
+          try { init3D(); return; } catch (e) { console.warn('[搬抬演示] 3D 初始化失敗，改用 2D：', e); }
+        }
+        mode = '2d';
+        document.getElementById('liftCanvas').classList.add('hidden');
+        document.getElementById('liftResetView').classList.add('hidden');
+        document.getElementById('liftSvg').classList.remove('hidden');
+        init2D();
+      }
+
+      // =============== 3D 版本 ===============
+      const M = (px) => px / PX_PER_M;                       // 像素 → 公尺
+      const toWorld = (pt, A) => new THREE.Vector3(M(pt.x - A.x), M(320 - pt.y), 0);
+      function init3D() {
+        const canvas = document.getElementById('liftCanvas');
+        const stage = document.getElementById('liftStage');
+        const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'low-power' });
+        r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        r.setClearColor(0x0b1220, 1);
+        r.outputEncoding = THREE.sRGBEncoding;
+        r.shadowMap.enabled = true;
+        r.shadowMap.type = THREE.PCFSoftShadowMap;
+        const scene = new THREE.Scene();
+        const cam = new THREE.PerspectiveCamera(36, 520 / 340, 0.05, 30);
+        const ctl = new THREE.OrbitControls(cam, canvas);
+        ctl.enableDamping = true; ctl.dampingFactor = 0.08; ctl.enablePan = false;
+        ctl.minDistance = 1.2; ctl.maxDistance = 4.5; ctl.maxPolarAngle = Math.PI / 2 - 0.05;
+        G.r = r; G.scene = scene; G.cam = cam; G.ctl = ctl; G.stage = stage;
+        resetView();
+        document.getElementById('liftResetView').addEventListener('click', resetView);
+        ['pointerdown', 'wheel'].forEach(ev => canvas.addEventListener(ev, () => { G.userMoved = true; }, { passive: true }));
+
+        scene.add(new THREE.HemisphereLight(0xdfe9ff, 0x1a2436, 0.9));
+        const sun = new THREE.DirectionalLight(0xffffff, 0.9);
+        sun.position.set(1.8, 3.2, 2.2); sun.castShadow = true;
+        sun.shadow.mapSize.set(1024, 1024); sun.shadow.camera.left = -2; sun.shadow.camera.right = 2; sun.shadow.camera.top = 3; sun.shadow.camera.bottom = -1;
+        sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 10; sun.shadow.bias = -0.0008;
+        scene.add(sun);
+        const ground = new THREE.Mesh(new THREE.CircleGeometry(1.7, 48), new THREE.MeshStandardMaterial({ color: 0x15213a, roughness: 1 }));
+        ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+        const grid = new THREE.GridHelper(3.2, 16, 0x2d3d5c, 0x22304a); grid.position.y = 0.002; scene.add(grid);
+
+        const mat = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.75 }, o));
+        const ghost = (c) => mat(c, { transparent: true, opacity: 0.42, depthWrite: false });   // 身體半透明，像透視圖
+        const part = (geo, m) => { const o = new THREE.Mesh(geo, m); o.castShadow = true; scene.add(o); return o; };
+        const limb = (radius, m) => part(new THREE.CylinderGeometry(radius, radius * 0.85, 1, 14), m);
+        const SKIN = 0xf1c9a5, PANTS = 0x334155, VEST = 0xf97316, BONE = 0xf5f1e6;
+        G.shankL = limb(0.07, ghost(PANTS)); G.shankR = limb(0.07, ghost(PANTS));
+        G.thighL = limb(0.085, ghost(PANTS)); G.thighR = limb(0.085, ghost(PANTS));
+        G.footL = part(new THREE.BoxGeometry(0.26, 0.07, 0.11), ghost(0x1e293b)); G.footR = G.footL.clone(); scene.add(G.footR);
+        G.pelvis = part(new THREE.BoxGeometry(0.18, 0.16, 0.3), ghost(PANTS));
+        G.trunk = part(new THREE.BoxGeometry(0.2, 1, 0.32), ghost(VEST));
+        G.head = part(new THREE.SphereGeometry(0.105, 20, 16), mat(SKIN));
+        G.upperL = limb(0.045, ghost(SKIN)); G.upperR = limb(0.045, ghost(SKIN));
+        G.foreL = limb(0.04, ghost(SKIN)); G.foreR = limb(0.04, ghost(SKIN));
+        // 脊椎：骶骨、5 節椎體（含棘突）、5 個楔形椎間盤、胸椎塊
+        G.sacrum = part(new THREE.BoxGeometry(0.07, M(L.sacrum), 0.12), mat(BONE, { roughness: 0.5 }));
+        G.verts = []; G.spines = []; G.discs = [];
+        for (let i = 0; i < 5; i++) {
+          const v = part(new THREE.BoxGeometry(0.075, M(L.vert), 0.09), mat(BONE, { roughness: 0.5 }));
+          const sp = part(new THREE.BoxGeometry(0.05, 0.02, 0.025), mat(BONE, { roughness: 0.5 }));
+          G.verts.push(v); G.spines.push(sp);
+          const geo = new THREE.CylinderGeometry(0.042, 0.042, 1, 22);
+          geo.userData.base = geo.attributes.position.array.slice();
+          const d = part(geo, mat(0x84c845, { roughness: 0.45 }));
+          G.discs.push(d);
+        }
+        G.thorax = part(new THREE.BoxGeometry(0.09, M(L.thorax) + 0.04, 0.16), mat(BONE, { roughness: 0.55 }));
+        // 物品：紙箱 + 重量標籤
+        G.boxMat = mat(0xd6a66b, { roughness: 0.9 });
+        G.box = part(new THREE.BoxGeometry(1, 1, 1), G.boxMat);
+        G.labelCvs = document.createElement('canvas'); G.labelCvs.width = 128; G.labelCvs.height = 64;
+        G.labelTex = new THREE.CanvasTexture(G.labelCvs); G.labelTex.encoding = THREE.sRGBEncoding;
+        G.label = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.08), new THREE.MeshBasicMaterial({ map: G.labelTex, transparent: true }));
+        scene.add(G.label);
+        // 水平距離指示：地面上的虛線與兩端的小柱
+        G.distLine = new THREE.Mesh(new THREE.BoxGeometry(1, 0.006, 0.02), new THREE.MeshBasicMaterial({ color: 0xfbbf24 }));
+        G.distA = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.08, 8), new THREE.MeshBasicMaterial({ color: 0xfbbf24 }));
+        G.distB = G.distA.clone(); scene.add(G.distLine, G.distA, G.distB);
+        G.labelW = -1;
+        onResize();
+        if (window.ResizeObserver) new ResizeObserver(onResize).observe(stage);
+      }
+      function resetView() {
+        G.cam.position.set(1.55, 1.15, 2.75);
+        G.ctl.target.set(0.42, 0.55, 0);
+        G.ctl.update();
+        G.userMoved = false;
+      }
+      function onResize() {
+        const w = G.stage.clientWidth || 520, h = G.stage.clientHeight || Math.round(w * 340 / 520);
+        G.r.setSize(w, h, false);
+        G.cam.aspect = w / h; G.cam.updateProjectionMatrix();
+      }
+      const _v = { a: new THREE.Vector3(), b: new THREE.Vector3(), m: new THREE.Vector3(), q: new THREE.Quaternion(), up: new THREE.Vector3(0, 1, 0) };
+      function placeLimb(mesh, a, b, z) {
+        _v.a.set(a.x, a.y, z); _v.b.set(b.x, b.y, z);
+        const len = _v.a.distanceTo(_v.b);
+        mesh.position.copy(_v.a).add(_v.b).multiplyScalar(0.5);
+        mesh.scale.set(1, len, 1);
+        _v.m.copy(_v.b).sub(_v.a).normalize();
+        mesh.quaternion.setFromUnitVectors(_v.up, _v.m);
+      }
+      function placeSeg(mesh, cx, cy, ang, z = 0) {   // ang：從垂直量起、向前（+x）為正
+        mesh.position.set(cx, cy, z);
+        mesh.rotation.set(0, 0, -ang);
+      }
+      function drawLabel(w) {
+        if (G.labelW === w) return;
+        G.labelW = w;
+        const ctx = G.labelCvs.getContext('2d');
+        ctx.clearRect(0, 0, 128, 64);
+        ctx.fillStyle = 'rgba(63,42,20,0.85)'; ctx.fillRect(0, 0, 128, 64);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 34px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(`${w} kg`, 64, 34);
+        G.labelTex.needsUpdate = true;
+      }
+      function draw3D(P) {
+        const A = P.A, pt = (q) => ({ x: M(q.x - A.x), y: M(320 - q.y) });
+        const a = pt(P.A), k = pt(P.K), h = pt(P.H), s = pt(P.S), top = pt(P.top), head = pt(P.headC), el = pt(P.elbow), hand = pt(P.hand), box = pt(P.box);
+        placeLimb(G.shankL, a, k, 0.1); placeLimb(G.shankR, a, k, -0.1);
+        placeLimb(G.thighL, k, h, 0.1); placeLimb(G.thighR, k, h, -0.1);
+        G.footL.position.set(a.x + 0.06, 0.035, 0.1); G.footR.position.set(a.x + 0.06, 0.035, -0.1);
+        placeSeg(G.pelvis, h.x, h.y + 0.02, P.trunkLean - P.lumbarFlex);
+        // 軀幹：髖→肩的半透明塊
+        _v.a.set(h.x, h.y, 0); _v.b.set(s.x, s.y, 0);
+        G.trunk.position.copy(_v.a).add(_v.b).multiplyScalar(0.5);
+        G.trunk.scale.set(1, _v.a.distanceTo(_v.b) * 0.92, 1);
+        G.trunk.rotation.set(0, 0, -(P.trunkLean + (P.trunkLean - P.lumbarFlex)) / 2);
+        G.head.position.set(head.x, head.y, 0);
+        placeLimb(G.upperL, s, el, 0.2); placeLimb(G.upperR, s, el, -0.2);
+        placeLimb(G.foreL, el, hand, 0.2); placeLimb(G.foreR, el, hand, -0.2);
+        // 脊椎
+        const sAng = P.trunkLean - P.lumbarFlex;
+        placeSeg(G.sacrum, h.x + Math.sin(sAng) * M(L.sacrum) / 2 - Math.cos(sAng) * 0.02, h.y + Math.cos(sAng) * M(L.sacrum) / 2 + Math.sin(sAng) * 0.02 * 0, sAng);
+        const flexNorm = (P.lumbarFlex - rad(12)) / (rad(40) - rad(12));
+        P.segs.forEach((sg, i) => {
+          const ax = Math.sin(sg.ang), ay = Math.cos(sg.ang);
+          const vb = pt({ x: sg.vx, y: sg.vy });
+          const vc = { x: vb.x + ax * M(L.vert) / 2, y: vb.y + ay * M(L.vert) / 2 };
+          placeSeg(G.verts[i], vc.x, vc.y, sg.ang);
+          // 棘突在後方（-x 方向）
+          placeSeg(G.spines[i], vc.x - Math.cos(sg.ang) * 0.06, vc.y + Math.sin(sg.ang) * 0.06, sg.ang);
+          // 椎間盤：楔形（前緣壓扁、後緣張開）
+          const db = pt({ x: sg.bx, y: sg.by });
+          const dc = { x: db.x + ax * M(L.disc) / 2, y: db.y + ay * M(L.disc) / 2 };
+          const kf = Math.min(1, sg.flex / rad(12));
+          const disc = G.discs[i], pos = disc.geometry.attributes.position, base = disc.geometry.userData.base;
+          for (let v = 0; v < pos.count; v++) {
+            const x = base[v * 3], y = base[v * 3 + 1];
+            if (y > 0) pos.array[v * 3 + 1] = 0.5 - 0.55 * kf * (x / 0.042) * 0.5;   // 前（+x）低、後（-x）高
+            else pos.array[v * 3 + 1] = y;
+          }
+          pos.needsUpdate = true;
+          disc.geometry.computeVertexNormals();
+          placeSeg(disc, dc.x, dc.y, sg.ang);
+          disc.scale.set(1, M(L.disc), 1);
+          const c = colorRgb(Math.min(1, kf * 0.9));
+          disc.material.color.setRGB(c[0] / 255, c[1] / 255, c[2] / 255).convertSRGBToLinear();
+        });
+        const tc = { x: (top.x + s.x) / 2, y: (top.y + s.y) / 2 };
+        placeSeg(G.thorax, tc.x, tc.y, P.trunkLean);
+        // 物品
+        const size = 0.2 + 0.008 * state.w;
+        G.box.scale.setScalar(size);
+        G.box.position.set(box.x, box.y + size / 2, 0);
+        G.label.position.set(box.x, box.y + size / 2, size / 2 + 0.003);
+        drawLabel(state.w);
+        // 水平距離標示
+        const dx = box.x - h.x;
+        G.distLine.position.set(h.x + dx / 2, 0.01, 0.3); G.distLine.scale.set(Math.max(0.01, dx), 1, 1);
+        G.distA.position.set(h.x, 0.04, 0.3); G.distB.position.set(box.x, 0.04, 0.3);
+        G.ctl.update();
+        G.r.render(G.scene, G.cam);
+        return flexNorm;
+      }
+
+      // =============== 2D 備援（SVG）===============
+      function init2D() {
+        svg = document.getElementById('liftSvg');
+        mk('rect', { x: 0, y: 0, width: 520, height: 340, fill: '#0b1220', rx: 14 });
+        for (let y = 60; y < 320; y += 40) mk('line', { x1: 20, y1: y, x2: 500, y2: y, stroke: '#1e293b', 'stroke-width': 1 });
+        mk('line', { x1: 20, y1: 320, x2: 500, y2: 320, stroke: '#475569', 'stroke-width': 2 });
+        els = {};
+        els.legBack = mk('path', { fill: 'none', stroke: '#64748b', 'stroke-width': 13, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+        els.leg = mk('path', { fill: 'none', stroke: '#94a3b8', 'stroke-width': 13, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+        els.torso = mk('path', { fill: 'none', stroke: '#cbd5e1', 'stroke-width': 26, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.35 });
+        els.armBack = mk('path', { fill: 'none', stroke: '#64748b', 'stroke-width': 9, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+        els.box = mk('g', {});
+        mk('rect', { x: -22, y: -40, width: 44, height: 40, rx: 4, fill: '#d6a66b', stroke: '#8a6236', 'stroke-width': 2 }, els.box);
+        els.boxLabel = mk('text', { x: 0, y: -14, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700, fill: '#3f2a14' }, els.box);
+        els.arm = mk('path', { fill: 'none', stroke: '#94a3b8', 'stroke-width': 9, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+        els.head = mk('circle', { r: L.headR, fill: '#e2e8f0' });
+        els.discs = []; els.verts = [];
+        for (let i = 0; i < 5; i++) els.discs.push(mk('polygon', { fill: '#84c845', stroke: '#0b1220', 'stroke-width': 1 }));
+        els.sacrum = mk('polygon', { fill: '#f1f5f9', stroke: '#334155', 'stroke-width': 1.2 });
+        for (let i = 0; i < 5; i++) els.verts.push(mk('rect', { width: 18, height: L.vert, rx: 3, fill: '#f8fafc', stroke: '#334155', 'stroke-width': 1.2 }));
+        els.loadArrow = mk('path', { fill: 'none', stroke: '#fbbf24', 'stroke-width': 2, 'stroke-dasharray': '4 3' });
+        els.loadText = mk('text', { 'font-size': 11, fill: '#fbbf24', 'font-weight': 700 });
+      }
+      function draw2D(P) {
+        els.leg.setAttribute('d', `M${fmt(P.A.x, P.A.y)} L${fmt(P.K.x, P.K.y)} L${fmt(P.H.x, P.H.y)}`);
+        els.legBack.setAttribute('d', `M${fmt(P.A.x - 8, P.A.y)} L${fmt(P.K.x - 8, P.K.y)} L${fmt(P.H.x - 6, P.H.y)}`);
+        els.torso.setAttribute('d', `M${fmt(P.H.x, P.H.y)} L${fmt(P.top.x, P.top.y)} L${fmt(P.S.x, P.S.y)}`);
+        els.head.setAttribute('cx', P.headC.x); els.head.setAttribute('cy', P.headC.y);
+        const armPath = `M${fmt(P.S.x, P.S.y)} L${fmt(P.elbow.x, P.elbow.y)} L${fmt(P.hand.x, P.hand.y)}`;
+        els.arm.setAttribute('d', armPath); els.armBack.setAttribute('d', armPath);
+        els.box.setAttribute('transform', `translate(${P.box.x.toFixed(1)} ${P.box.y.toFixed(1)})`);
+        els.boxLabel.textContent = `${state.w} kg`;
+        const s0 = P.segs[0], sAng = P.trunkLean - P.lumbarFlex, fx = Math.cos(sAng), fy = Math.sin(sAng);
+        els.sacrum.setAttribute('points', [fmt(P.H.x + fx * 7, P.H.y + fy * 7), fmt(P.H.x - fx * 9, P.H.y - fy * 9), fmt(s0.bx - fx * 7, s0.by - fy * 7), fmt(s0.bx + fx * 5, s0.by + fy * 5)].join(' '));
+        P.segs.forEach((sg, i) => {
+          const ax = Math.sin(sg.ang), ay = -Math.cos(sg.ang), px = Math.cos(sg.ang), py = Math.sin(sg.ang);
+          const r = els.verts[i];
+          r.setAttribute('x', -9); r.setAttribute('y', -L.vert);
+          r.setAttribute('transform', `translate(${(sg.vx + ax * L.vert).toFixed(1)} ${(sg.vy + ay * L.vert).toFixed(1)}) rotate(${(sg.ang * 180 / Math.PI).toFixed(1)})`);
+          const k = Math.min(1, sg.flex / rad(12));
+          const frontH = 1 - 0.55 * k, backH = 1 + 0.55 * k;
+          const bl = { x: sg.bx - px * 9, y: sg.by - py * 9 }, br = { x: sg.bx + px * 9, y: sg.by + py * 9 };
+          const tl = { x: bl.x + ax * L.disc * backH, y: bl.y + ay * L.disc * backH }, tr = { x: br.x + ax * L.disc * frontH, y: br.y + ay * L.disc * frontH };
+          els.discs[i].setAttribute('points', [fmt(bl.x, bl.y), fmt(br.x, br.y), fmt(tr.x, tr.y), fmt(tl.x, tl.y)].join(' '));
+          els.discs[i].setAttribute('fill', color(Math.min(1, k * 0.9)));
+        });
+        els.loadArrow.setAttribute('d', `M${fmt(P.H.x, 332)} L${fmt(P.box.x, 332)} M${fmt(P.H.x, 326)} L${fmt(P.H.x, 338)} M${fmt(P.box.x, 326)} L${fmt(P.box.x, 338)}`);
+        els.loadText.setAttribute('x', (P.H.x + P.box.x) / 2 - 24); els.loadText.setAttribute('y', 312);
+        els.loadText.textContent = `水平距離 ${((P.box.x - P.H.x) / PX_PER_M * 100).toFixed(0)} cm`;
+        return (P.lumbarFlex - rad(12)) / (rad(40) - rad(12));
+      }
+
+      // ---- 讀數（兩種模式共用）----
+      function draw() {
+        const P = pose(cur.p, cur.d);
+        const flexNorm = mode === '3d' ? draw3D(P) : draw2D(P);
+        const Mnow = moment(state.w, P);
+        const Mmax = moment(25, pose(0, 1));
+        const Mbest = moment(state.w, pose(1, 0));
+        const ratio = Mnow / Mmax, vsBest = Mnow / Mbest;
+        const bar = document.getElementById('liftMomentBar');
+        bar.style.width = `${Math.round(ratio * 100)}%`; bar.style.background = color(ratio);
+        document.getElementById('liftMomentText').textContent = `${Math.round(ratio * 100)}%（約 ${Math.round(Mnow)} N·m）`;
+        const fbar = document.getElementById('liftFlexBar');
+        fbar.style.width = `${Math.round(flexNorm * 100)}%`; fbar.style.background = color(flexNorm);
+        document.getElementById('liftFlexText').textContent = flexNorm > 0.66 ? '高：前緣明顯受壓' : flexNorm > 0.33 ? '中' : '低：排列整齊';
+        document.getElementById('liftPostureText').textContent = cur.p < 0.25 ? '彎腰' : cur.p < 0.75 ? '半蹲' : '屈膝直背';
+        document.getElementById('liftDistText').textContent = `${((P.box.x - P.H.x) / PX_PER_M * 100).toFixed(0)} cm`;
+        document.getElementById('liftWeightText').textContent = `${state.w} 公斤`;
+        let insight;
+        if (cur.d > 0.6) insight = `物品離身體遠，力矩是「同樣姿勢、物品貼近」的約 ${(Mnow / moment(state.w, pose(cur.p, 0))).toFixed(1)} 倍。先把物品拉近，比換姿勢更有效。`;
+        else if (cur.p < 0.3) insight = `彎腰搬抬：腰椎彎曲大，椎間盤前緣受壓；力矩約為「屈膝、貼近」的 ${vsBest.toFixed(1)} 倍。物品已經靠近身體，是減輕負荷最重要的一步。`;
+        else if (cur.p > 0.7) insight = `屈膝直背：腰椎排列整齊、剪力較低，但壓縮力不一定比彎腰低，膝蓋與大腿的負擔較大。物品貼近身體、放在雙腳之間，才是這個姿勢真正的優勢。`;
+        else insight = `半蹲是多數人自然會採用的方式：腰椎有些彎曲，腿也分擔一部分。研究顯示沒有哪一種姿勢對所有人都最好；物品靠近身體、減少重量與次數，比堅持某一種姿勢更重要。`;
+        document.getElementById('liftInsight').textContent = insight;
+      }
+      function loop() {
+        const k = REDUCED_MOTION ? 1 : 0.14;
+        cur.p += (state.p - cur.p) * k; cur.d += (state.d - cur.d) * k;
+        draw();
+        if (!liftModal.classList.contains('hidden')) raf = requestAnimationFrame(loop);
+      }
+      function start() { cancelAnimationFrame(raf); if (mode === '3d') onResize(); loop(); }
+      return { init, start };
+    })();
 
     // =============================================================
     // 2. 背景音樂引擎 (Web Audio API) — 全部以程式即時合成，不載入任何音檔
@@ -2489,6 +2951,58 @@
     }
 
     // =============================================================
+    // 5.25 [新增] 搬抬演示的小場景：工作環境危害評估島上，一個小人反覆彎腰搬箱子；點它打開演示
+    // =============================================================
+    const LIFT_PROP = { module: 1, r: 20.5, deg: 330 };
+    let liftProp = null;
+    function buildLiftProp() {
+      const m = modById(LIFT_PROP.module);
+      if (!m) return;
+      const [ox, oz] = polar(LIFT_PROP.r, LIFT_PROP.deg);
+      const g = new THREE.Group();
+      g.position.set(m.gridPos.x + ox, tileTop(m), m.gridPos.z + oz);
+      g.rotation.y = THREE.MathUtils.degToRad(-20);
+      g.scale.setScalar(1.3);
+      const mat = (c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85 });
+      const mesh = (geo, c, x, y, z) => { const o = new THREE.Mesh(geo, mat(c)); o.position.set(x, y, z); o.castShadow = true; return o; };
+      // 地墊
+      g.add(mesh(new THREE.CylinderGeometry(3.4, 3.4, 0.12, 24), '#e7d7c1', 0, 0.06, 0));
+      // 腿
+      g.add(mesh(new THREE.BoxGeometry(0.5, 1.6, 0.5), '#334155', 0, 0.8, -0.35));
+      g.add(mesh(new THREE.BoxGeometry(0.5, 1.6, 0.5), '#334155', 0, 0.8, 0.35));
+      // 軀幹（以髖為軸心旋轉）
+      const torso = new THREE.Group(); torso.position.set(0, 1.65, 0);
+      torso.add(mesh(new THREE.BoxGeometry(0.9, 1.5, 1.2), '#f97316', 0, 0.75, 0));   // 反光背心
+      torso.add(mesh(new THREE.SphereGeometry(0.42, 12, 10), '#f1c9a5', 0, 1.85, 0));  // 頭
+      torso.add(mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.3, 12), '#fbbf24', 0, 2.2, 0)); // 安全帽
+      torso.add(mesh(new THREE.BoxGeometry(0.9, 0.25, 0.3), '#f1c9a5', 0.75, 0.55, 0.5));   // 手臂
+      torso.add(mesh(new THREE.BoxGeometry(0.9, 0.25, 0.3), '#f1c9a5', 0.75, 0.55, -0.5));
+      const box = mesh(new THREE.BoxGeometry(1.1, 1.0, 1.1), '#d6a66b', 1.3, 0.35, 0);
+      torso.add(box);
+      g.add(torso);
+      // 看板
+      const sign = mesh(new THREE.BoxGeometry(2.2, 1.3, 0.1), '#0f172a', -2.2, 1.6, -1.2);
+      g.add(sign); g.add(mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.6, 6), '#94a3b8', -2.2, 0.8, -1.2));
+      g.traverse(o => { if (o.isMesh) { o.userData.lift = true; pickables.push(o); } });
+      prepColors(g);
+      scene.add(g);
+      liftProp = { group: g, torso, t: 0 };
+    }
+    function updateLiftProp(dt) {
+      if (!liftProp) return;
+      liftProp.t = (liftProp.t + dt / 4.2) % 1;   // 一個循環 4.2 秒：彎下→停→抬起→停
+      const t = liftProp.t;
+      const ease = (x) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+      let bend;
+      if (t < 0.3) bend = ease(t / 0.3);
+      else if (t < 0.45) bend = 1;
+      else if (t < 0.75) bend = 1 - ease((t - 0.45) / 0.3);
+      else bend = 0;
+      liftProp.torso.rotation.z = -THREE.MathUtils.degToRad(68) * bend;
+      liftProp.group.position.y = tileTop(modById(LIFT_PROP.module)) - 0.15 * bend;
+    }
+
+    // =============================================================
     // 5.3 [新增] 飄動的雲朵：由數個圓球疊成，繞著島群緩慢飄移
     //   全部雲團合併成一個 InstancedMesh；靠近鏡頭的雲會縮小消失，不擋住視線
     //   雲只在島群外圍的環帶飄動，中央的服務島不會被遮住
@@ -3389,6 +3903,8 @@
       flushKit();
       buildPedestrians();
 
+      buildLiftProp();
+
       DOCTORS.forEach(doc => {
         const docMesh = buildDoctorCharacter(doc);
         scene.add(docMesh);
@@ -3842,6 +4358,20 @@
           </div>`, `${doc.name}：查看醫師陣容`,
           () => focusDoctor(doc), new THREE.Vector3(doc.pos.x, doc.pos.y + 15, doc.pos.z), { doctor: doc });
       });
+
+      // 搬抬演示小場景的標籤
+      {
+        const m = modById(LIFT_PROP.module);
+        if (m) {
+          const [ox, oz] = polar(LIFT_PROP.r, LIFT_PROP.deg);
+          makePin('island-pin', `
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-amber-400/60 text-amber-300 text-[11px] font-bold shadow-xl">
+            ${svgIcon('activity')}
+            <span>搬抬演示</span>
+          </div>`, '互動演示：搬抬時的腰椎負荷',
+            () => { sound.playClick(); openLiftDemo('pin'); }, new THREE.Vector3(m.gridPos.x + ox, tileTop(m) + 5.5, m.gridPos.z + oz), { lift: true });
+        }
+      }
 
       applyRoleHighlight();
     }
@@ -4386,6 +4916,7 @@
         animateOcean(motionTime);
         if (atmosphereParticles) atmosphereParticles.rotation.y = motionTime * 0.02;
         updateWalkers(md);
+        updateLiftProp(md);
         if (routeArrowMat) routeArrowMat.map.offset.x -= md * 0.35;
         updatePedestrians(md);
       }
@@ -4435,6 +4966,7 @@
       for (let i = 0; i < hits.length; i++) {
         const ud = hits[i].object.userData;
         if (ud.doctor) return { doctor: ud.doctor };
+        if (ud.lift) return { lift: true };
         if (ud.module) return { module: ud.module };
       }
       return null;
@@ -4472,6 +5004,9 @@
       if (!hit) return;
       if (hit.doctor) {
         focusDoctor(hit.doctor);
+      } else if (hit.lift) {
+        sound.playClick();
+        openLiftDemo('island');
       } else {
         sound.playClick();
         if (hit.module.type === 'region') selectRegionNode(hit.module);
@@ -4773,6 +5308,7 @@
     function isDrawerOpen() { return !infoDrawer.classList.contains('translate-x-full'); }
 
     function openDrawer(mod) {
+      document.getElementById('drawerLiftBtn').classList.toggle('hidden', !(mod.id === 1 || mod.id === 5));
       document.getElementById('drawerIcon').innerHTML = svgIcon(mod.icon, 'icon-lg');
       document.getElementById('drawerBadge').textContent = mod.badge;
       document.getElementById('drawerTitle').textContent = mod.name;
@@ -4834,7 +5370,9 @@
     const historyModal = document.getElementById('historyModal');
     const calcModal = document.getElementById('calcModal');
     const contactModal = document.getElementById('contactModal');
-    const ALL_MODALS = [doctorsModal, marketModal, historyModal, calcModal, contactModal];
+    const toolsModal = document.getElementById('toolsModal');
+    const liftModal = document.getElementById('liftModal');
+    const ALL_MODALS = [doctorsModal, marketModal, historyModal, calcModal, contactModal, toolsModal, liftModal];
 
     // 諮詢管道：以資料檔為準套用到所有按鈕（HTML 內已有預設網址，資料檔沒載入時仍可使用）
     // 量測頁首實際高度，讓服務路徑列、地區卡片、巡航橫幅排在它下方（手機頁首會因螢幕寬度換行）
@@ -5109,7 +5647,18 @@
     document.getElementById('btnOpenDoctors').addEventListener('click', () => { sound.playClick(); openModal(doctorsModal); });
     document.getElementById('btnOpenMarket').addEventListener('click', () => { sound.playClick(); openModal(marketModal); });
     document.getElementById('btnOpenHistory').addEventListener('click', () => { sound.playClick(); openModal(historyModal); });
-    document.getElementById('btnOpenCalc').addEventListener('click', () => { sound.playClick(); openModal(calcModal); track('island_calc_open'); });
+    document.getElementById('btnOpenCalc').addEventListener('click', () => { sound.playClick(); openModal(toolsModal); });
+    document.getElementById('toolsToCalc').addEventListener('click', () => { sound.playClick(); closeModal(toolsModal); openModal(calcModal); track('island_calc_open'); });
+    document.getElementById('toolsToLift').addEventListener('click', () => { sound.playClick(); closeModal(toolsModal); openLiftDemo('tools'); });
+    document.getElementById('drawerLiftBtn').addEventListener('click', () => { sound.playClick(); openLiftDemo('drawer'); });
+    document.getElementById('liftToService').addEventListener('click', () => { sound.playClick(); closeModal(liftModal); selectModule(modById(1)); });
+    document.getElementById('liftToContact').addEventListener('click', () => { sound.playClick(); closeModal(liftModal); openModal(contactModal); });
+    function openLiftDemo(from) {
+      LiftDemo.init();
+      openModal(liftModal);
+      LiftDemo.start();
+      track('island_lift_open', { from });
+    }
     document.getElementById('btnOpenContact').addEventListener('click', () => { sound.playClick(); openModal(contactModal); track('island_contact_open'); });
     document.getElementById('contactToCalcBtn').addEventListener('click', () => { closeModal(contactModal); openModal(calcModal); });
     document.getElementById('marketToCalcBtn').addEventListener('click', () => {
@@ -5635,6 +6184,7 @@
         startTaipeiClockMonitor();
         setLoader(1, '準備完成');
         if (location.hash === '#calc') setTimeout(() => openModal(calcModal), 1200);
+        if (location.hash === '#lift') setTimeout(() => openLiftDemo('link'), 1200);
         track('island_ready', { ms: Math.round(performance.now() - t0) });
         // 載入畫面至少停 900 毫秒，避免一閃而過
         setTimeout(() => {

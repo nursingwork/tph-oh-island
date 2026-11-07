@@ -154,6 +154,26 @@ const html = `<!DOCTYPE html>
       <ul class="mt-2 space-y-3">${routes}</ul>
     </section>
 
+    <section id="lifting" aria-labelledby="h-lift">
+      <h2 id="h-lift" class="text-xl font-extrabold text-white">搬抬時的腰椎負荷（互動演示）</h2>
+      <p class="mt-2 text-sm text-slate-300 leading-relaxed">3D 地圖版有一個互動演示，仿照教學用的搬抬示範模型：側面的人形可以在「彎腰」與「屈膝直背」之間切換，看腰椎的彎曲與椎間盤前緣受壓的情形，並可調整物品離身體的距離與重量，觀察腰部力矩的變化。<a class="underline text-brand-300" href="index.html#lift">開啟互動演示</a></p>
+      <h3 class="mt-4 font-bold text-brand-300">研究證據摘要</h3>
+      <ul class="mt-1 list-disc pl-5 space-y-1 text-sm text-slate-300">
+        <li>比較彎腰與屈膝搬抬的生物力學研究顯示，腰椎壓縮力兩者相近，屈膝能降低的是剪力與彎曲力矩；回顧的結論是證據不足以把屈膝搬抬當作預防下背痛的方法（van Dieën 等，Clinical Biomechanics，1999）。</li>
+        <li>腰椎承受的力主要受負荷力矩、搬抬速度與加速度影響；物品的寬度與放置高度比姿勢更關鍵，物品能放在雙腳之間時屈膝才能真正降低壓縮力（Kingma 等，Physical Therapy，2006）。</li>
+        <li>Cochrane 系統性回顧（9 篇隨機試驗、兩萬多名員工）顯示，單純的搬抬姿勢訓練，不論是否搭配輔具，都沒有減少腰痛、失能或病假（Verbeek 等，2011）。</li>
+      </ul>
+      <h3 class="mt-4 font-bold text-brand-300">比姿勢更有效的做法</h3>
+      <ul class="mt-1 list-disc pl-5 space-y-1 text-sm text-slate-300">
+        <li>讓物品靠近身體，能放在雙腳之間最好</li>
+        <li>避免扭轉：先轉腳，再轉身</li>
+        <li>把常搬的物品放在膝蓋到胸口之間的高度，不要放地上</li>
+        <li>分批搬、兩人搬，或用推車、吊具、升降台減少重量與次數</li>
+        <li>從作業設計著手，把「要搬」變成「不用搬」</li>
+      </ul>
+      <p class="mt-2 text-xs text-slate-400">本科在臨場服務時以 KIM、OWAS、RULA 等工具到現場評估搬抬作業並提出改善建議；本演示為衛教用途，數值為相對比較，不是個人或作業的評估結果。</p>
+    </section>
+
     <section id="doctors" aria-labelledby="h-doc">
       <h2 id="h-doc" class="text-xl font-extrabold text-white">醫師</h2>
       <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -256,6 +276,7 @@ ${core.map(m => `- ${m.name}（${m.officialName}）：${m.desc}`).join('\n')}
 ## 頁面
 - 3D 地圖版：${SITE}/
 - 文字版服務說明與常見問題：${SITE}/services.html
+- 互動演示「搬抬時的腰椎負荷」：${SITE}/#lift（研究摘要見 ${SITE}/services.html#lifting）
 
 資料更新日期：${updated}
 `;
