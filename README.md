@@ -80,6 +80,13 @@ node build-text-page.js
 
 會依 island-data.js 重新產生 `services.html`、`llms.txt`、`sitemap.xml`。常見問題（FAQ）的內容寫在 `build-text-page.js` 的 `FAQ` 陣列，要增修也在那裡改。
 
+## 效能設定
+
+- 中文字使用各平台內建字型（iPhone 蘋方、Android 思源黑體、Windows 微軟正黑體），只從 Google Fonts 載入英數字型 Plus Jakarta Sans，而且不阻擋畫面顯示。
+- 3D 程式庫放在頁尾，載入畫面會先出現。
+- 手機上地形與海岸距離場用較粗的解析度；雲朵在瀏覽器空檔時才建立。
+- 院徽圖檔已壓縮（`logo-mark.png` 144×144）；如需更換，請維持相近尺寸。
+
 ## 重新產生 tailwind.css
 
 需要先安裝 [Node.js](https://nodejs.org/)，然後在這個資料夾執行：

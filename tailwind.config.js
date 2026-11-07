@@ -11,7 +11,7 @@ module.exports = {
         accent: { gold: '#fbbf24', orange: '#f97316', violet: '#8b5cf6' }
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', '"Noto Sans TC"', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', '"PingFang TC"', '"Noto Sans TC"', '"Noto Sans CJK TC"', '"Microsoft JhengHei"', 'system-ui', 'sans-serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace']
       }
     }

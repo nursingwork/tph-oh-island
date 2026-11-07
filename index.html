@@ -132,7 +132,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- [效能] 字型：英數用 Plus Jakarta Sans（非阻塞載入）；中文改用各平台內建字型（iPhone 蘋方、Android 思源黑體、Windows 微軟正黑體），
+       不再下載約 1.3 MB 的中文網路字型 -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap"></noscript>
 
   <!-- [優化] 改用預先編譯好的 Tailwind CSS（約 40KB），取代瀏覽器端即時編譯的 CDN：
        載入更快、沒有閃爍，也不會再出現「cdn.tailwindcss.com should not be used in production」警告。
@@ -140,10 +144,6 @@
   <link rel="stylesheet" href="./tailwind.css">
 
   <!-- Three.js (r128), OrbitControls (同版本), Tween.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
   <style>
     * {
@@ -504,7 +504,7 @@
   <!-- ================= 載入畫面：先出現品牌與進度，場景建好後淡出並以運鏡進場 ================= -->
   <div id="loader" class="fixed inset-0 z-[60] flex items-center justify-center bg-[#060913]" aria-live="polite">
     <div class="text-center">
-      <img src="assets/logo-mark.png" alt="" width="72" height="72" class="loader-mark mx-auto w-[72px] h-[72px]" decoding="async">
+      <img src="assets/logo-mark.png" alt="" width="72" height="72" class="loader-mark mx-auto w-[72px] h-[72px]" fetchpriority="high">
       <div class="mt-5 text-lg font-extrabold tracking-wide text-white">職醫守護島</div>
       <div class="mt-1 text-xs text-slate-400">衛生福利部臺北醫院 職業醫學科</div>
       <div class="loader-bar mx-auto mt-6 w-40 h-1 rounded-full bg-white/10 overflow-hidden"><div id="loaderFill" class="h-full w-0 bg-gradient-to-r from-brand-400 to-medblue-400 rounded-full"></div></div>
@@ -1577,6 +1577,12 @@
     <span class="w-2 h-2 shrink-0 rounded-full bg-brand-400" aria-hidden="true"></span>
     <span id="toastMsg"></span>
   </div>
+
+  <!-- ================= 3D 程式庫（[效能] 放在頁尾，不阻擋載入畫面顯示） ================= -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
   <!-- ================= 內容資料（服務、醫師、流線、試算規則、引導文字） ================= -->
   <script src="./island-data.js"></script>
@@ -2838,7 +2844,9 @@
       };
     }
 
+    let lastEnvState = null;
     function applyEnvState(st) {
+      lastEnvState = st;
       envState = st;
       skyMat.uniforms.uTop.value.copy(st.top);
       skyMat.uniforms.uHorizon.value.copy(st.horizon);
@@ -3148,7 +3156,7 @@
       scene.add(oceanMesh);
 
       // [畫質] 地形改用頂點色：海床 → 沙灘 → 草地 → 森林 → 岩頂，依高度與雜訊漸變
-      const terrainGeo = new THREE.PlaneGeometry(3600, 3600, 240, 240); // 提高解析度，海岸線較不鋸齒
+      const terrainGeo = new THREE.PlaneGeometry(3600, 3600, IS_COARSE_POINTER ? 150 : 240, IS_COARSE_POINTER ? 150 : 240); // 桌機較細；[效能] 手機減少約六成頂點
       terrainGeo.rotateX(-Math.PI / 2);
       const pos = terrainGeo.attributes.position;
       const colors = new Float32Array(pos.count * 3);
@@ -3184,7 +3192,8 @@
 
       buildMountainForests();
       buildArchipelago();
-      buildClouds();
+      // [效能] 雲朵不影響第一眼的畫面，延後到瀏覽器空檔再建，縮短首次載入的主執行緒占用
+      (window.requestIdleCallback || ((fn) => setTimeout(fn, 1200)))(() => { buildClouds(); if (lastEnvState) tintClouds(lastEnvState); dirty = true; }, { timeout: 2500 });
     }
 
     // ---- [畫質] 樹冠：二十面體加上確定性的頂點擾動，做出蓬鬆不規則的低多邊形樹叢 ----
@@ -3563,7 +3572,7 @@
     }
 
     function buildShoreField() {
-      const N = 384, cell = SHORE_RECT.size / N;
+      const N = IS_COARSE_POINTER ? 256 : 384, cell = SHORE_RECT.size / N; // [效能] 手機用較粗的距離場
       const tiles = ISLAND_MODULES.map(m => ({ x: m.gridPos.x, z: m.gridPos.z, r: (m.type !== 'region' || m.id === 13) ? 36 : 22 }));
       const INF = 1e9;
       const dist = new Float32Array(N * N);
