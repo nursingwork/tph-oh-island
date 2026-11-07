@@ -11,7 +11,7 @@
 | `tailwind.css` | 預先編譯好的樣式，不要手動修改 | 自動產生 |
 | `tailwind.config.js`、`tailwind.input.css` | 重新產生 `tailwind.css` 用的設定 | 負責網站的人 |
 | `services.html`、`llms.txt`、`sitemap.xml` | 文字版服務說明、給 AI 搜尋的網站摘要、網站地圖。**由 `build-text-page.js` 自動產生，不要手動改**；改完 island-data.js 後執行 `node build-text-page.js` 重新產生 | 自動產生 |
-| `robots.txt` | 允許搜尋引擎與 AI 爬蟲讀取的範本。注意：網站在子路徑 `/tph-oh-island/` 下，這個檔案不會生效，要生效需另建 `nursingwork.github.io` repository 放在根目錄 | 負責網站的人 |
+| `robots.txt` | 範本；實際生效的版本放在另一個 repository `nursingwork.github.io` 的根目錄（那裡另有入口頁 index.html，負責讓 Google 顯示正確的網站名稱） | 負責網站的人 |
 | `assets/` | 院徽（`logo-mark.png`、`logo-lockup.png`）、網站圖示（`favicon.png`、`apple-touch-icon.png`）、社群分享預覽圖（`og-cover.jpg`） | 負責網站的人 |
 
 所有檔案放在同一個資料夾，`assets` 資料夾也要一起上傳。網站實際運作需要 `index.html`、`island-data.js`、`tailwind.css` 與 `assets/` 資料夾。
