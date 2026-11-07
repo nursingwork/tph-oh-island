@@ -104,6 +104,7 @@ const html = `<!DOCTYPE html>
       <nav aria-label="主要" class="flex flex-wrap gap-2 text-xs">
         <a href="index.html" class="px-3 py-1.5 rounded-xl bg-brand-500/15 text-brand-300 border border-brand-500/30 hover:bg-brand-500/25">3D 地圖版</a>
         <a href="#enterprise" class="px-3 py-1.5 rounded-xl bg-slate-800 border border-white/10 hover:bg-slate-700">企業臨場服務</a>
+        <a href="#tools" class="px-3 py-1.5 rounded-xl bg-slate-800 border border-white/10 hover:bg-slate-700">互動工具</a>
         <a href="#faq" class="px-3 py-1.5 rounded-xl bg-slate-800 border border-white/10 hover:bg-slate-700">常見問題</a>
         <a href="#contact" class="px-3 py-1.5 rounded-xl bg-slate-800 border border-white/10 hover:bg-slate-700">聯絡方式</a>
       </nav>
@@ -154,6 +155,16 @@ const html = `<!DOCTYPE html>
       <ul class="mt-2 space-y-3">${routes}</ul>
     </section>
 
+    <section id="tools" aria-labelledby="h-tools">
+      <h2 id="h-tools" class="text-xl font-extrabold text-white">互動工具</h2>
+      <p class="mt-1 text-sm text-slate-400">三個可以直接使用的工具，連結可貼在 LINE 或衛教單張上。</p>
+      <ul class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+        <li class="rounded-2xl border border-white/10 bg-slate-900/60 p-4"><a class="font-bold text-white underline" href="index.html#calc">臨場服務頻率試算</a><p class="mt-1 text-slate-300">輸入勞工人數與事業分類，查《勞工健康保護規則》規定的醫護臨場次數。給企業人資與職安人員。</p></li>
+        <li class="rounded-2xl border border-white/10 bg-slate-900/60 p-4"><a class="font-bold text-white underline" href="index.html#lift">搬抬時的腰椎負荷</a><p class="mt-1 text-slate-300">3D 演示：姿勢、物品距離與重量怎麼影響腰椎，附研究證據與建議。給勞工與職安人員。</p></li>
+        <li class="rounded-2xl border border-white/10 bg-slate-900/60 p-4"><a class="font-bold text-white underline" href="index.html#cvd">十年心血管風險</a><p class="mt-1 text-slate-300">國民健康署 MACE 模型試算未來十年發生心肌梗塞、腦中風等事件的機率，並用「火山腳下的房子」的比喻看懂這個數字。給勞工與民眾。</p></li>
+      </ul>
+    </section>
+
     <section id="lifting" aria-labelledby="h-lift">
       <h2 id="h-lift" class="text-xl font-extrabold text-white">搬抬時的腰椎負荷（互動演示）</h2>
       <p class="mt-2 text-sm text-slate-300 leading-relaxed">3D 地圖版有一個互動演示，仿照教學用的搬抬示範模型：側面的人形可以在「彎腰」與「屈膝直背」之間切換，看腰椎的彎曲與椎間盤前緣受壓的情形，並可調整物品離身體的距離與重量，觀察腰部力矩的變化。<a class="underline text-brand-300" href="index.html#lift">開啟互動演示</a></p>
@@ -172,6 +183,14 @@ const html = `<!DOCTYPE html>
         <li>從作業設計著手，把「要搬」變成「不用搬」</li>
       </ul>
       <p class="mt-2 text-xs text-slate-400">本科在臨場服務時以 KIM、OWAS、RULA 等工具到現場評估搬抬作業並提出改善建議；本演示為衛教用途，數值為相對比較，不是個人或作業的評估結果。</p>
+    </section>
+
+    <section id="cvd" aria-labelledby="h-cvd">
+      <h2 id="h-cvd" class="text-xl font-extrabold text-white">十年心血管風險：MACE 健康管理分級與「火山腳下的房子」</h2>
+      <p class="mt-2 text-sm text-slate-300 leading-relaxed">一般健康檢查後的健康管理分級目前沒有官方指引，業界常見的做法是看單一檢查數值，取最高的一項作為等級。本科的立場是做整體性評估：以國民健康署與國家衛生研究院的「慢性疾病風險評估」模型（適用 35～70 歲），由性別、年齡、腰圍、收縮壓、總膽固醇、HDL 與吸菸，推算未來十年發生心血管不良事件（MACE）的機率，分為低（10% 以下）、中（10%～20%）、高（20% 以上）三級，作為健康管理的分級依據，並向個案說明風險來源與可改善的項目。</p>
+      <p class="mt-2 text-sm text-slate-300 leading-relaxed">衛教時用「火山腳下的房子」把機率變具體：合約明載十年內火山有 15% 機率爆發淹沒整棟房子，你敢買嗎？接著說明這座火山和真的火山不同，它可以降溫：戒菸、控制血壓、減少腰圍、改善血脂，都能讓風險下降。<a class="underline text-brand-300" href="index.html#cvd">開啟互動工具</a></p>
+      <p class="mt-2 text-sm text-slate-300 leading-relaxed">民眾與勞工也可以到<a class="underline text-brand-300" href="https://cdrc.hpa.gov.tw/" target="_blank" rel="noopener noreferrer">國民健康署慢性疾病風險評估平台</a>，自行輸入健康檢查數值，查看冠心病、糖尿病、高血壓、腦中風與心血管不良事件的十年風險。</p>
+      <p class="mt-2 text-xs text-slate-400">異常工作負荷促發疾病預防的風險分級，依官方指引以 Framingham 量表評估，不在本工具範圍。正式的 MACE 風險值以國民健康署慢性疾病風險評估平台為準；本工具為衛教與面談輔助，不儲存任何輸入資料。</p>
     </section>
 
     <section id="doctors" aria-labelledby="h-doc">
@@ -276,7 +295,11 @@ ${core.map(m => `- ${m.name}（${m.officialName}）：${m.desc}`).join('\n')}
 ## 頁面
 - 3D 地圖版：${SITE}/
 - 文字版服務說明與常見問題：${SITE}/services.html
+- 互動工具總覽：${SITE}/services.html#tools
+- 臨場服務頻率試算：${SITE}/#calc
 - 互動演示「搬抬時的腰椎負荷」：${SITE}/#lift（研究摘要見 ${SITE}/services.html#lifting）
+- 國民健康署慢性疾病風險評估平台（民眾可自行試算）：https://cdrc.hpa.gov.tw/
+- 互動工具「十年心血管風險」（國民健康署 MACE 模型，副標「火山腳下的房子」）：${SITE}/#cvd。本科一般健康管理以國民健康署 MACE 十年風險做整體性分級（說明見 ${SITE}/services.html#cvd）；異常工作負荷預防依指引使用 Framingham。
 
 資料更新日期：${updated}
 `;

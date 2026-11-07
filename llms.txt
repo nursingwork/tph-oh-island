@@ -31,6 +31,10 @@
 ## 頁面
 - 3D 地圖版：https://nursingwork.github.io/tph-oh-island/
 - 文字版服務說明與常見問題：https://nursingwork.github.io/tph-oh-island/services.html
+- 互動工具總覽：https://nursingwork.github.io/tph-oh-island/services.html#tools
+- 臨場服務頻率試算：https://nursingwork.github.io/tph-oh-island/#calc
 - 互動演示「搬抬時的腰椎負荷」：https://nursingwork.github.io/tph-oh-island/#lift（研究摘要見 https://nursingwork.github.io/tph-oh-island/services.html#lifting）
+- 國民健康署慢性疾病風險評估平台（民眾可自行試算）：https://cdrc.hpa.gov.tw/
+- 互動工具「十年心血管風險」（國民健康署 MACE 模型，副標「火山腳下的房子」）：https://nursingwork.github.io/tph-oh-island/#cvd。本科一般健康管理以國民健康署 MACE 十年風險做整體性分級（說明見 https://nursingwork.github.io/tph-oh-island/services.html#cvd）；異常工作負荷預防依指引使用 Framingham。
 
 資料更新日期：2026-11-04

@@ -301,6 +301,10 @@
     .icon-xl { width: 30px; height: 30px; }
     .island-pin .icon, .region-pin .icon { width: 12px; height: 12px; }
 
+    /* 常見問題：隱藏瀏覽器預設的展開三角形，改由「Q」圖示表示 */
+    details > summary.list-none::-webkit-details-marker { display: none; }
+    details > summary.list-none::marker { content: ''; }
+
     /* 畫面四角輕微壓暗，視線集中在島群 */
     #vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none;
       background: radial-gradient(ellipse at 50% 45%, transparent 58%, rgba(6, 9, 19, 0.32) 100%); }
@@ -749,6 +753,10 @@
         <ul id="drawerKeypoints" class="space-y-2.5 text-xs md:text-sm text-slate-300"></ul>
       </div>
 
+      <button id="drawerCvdBtn" type="button" class="hidden w-full flex items-center gap-3 p-3.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-left transition">
+        <span class="w-10 h-10 shrink-0 rounded-xl bg-rose-500/20 text-rose-300 flex items-center justify-center"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-heart-pulse"></use></svg></span>
+        <span><span class="block text-sm font-bold text-white">互動工具：十年心血管風險</span><span class="block text-xs text-slate-400 mt-0.5">火山腳下的房子：用一個比喻看懂機率</span></span>
+      </button>
       <button id="drawerLiftBtn" type="button" class="hidden w-full flex items-center gap-3 p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-left transition">
         <span class="w-10 h-10 shrink-0 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-activity"></use></svg></span>
         <span><span class="block text-sm font-bold text-white">互動演示：搬抬時的腰椎負荷</span><span class="block text-xs text-slate-400 mt-0.5">拉動姿勢、距離與重量，看腰椎怎麼受力；附研究證據與建議</span></span>
@@ -1051,7 +1059,7 @@
             </div>
             <div class="p-3 rounded-xl bg-slate-800/70 border border-white/10">
               <div class="font-bold text-white mb-1">異常工作負荷預防（過勞）</div>
-              <p>針對輪班、夜間工作與長工時人員，評估工作負荷，並以 Framingham 量表推估 10 年心血管疾病風險後分級；依風險安排醫師面談，必要時建議調整工作時間或工作內容。</p>
+              <p>針對輪班、夜間工作與長工時人員，評估工作負荷，並依指引以 Framingham 量表推估 10 年心血管疾病風險後分級；依風險安排醫師面談，必要時建議調整工作時間或工作內容。</p>
             </div>
             <div class="p-3 rounded-xl bg-slate-800/70 border border-white/10">
               <div class="font-bold text-white mb-1">執行職務遭受不法侵害預防</div>
@@ -1123,11 +1131,176 @@
           <span class="w-10 h-10 shrink-0 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-calculator"></use></svg></span>
           <span><span class="block text-sm font-bold text-white">臨場服務頻率試算</span><span class="block text-xs text-slate-400 mt-0.5">依勞工人數與事業分類，查《勞工健康保護規則》規定的醫護臨場次數</span></span>
         </button>
+        <button id="toolsToCvd" type="button" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-700/70 border border-white/10 text-left transition">
+          <span class="w-10 h-10 shrink-0 rounded-xl bg-rose-500/20 text-rose-300 flex items-center justify-center"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-heart-pulse"></use></svg></span>
+          <span><span class="block text-sm font-bold text-white">十年心血管風險</span><span class="block text-xs text-slate-400 mt-0.5">火山腳下的房子：用一個比喻看懂機率</span></span>
+        </button>
         <button id="toolsToLift" type="button" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-700/70 border border-white/10 text-left transition">
           <span class="w-10 h-10 shrink-0 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-activity"></use></svg></span>
           <span><span class="block text-sm font-bold text-white">搬抬時的腰椎負荷</span><span class="block text-xs text-slate-400 mt-0.5">互動演示：姿勢、物品距離與重量怎麼影響腰椎，附研究證據與建議</span></span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- ================= 彈出面板：十年心血管風險（副標：火山腳下的房子） ================= -->
+  <div id="cvdModal" role="dialog" aria-modal="true" aria-labelledby="cvdModalTitle" class="modal fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div class="glass-morphism w-full max-w-3xl max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl p-5 md:p-7 relative border border-white/20">
+      <button type="button" data-close aria-label="關閉" class="absolute top-5 right-5 text-slate-400 hover:text-white flex"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
+      <div class="flex items-center gap-3.5 mb-4 pr-8">
+        <div class="w-12 h-12 shrink-0 rounded-2xl bg-rose-500/20 text-rose-300 flex items-center justify-center border border-rose-500/30" aria-hidden="true"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-heart-pulse"></use></svg></div>
+        <div>
+          <h2 id="cvdModalTitle" class="text-xl font-extrabold text-white">十年心血管風險</h2>
+          <p class="text-xs text-slate-400 mt-0.5">火山腳下的房子：用一個比喻看懂機率｜國民健康署 MACE 模型，本科健康管理分級採用的整體性評估</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <!-- 輸入 -->
+        <div class="md:col-span-2 space-y-2.5 text-xs">
+          <div class="grid grid-cols-2 gap-2">
+            <label class="block"><span class="text-slate-300 font-bold">性別</span>
+              <select id="cvdSex" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2.5 py-2 text-slate-100"><option value="m">男</option><option value="f">女</option></select></label>
+            <label class="block"><span class="text-slate-300 font-bold">年齡 <span class="font-normal text-slate-500">35～70</span></span>
+              <input id="cvdAge" type="number" min="35" max="70" value="45" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2.5 py-2 text-slate-100"></label>
+            <label class="block"><span class="text-slate-300 font-bold">腰圍 <span class="font-normal text-slate-500">cm</span></span>
+              <input id="cvdWaist" type="number" min="50" max="160" value="92" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2.5 py-2 text-slate-100"></label>
+            <label class="block"><span class="text-slate-300 font-bold">收縮壓 <span class="font-normal text-slate-500">mmHg</span></span>
+              <input id="cvdSbp" type="number" min="80" max="240" value="142" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2.5 py-2 text-slate-100"></label>
+            <label class="block"><span class="text-slate-300 font-bold">總膽固醇 <span class="font-normal text-slate-500">mg/dL</span></span>
+              <input id="cvdTc" type="number" min="100" max="400" value="210" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2.5 py-2 text-slate-100"></label>
+            <label class="block"><span class="text-slate-300 font-bold">HDL <span class="font-normal text-slate-500">mg/dL</span></span>
+              <input id="cvdHdl" type="number" min="15" max="120" value="42" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2.5 py-2 text-slate-100"></label>
+            <label class="block"><span class="text-slate-300 font-bold">目前吸菸</span>
+              <select id="cvdSmoke" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2.5 py-2 text-slate-100"><option value="0">否</option><option value="1" selected>是</option></select></label>
+          </div>
+
+          <div class="rounded-2xl bg-slate-800/70 border border-white/10 p-3">
+            <div class="text-slate-300 font-bold mb-1.5">把火山降溫：假如他做到了</div>
+            <label class="flex items-center gap-2 py-1"><input id="cvdFixSmoke" type="checkbox" class="accent-brand-500"><span>戒菸<span id="cvdSmokeNote" class="hidden text-slate-500"></span></span></label>
+            <label class="flex items-center gap-2 py-1"><input id="cvdFixBp" type="checkbox" class="accent-brand-500"><span>血壓控制到 125 以下（規律量測與用藥）</span></label>
+            <label class="flex items-center gap-2 py-1"><input id="cvdFixWaist" type="checkbox" class="accent-brand-500"><span>腰圍減 5 公分（減重與運動）</span></label>
+            <label class="flex items-center gap-2 py-1"><input id="cvdFixLipid" type="checkbox" class="accent-brand-500"><span>膽固醇改善（總膽固醇 180、HDL 50）</span></label>
+          </div>
+        </div>
+
+        <!-- 結果與火山 -->
+        <div class="md:col-span-3 space-y-3">
+          <div class="rounded-2xl bg-slate-900/70 border border-white/10 overflow-hidden">
+            <svg id="cvdSvg" viewBox="0 0 520 280" class="w-full h-auto block" role="img" aria-label="火山腳下的房子：火山的活躍程度代表未來十年發生心血管不良事件的機率"></svg>
+          </div>
+          <div class="rounded-2xl bg-slate-800/70 border border-white/10 p-3.5 text-xs">
+            <div class="flex items-end justify-between gap-3 flex-wrap">
+              <div>
+                <div class="text-slate-400">未來十年發生心血管不良事件的機率</div>
+                <div class="flex items-baseline gap-2"><span id="cvdRiskNow" class="text-3xl font-extrabold text-white">—</span><span id="cvdRiskLevel" class="px-2 py-0.5 rounded-full text-[11px] font-bold">—</span></div>
+              </div>
+              <div id="cvdAfterBox" class="hidden text-right">
+                <div class="text-slate-400">做到上面的改變之後</div>
+                <div class="flex items-baseline gap-2 justify-end"><span id="cvdRiskAfter" class="text-3xl font-extrabold text-brand-300">—</span><span id="cvdAfterLevel" class="px-2 py-0.5 rounded-full text-[11px] font-bold">—</span></div>
+              </div>
+            </div>
+            <div id="cvdPoints" class="text-[10px] text-slate-500 mt-1"></div>
+            <p id="cvdInsight" class="mt-2 text-slate-200 leading-relaxed"></p>
+          </div>
+          <a href="https://cdrc.hpa.gov.tw/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 p-3 rounded-2xl bg-medblue-500/10 hover:bg-medblue-500/20 border border-medblue-400/30 text-xs transition">
+            <span class="w-9 h-9 shrink-0 rounded-xl bg-medblue-500/20 text-medblue-300 flex items-center justify-center"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-globe"></use></svg></span>
+            <span class="flex-1"><span class="block font-bold text-white">國民健康署 慢性疾病風險評估平台</span><span class="block text-slate-400 mt-0.5">自己輸入健康檢查數值，查看冠心病、糖尿病、高血壓、腦中風與心血管不良事件的十年風險</span></span>
+            <svg class="icon icon-sm text-medblue-300" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg>
+          </a>
+          <div class="rounded-2xl bg-slate-800/70 border border-white/10 p-3.5">
+            <div class="text-xs text-slate-300 font-bold mb-2">100 戶一樣的房子裡，十年內會被淹沒的：<span id="cvdHousesText" class="text-rose-300"></span></div>
+            <div id="cvdHouses" class="grid grid-cols-20 gap-[3px]" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 space-y-5 text-xs text-slate-300 leading-relaxed">
+        <section aria-labelledby="cvdFaqWorker">
+          <h3 id="cvdFaqWorker" class="text-sm font-extrabold text-white mb-2">常見問題｜給勞工與民眾</h3>
+          <div class="space-y-2">
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4 group" open>
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>這個百分比是什麼意思？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>是「未來十年內，發生心肌梗塞、腦中風等重大心血管事件」的機率。例如 15%，代表和你條件相同的 100 個人，十年內大約有 15 個人會發生。</p>
+                <p>分成三級：<strong class="text-brand-300">10% 以下低風險</strong>、<strong class="text-amber-300">10%～20% 中度風險</strong>、<strong class="text-rose-300">20% 以上高風險</strong>。數字下方也會顯示「同性別、同年齡的平均」，讓你知道自己比同齡的人高或低多少。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4 group">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>15% 聽起來不高，為什麼要在意？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>多數人的直覺是「還有 85% 不會發生」。換個情境想：一棟房子地段再好、裝潢再漂亮，合約卻寫著「十年內火山有 15% 的機率爆發、淹沒整棟房子」，你敢掏空身家買下它、讓家人住進去嗎？</p>
+                <p>心肌梗塞和中風就像火山爆發，一旦發生往往無法回頭。面對這種事，15% 其實很高。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4 group">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>數字可以降下來嗎？我該從哪裡開始？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>可以，這座火山和真的火山不同，它可以降溫。現在的數字不是宿命，而是「什麼都不改」時的預報。可以從這幾件事開始：</p>
+                <ul class="list-disc pl-5 space-y-1">
+                  <li><strong class="text-slate-100">量血壓</strong>：在家用「722 原則」量，連續 7 天、早晚各 2 回、每回量 2 次，把紀錄帶給醫師看。</li>
+                  <li><strong class="text-slate-100">顧腰圍</strong>：國民健康署建議男性 90 公分、女性 80 公分以下。</li>
+                  <li><strong class="text-slate-100">戒菸</strong>：需要協助可以找醫院的戒菸門診。</li>
+                  <li><strong class="text-slate-100">動起來</strong>：每週累積 150 分鐘中等強度的運動，減少久坐。</li>
+                  <li><strong class="text-slate-100">按時回診吃藥</strong>：已經在吃血壓、血脂藥的人，不要自己停藥。</li>
+                </ul>
+                <p>勾選上方「把火山降溫」的項目，可以看到改善後的數字。半年後帶新的健檢數值再算一次，看看火山降溫了多少。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4 group">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>我是男性，為什麼勾「戒菸」數字沒有變？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>這是模型本身的設計。國民健康署的心血管不良事件模型，男性公式採用年齡、腰圍、收縮壓與 HDL，沒有把吸菸列為變項；女性公式才有。所以男性勾選戒菸，這個工具的數字不會改變。</p>
+                <p>這不代表吸菸沒關係。吸菸會傷害血管、增加多種疾病的風險，戒菸對每個人都值得做。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4 group">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>算出來是高風險，我該怎麼辦？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>不需要恐慌，這個數字的用意是提醒，不是診斷。建議帶著健檢報告和這個結果，和公司的臨場醫護人員或醫師討論，確認哪些數值需要追蹤或治療。</p>
+                <p>也可以到<a class="underline text-medblue-300" href="https://cdrc.hpa.gov.tw/" target="_blank" rel="noopener noreferrer">國民健康署慢性疾病風險評估平台</a>，查看其他慢性病的風險；或<a data-contact="booking" class="underline text-medblue-300" href="https://nreg.tph.mohw.gov.tw/OReg/OpoDoctorsVisitListPage?sectcategory=%E5%85%A7%E7%A7%91%E7%B3%BB&amp;sectid=0106&amp;sectname=%E8%81%B7%E6%A5%AD%E9%86%AB%E5%AD%B8%E7%A7%91&amp;showcd=N" target="_blank" rel="noopener noreferrer">預約本院職業醫學科門診</a>。</p>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <section aria-labelledby="cvdFaqPro">
+          <h3 id="cvdFaqPro" class="text-sm font-extrabold text-white mb-2">常見問題｜給企業人資與醫護人員</h3>
+          <div class="space-y-2">
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4 group">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>本科為什麼用 MACE 做健康管理分級？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>一般健康檢查後的健康管理分級目前沒有官方指引，業界常見的做法是看單一數值：血壓、血糖、血脂各自分級，取最高的一項作為等級。</p>
+                <p>本科的立場是做整體性評估。同樣是收縮壓 140，對一位 35 歲、腰圍正常的人，和一位 58 歲、腰圍超標、HDL 偏低的人，意義完全不同。MACE 十年風險把多項危險因子合成一個機率，能看出這種差別，也能告訴個案風險從哪裡來、改善哪一項最有效。因此本科在一般健康管理上以 MACE 十年風險分級，並據以向個案衛教。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4 group">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>和異常工作負荷預防用的 Framingham 有什麼不同？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>用途不同。異常工作負荷促發疾病預防依官方指引，以 Framingham 量表評估腦心血管疾病風險，再與工作負荷合併分級；本工具不取代這套流程。</p>
+                <p>MACE 模型由國民健康署與國家衛生研究院以國人資料建立，本科用於一般健康管理的分級與衛教。本工具的公式與同齡平均值，已和國民健康署地端程式（第 4 版）核對一致。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4 group">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>適用對象與使用限制？</span></summary>
+              <div class="mt-2 pl-7">
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>適用 35～70 歲；其他年齡層的結果僅供參考。</li>
+                  <li>已經罹患心血管疾病或腦中風的人不適用，請由醫師評估。</li>
+                  <li>本工具為衛教與面談輔助；正式的風險值以<a class="underline text-medblue-300" href="https://cdrc.hpa.gov.tw/" target="_blank" rel="noopener noreferrer">國民健康署慢性疾病風險評估平台</a>為準，企業的風險分級請依臨場醫護人員的評估。</li>
+                  <li>輸入的數值只在你的瀏覽器裡計算，不會上傳或儲存。</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+        </section>
+      </div>
+
+      <div class="mt-4 flex flex-col sm:flex-row gap-2">
+        <button id="cvdToService" type="button" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-medblue-600 to-brand-500 text-white font-bold text-sm transition">查看「健檢分析與健康管理」服務</button>
+        <button id="cvdToContact" type="button" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-100 font-bold text-sm text-center transition">企業臨場健康服務說明</button>
+      </div>
+      <p class="text-[10px] text-slate-500 mt-3">公式與同齡平均值依國民健康署「慢性疾病風險評估」心血管不良事件模型（第 4 版，男女分別計算）；本工具不儲存任何輸入資料。</p>
     </div>
   </div>
 
@@ -1189,36 +1362,83 @@
         </div>
       </div>
 
-      <div class="mt-5 space-y-2 text-xs text-slate-300 leading-relaxed">
-        <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4" open>
-          <summary class="cursor-pointer font-bold text-white">這個演示在模仿什麼</summary>
-          <p class="mt-2">醫學教學常用一種桌上型的搬抬示範模型：人偶可以從「彎腰」與「屈膝直背」兩種姿勢舉起重物，側面看得到脊椎。彎腰搬抬時腰椎向前彎，椎間盤前緣被壓扁、後緣張開；屈膝直背時椎骨排列整齊，負荷平均落在整個椎體上。上面的側面圖重現了這個對比，並多加了兩個教具沒有的變數：物品離身體的距離，以及重量。</p>
-        </details>
-        <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-          <summary class="cursor-pointer font-bold text-white">什麼最影響腰部負荷</summary>
-          <p class="mt-2">腰部承受的力矩約等於「重量 × 物品與腰椎的水平距離」，再加上上半身本身的重量乘以它前傾的距離。拉動「物品離身體的距離」會發現：物品離身體越遠，力矩上升得比換姿勢還快。研究也指出，作用在腰椎上的力主要受負荷力矩、搬抬速度與加速度影響；物品的寬度與放置高度，比搬抬姿勢更關鍵。物品窄到可以放在雙腳之間時，屈膝搬抬才能真正降低脊椎的壓縮力。</p>
-        </details>
-        <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-          <summary class="cursor-pointer font-bold text-white">研究怎麼說：屈膝不一定比較好</summary>
-          <ul class="mt-2 list-disc pl-5 space-y-1.5">
-            <li>比較彎腰與屈膝搬抬的生物力學研究顯示，腰椎的壓縮力兩者相近，屈膝甚至略高；屈膝能降低的是剪力與彎曲力矩。回顧的結論是：現有證據不足以把「屈膝搬抬」當作預防下背痛的方法。（van Dieën 等，<em>Clinical Biomechanics</em>，1999）</li>
-            <li>用動作擷取與肌肉骨骼模型的研究發現，彎腰搬抬的總負荷與壓縮負荷低於屈膝；剪力多半是彎腰較高，但在 L5/S1 這一節反而是屈膝較高。（Von Arx 等，<em>Frontiers in Bioengineering and Biotechnology</em>，2021）</li>
-            <li>Cochrane 系統性回顧納入 9 篇隨機試驗、兩萬多名員工：單純的搬抬姿勢訓練，不論有沒有搭配輔具，都沒有減少腰痛、失能或病假。（Verbeek 等，<em>Cochrane Database of Systematic Reviews</em>，2011）</li>
-            <li>綜合分析也沒有找到「搬抬時腰椎彎曲較多的人比較容易腰痛」的一致證據。（Saraceni 等，<em>JOSPT</em>，2020）</li>
-          </ul>
-          <p class="mt-2 text-slate-400">所以教具展示的「彎腰時椎間盤前緣受壓」在力學上是真的，但「一定要蹲著搬」和「教會姿勢就能預防腰痛」都不是目前的共識。沒有哪一種姿勢對所有人都最好：腰部不適的人常覺得屈膝比較舒服，膝蓋不好或需要反覆搬抬的人則覺得彎腰省力。</p>
-        </details>
-        <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-          <summary class="cursor-pointer font-bold text-white">實際上怎麼做比較有效</summary>
-          <ul class="mt-2 list-disc pl-5 space-y-1.5">
-            <li><strong class="text-slate-100">讓物品靠近身體</strong>：這是影響最大的一件事。能放在雙腳之間最好。</li>
-            <li><strong class="text-slate-100">避免扭轉</strong>：先轉腳，再轉身，不要只轉腰。</li>
-            <li><strong class="text-slate-100">改變物品的高度</strong>：把常搬的東西放在膝蓋到胸口之間，不要放地上。</li>
-            <li><strong class="text-slate-100">減少重量與次數</strong>：分批搬、兩人搬，或用推車、吊具、升降台。</li>
-            <li><strong class="text-slate-100">從作業設計著手</strong>：把「要搬」變成「不用搬」，效果大過任何姿勢訓練。</li>
-          </ul>
-          <p class="mt-2 text-slate-400">本科在臨場服務時，會用 KIM、OWAS、RULA 等工具到現場評估搬抬作業的負荷，並提出改善建議；這也是人因性危害預防計畫的一部分。</p>
-        </details>
+      <div class="mt-5 space-y-5 text-xs text-slate-300 leading-relaxed">
+        <section aria-labelledby="liftFaqWorker">
+          <h3 id="liftFaqWorker" class="text-sm font-extrabold text-white mb-2">常見問題｜給勞工與民眾</h3>
+          <div class="space-y-2">
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4" open>
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>這個演示在模仿什麼？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>醫學教學常用一種桌上型的搬抬示範模型：人偶可以用「彎腰」或「屈膝直背」兩種姿勢舉起重物，從側面看得到脊椎。彎腰時腰椎向前彎，椎間盤前緣被壓扁、後緣張開；屈膝直背時椎骨排列整齊。</p>
+                <p>上面的 3D 演示重現了這個對比，並多加了教具沒有的兩個變數：<strong class="text-slate-100">物品離身體的距離</strong>和<strong class="text-slate-100">重量</strong>。拖曳畫面可以轉到不同角度看脊椎。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>蹲著搬，是不是一定比彎腰安全？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>不一定。研究比較兩種姿勢，腰椎承受的壓力其實差不多，蹲著搬甚至稍高；蹲著搬能減少的，主要是讓椎骨前後錯動的力量。蹲著搬也比較費力，膝蓋與大腿的負擔較大。</p>
+                <p>所以沒有哪一種姿勢對每個人都最好。腰部不適的人常覺得屈膝比較舒服；膝蓋不好、或需要反覆搬很多次的人，常覺得半蹲或稍微彎腰比較省力。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>什麼最影響腰部的負擔？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p><strong class="text-slate-100">物品離身體多遠。</strong>腰部承受的力，大約是「重量 × 物品離腰的水平距離」。把「物品離身體的距離」滑桿往右拉，會看到力矩上升得比換姿勢還快。</p>
+                <p>其次是重量、搬的速度與有沒有扭轉身體。物品窄到可以放在雙腳之間時，屈膝搬才真正有優勢，因為物品能貼近身體。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>搬東西時，實際上怎麼做比較好？</span></summary>
+              <div class="mt-2 pl-7">
+                <ul class="list-disc pl-5 space-y-1">
+                  <li><strong class="text-slate-100">先靠近，再搬</strong>：讓物品貼近身體，能放在雙腳之間最好。</li>
+                  <li><strong class="text-slate-100">先轉腳，再轉身</strong>：不要只扭腰。</li>
+                  <li><strong class="text-slate-100">慢慢來</strong>：不要猛然用力抬起。</li>
+                  <li><strong class="text-slate-100">太重就分批或找人幫忙</strong>，能用推車、升降台就用。</li>
+                  <li><strong class="text-slate-100">選自己舒服的姿勢</strong>：在上面幾點都做到的前提下，彎腰、半蹲或屈膝都可以。</li>
+                </ul>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>已經腰痛了，還能搬東西嗎？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>一般的腰痛多數會在幾週內改善，適度活動通常比完全躺著休息好。搬東西時先減少重量與次數，選擇比較不痛的姿勢，很多人會覺得屈膝搬比較舒服。</p>
+                <p>如果疼痛持續、越來越嚴重，或出現腳麻、腳沒力，請就醫評估。懷疑腰痛和工作有關，可以<a data-contact="booking" class="underline text-medblue-300" href="https://nreg.tph.mohw.gov.tw/OReg/OpoDoctorsVisitListPage?sectcategory=%E5%85%A7%E7%A7%91%E7%B3%BB&amp;sectid=0106&amp;sectname=%E8%81%B7%E6%A5%AD%E9%86%AB%E5%AD%B8%E7%A7%91&amp;showcd=N" target="_blank" rel="noopener noreferrer">預約本院職業醫學科門診</a>。</p>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <section aria-labelledby="liftFaqPro">
+          <h3 id="liftFaqPro" class="text-sm font-extrabold text-white mb-2">常見問題｜給企業人資與職安人員</h3>
+          <div class="space-y-2">
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>為什麼只教「正確搬抬姿勢」不夠？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>Cochrane 系統性回顧納入 9 篇隨機試驗、兩萬多名員工，發現單純的搬抬姿勢訓練，不論有沒有搭配輔具，都沒有減少腰痛、失能或病假。受訓的人知識增加了，但不一定轉化成行為改變。</p>
+                <p>姿勢教育可以作為輔助，真正有效的是從作業本身著手：減少要搬的重量與次數、調整物品放置的高度、提供搬運輔具。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>企業可以怎麼改善？本科怎麼協助？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <ul class="list-disc pl-5 space-y-1">
+                  <li><strong class="text-slate-100">工程改善</strong>：升降台、推車、吊具，把常搬的物品放在膝蓋到胸口之間的高度。</li>
+                  <li><strong class="text-slate-100">作業調整</strong>：拆小包裝、兩人搬運、輪替作業，減少單人反覆搬抬。</li>
+                  <li><strong class="text-slate-100">評估與追蹤</strong>：本科在臨場服務時，以 KIM、OWAS、RULA 等工具到現場評估搬抬作業的負荷，並提出改善建議。</li>
+                </ul>
+                <p>這些也是人因性危害預防計畫的內容；計畫由事業單位撰寫與執行，本科協助評估並提供醫學建議。</p>
+              </div>
+            </details>
+            <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>演示的數值怎麼來的？有什麼限制？</span></summary>
+              <div class="mt-2 pl-7 space-y-1.5">
+                <p>人形以簡化的連桿模型繪製；腰部力矩以「上半身重量（35 公斤）× 前傾距離＋物品重量 × 物品的水平距離」估算，只顯示相對高低與倍數。這是衛教用的示意，不是個人或作業的評估結果；實際作業的負荷，請以現場評估為準。</p>
+                <p class="text-slate-400">參考文獻：van Dieën 等，<em>Clinical Biomechanics</em>，1999；Kingma 等，<em>Physical Therapy</em>，2006；von Arx 等，<em>Frontiers in Bioengineering and Biotechnology</em>，2021；Verbeek 等，<em>Cochrane Database of Systematic Reviews</em>，2011；Saraceni 等，<em>JOSPT</em>，2020。</p>
+              </div>
+            </details>
+          </div>
+        </section>
       </div>
 
       <div class="mt-4 flex flex-col sm:flex-row gap-2">
@@ -1802,6 +2022,142 @@
       }
       function start() { cancelAnimationFrame(raf); if (mode === '3d') onResize(); loop(); }
       return { init, start };
+    })();
+
+    // =============================================================
+    // 1.95 十年心血管不良事件風險：國民健康署「慢性疾病風險評估」模型＋火山與房子
+    //   風險分級：<10% 低、10～20% 中、>20% 高（與平台相同）
+    //   用途：本科一般健康管理的整體性分級與衛教；異常工作負荷促發疾病預防仍依指引使用 Framingham，不在本工具範圍
+    //   綜合風險等級（腦心血管風險 × 工作負荷）依指引的對照表，供面談參考
+    // =============================================================
+    const CvdTool = (() => {
+      // 國民健康署「慢性疾病風險評估」心血管不良事件（MACE）十年風險：Cox 模型，男女分別計算
+      //   風險 = 1 − S0 ^ exp( Σ β × (x − 平均值) )；係數經與國健署地端程式（RiskV4Helper，Model_Version 4）核對一致，男性公式不含吸菸
+      const MODEL = {
+        m: { s0: 0.82,   terms: [['logAge', 7.3146, 1.7056], ['waist', 0.0114, 82.0694], ['sbp', 0.027, 127.0251], ['hdl', -0.0045, 53.06]] },
+        f: { s0: 0.9036, terms: [['logAge', 6.8833, 1.6886], ['smoke', 0.1923, 0.0462], ['waist', 0.0257, 76.3618], ['sbp', 0.0128, 123.379], ['tcHdl', 0.3054, 3.5753]] }
+      };
+      // 同性別、同年齡（35～70 歲）的平均十年風險（來自國民健康署地端程式 RiskV4Helper 的 Average_MACE 表）
+      const AVG_MACE = {
+        m: [0.057790, 0.059178, 0.055844, 0.070058, 0.077137, 0.083643, 0.090888, 0.097033, 0.094405, 0.092262, 0.113872, 0.143196, 0.144456, 0.149567, 0.166272, 0.164520, 0.162685, 0.247703, 0.178672, 0.198643, 0.235334, 0.270926, 0.268260, 0.306654, 0.284116, 0.313436, 0.342902, 0.347163, 0.369008, 0.428980, 0.418162, 0.382422, 0.447444, 0.456463, 0.477612, 0.530096],
+        f: [0.031640, 0.034100, 0.036753, 0.039611, 0.042692, 0.046012, 0.049591, 0.053448, 0.057605, 0.062085, 0.066914, 0.072118, 0.077728, 0.083773, 0.090288, 0.097311, 0.104879, 0.113036, 0.121828, 0.131303, 0.141515, 0.152522, 0.164385, 0.177170, 0.190950, 0.205801, 0.221807, 0.239059, 0.257652, 0.277691, 0.299289, 0.322566, 0.347654, 0.374694, 0.403836, 0.435245]
+      };
+      function score(x) {
+        const m = MODEL[x.sex];
+        const v = { logAge: Math.log10(x.age), waist: x.waist, sbp: x.sbp, hdl: x.hdl, smoke: x.smoke ? 1 : 0, tcHdl: x.tc / x.hdl };
+        const lin = m.terms.reduce((sum, [key, beta, mean]) => sum + beta * (v[key] - mean), 0);
+        const risk = Math.round((1 - Math.pow(m.s0, Math.exp(lin))) * 10000) / 100;   // 與官方程式相同：取到小數第二位
+        const avg = (x.age >= 35 && x.age <= 70) ? Math.round(AVG_MACE[x.sex][Math.round(x.age) - 35] * 10000) / 100 : null;
+        return { risk: Math.max(0, Math.min(99.99, risk)), lin, avg, multiple: avg ? Math.round(risk / avg * 100) / 100 : null, over: risk >= 99.9, under: false };
+      }
+      const level = (r) => r >= 20 ? { name: '高風險', cls: 'bg-rose-500/20 text-rose-300', i: 2 } : r >= 10 ? { name: '中度風險', cls: 'bg-amber-500/20 text-amber-300', i: 1 } : { name: '低風險', cls: 'bg-brand-500/20 text-brand-300', i: 0 };
+      const NS = 'http://www.w3.org/2000/svg';
+      let svg = null, els = null, inited = false;
+      const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent || svg).appendChild(e); return e; };
+      const ids = ['cvdSex', 'cvdAge', 'cvdWaist', 'cvdTc', 'cvdHdl', 'cvdSbp', 'cvdSmoke', 'cvdFixSmoke', 'cvdFixBp', 'cvdFixWaist', 'cvdFixLipid'];
+      const $ = (id) => document.getElementById(id);
+
+      function init() {
+        if (inited) return;
+        inited = true;
+        svg = $('cvdSvg');
+        // 天空、山、火山口、煙、熔岩、房子
+        const defs = mk('defs', {});
+        const sky = mk('linearGradient', { id: 'cvdSky', x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+        mk('stop', { offset: 0, 'stop-color': '#0f1c33' }, sky); mk('stop', { offset: 1, 'stop-color': '#1b2a47' }, sky);
+        const glow = mk('radialGradient', { id: 'cvdGlow' }, defs);
+        mk('stop', { offset: 0, 'stop-color': '#ff7a1a', 'stop-opacity': 0.9 }, glow); mk('stop', { offset: 1, 'stop-color': '#ff7a1a', 'stop-opacity': 0 }, glow);
+        mk('rect', { x: 0, y: 0, width: 520, height: 280, fill: 'url(#cvdSky)' });
+        els = {};
+        els.glow = mk('circle', { cx: 250, cy: 70, r: 90, fill: 'url(#cvdGlow)', opacity: 0 });
+        mk('polygon', { points: '110,230 250,70 390,230', fill: '#3b3f4a' });            // 山體
+        mk('polygon', { points: '160,230 250,120 340,230', fill: '#4a4f5c' });
+        els.lava = mk('polygon', { points: '232,78 268,78 262,120 238,120', fill: '#ff4d1f', opacity: 0 });
+        els.lavaFlow = mk('path', { d: 'M250,80 C262,120 300,150 320,230', fill: 'none', stroke: '#ff5a2a', 'stroke-width': 9, 'stroke-linecap': 'round', opacity: 0 });
+        mk('rect', { x: 0, y: 230, width: 520, height: 50, fill: '#223b2a' });              // 地面
+        els.smokes = [0, 1, 2].map(i => mk('ellipse', { cx: 250 + i * 14, cy: 60 - i * 26, rx: 22 + i * 10, ry: 14 + i * 6, fill: '#94a3b8', opacity: 0 }));
+        // 房子
+        const h = mk('g', { transform: 'translate(430 200)' });
+        mk('rect', { x: -28, y: -10, width: 56, height: 40, fill: '#f1e3c6', stroke: '#8a6236', 'stroke-width': 2 }, h);
+        mk('polygon', { points: '-34,-10 0,-38 34,-10', fill: '#c2410c' }, h);
+        mk('rect', { x: -8, y: 8, width: 16, height: 22, fill: '#7c4a1f' }, h);
+        mk('rect', { x: -24, y: -2, width: 12, height: 10, fill: '#bae6fd' }, h); mk('rect', { x: 12, y: -2, width: 12, height: 10, fill: '#bae6fd' }, h);
+        els.houseLight = mk('rect', { x: -24, y: -2, width: 12, height: 10, fill: '#fde68a', opacity: 0.9 }, h);
+        // 合約牌
+        const c = mk('g', { transform: 'translate(300 16)' });
+        mk('rect', { x: 0, y: 0, width: 204, height: 86, rx: 10, fill: '#fffbeb', stroke: '#d6a66b', 'stroke-width': 1.5 }, c);
+        mk('text', { x: 12, y: 19, 'font-size': 10, fill: '#78350f', 'font-weight': 700 }, c).textContent = '不動產買賣契約・特別條款';
+        mk('text', { x: 12, y: 38, 'font-size': 11, fill: '#1f2937' }, c).textContent = '未來 10 年內，火山有';
+        els.contract = mk('text', { x: 12, y: 60, 'font-size': 11, fill: '#1f2937' }, c);
+        els.contractPct = mk('tspan', { 'font-size': 18, 'font-weight': 800, fill: '#b91c1c' }, els.contract);
+        els.contractTail = mk('tspan', { dx: 4 }, els.contract);
+        els.contractTail.textContent = '的機率爆發';
+        mk('text', { x: 12, y: 76, 'font-size': 9, fill: '#6b7280' }, c).textContent = '爆發時整棟房屋將被淹沒，恕不賠償。';
+        els.status = mk('text', { x: 250, y: 262, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, fill: '#e2e8f0' });
+        // 100 戶
+        const grid = $('cvdHouses');
+        els.houses = [];
+        for (let i = 0; i < 100; i++) {
+          const d = document.createElement('div');
+          d.className = 'aspect-square rounded-[2px] bg-slate-600 transition-colors duration-300';
+          grid.appendChild(d); els.houses.push(d);
+        }
+        ids.forEach(id => $(id).addEventListener('input', update));
+      }
+
+      function read() {
+        const num = (id, lo, hi, dflt) => { const v = parseFloat($(id).value); return isNaN(v) ? dflt : Math.max(lo, Math.min(hi, v)); };
+        return { sex: $('cvdSex').value, age: num('cvdAge', 20, 90, 45), waist: num('cvdWaist', 50, 160, 92), tc: num('cvdTc', 100, 400, 210), hdl: num('cvdHdl', 15, 120, 42), sbp: num('cvdSbp', 80, 240, 142),
+                 smoke: $('cvdSmoke').value === '1' };
+      }
+
+      function paint(r) {   // r：風險 %，決定火山的活躍程度
+        const a = Math.max(0, Math.min(1, (r - 3) / 22));   // 3% 以下休眠，25% 以上全面活躍
+        els.glow.setAttribute('opacity', (a * 0.9).toFixed(2));
+        els.lava.setAttribute('opacity', (Math.min(1, a * 1.3)).toFixed(2));
+        els.lavaFlow.setAttribute('opacity', (Math.max(0, (a - 0.45) / 0.55)).toFixed(2));
+        els.smokes.forEach((e, i) => e.setAttribute('opacity', (Math.max(0, a - i * 0.18) * 0.7).toFixed(2)));
+        els.houseLight.setAttribute('fill', a > 0.75 ? '#fca5a5' : '#fde68a');
+        els.status.textContent = r >= 20 ? '火山活躍：隨時可能爆發' : r >= 10 ? '火山冒煙：明顯活動中' : r >= 5 ? '火山低度活動' : '火山休眠：安全狀態';
+        els.contractPct.textContent = `${r.toFixed(1)}%`;
+      }
+
+      function update() {
+        const x = read();
+        const now = score(x);
+        const after = score(Object.assign({}, x, {
+          smoke: x.smoke && !$('cvdFixSmoke').checked, sbp: $('cvdFixBp').checked ? Math.min(x.sbp, 125) : x.sbp,
+          waist: $('cvdFixWaist').checked ? x.waist - 5 : x.waist,
+          tc: $('cvdFixLipid').checked ? Math.min(x.tc, 180) : x.tc, hdl: $('cvdFixLipid').checked ? Math.max(x.hdl, 50) : x.hdl
+        }));
+        const anyFix = $('cvdFixSmoke').checked || $('cvdFixBp').checked || $('cvdFixWaist').checked || $('cvdFixLipid').checked;
+        const shown = anyFix ? after : now;
+        const rtxt = (sc) => `${sc.risk.toFixed(1)}%`;
+        const L = level(now.risk), LA = level(after.risk);
+        $('cvdRiskNow').textContent = rtxt(now);
+        $('cvdRiskLevel').textContent = L.name; $('cvdRiskLevel').className = `px-2 py-0.5 rounded-full text-[11px] font-bold ${L.cls}`;
+        $('cvdAfterBox').classList.toggle('hidden', !anyFix);
+        $('cvdRiskAfter').textContent = rtxt(after);
+        $('cvdAfterLevel').textContent = LA.name; $('cvdAfterLevel').className = `px-2 py-0.5 rounded-full text-[11px] font-bold ${LA.cls}`;
+        const ageNote = (x.age < 35 || x.age > 70) ? '；年齡不在 35～70 歲的適用範圍，結果僅供參考' : '';
+        const smokeNote = $('cvdSmokeNote');
+        smokeNote.classList.toggle('hidden', x.sex !== 'm');
+        smokeNote.textContent = x.sex === 'm' ? '（男性模型未納入吸菸，此項不改變數值；戒菸對健康仍然重要）' : '';
+        const avgNote = now.avg !== null ? `同性別同年齡的平均約 ${now.avg.toFixed(1)}%，目前是平均的 ${now.multiple.toFixed(1)} 倍` : '';
+        $('cvdPoints').textContent = `${avgNote}${avgNote && ageNote ? '；' : ''}${ageNote.replace(/^；/, '')}${(avgNote || ageNote) ? '。' : ''}國民健康署慢性疾病風險評估模型（${x.sex === 'm' ? '男性' : '女性'}公式${x.sex === 'm' ? '，吸菸不在男性公式的變項中' : ''}）`;
+        paint(shown.risk);
+        const n = Math.round(Math.min(100, shown.risk));
+        els.houses.forEach((d, i) => { d.className = `aspect-square rounded-[2px] transition-colors duration-300 ${i < n ? 'bg-rose-500' : 'bg-slate-600'}`; });
+        $('cvdHousesText').textContent = `約 ${n} 戶`;
+        let insight;
+        if (anyFix) insight = `同樣這個人，做到勾選的改變後，十年風險由 ${rtxt(now)} 降到 ${rtxt(after)}。現在的數字不是宿命，是「放著什麼都不改」的預報；半年後再量一次血壓、驗一次血脂，這座火山的狀態可以重新計算。`;
+        else if (now.risk >= 20) insight = `十年內每 5 戶就有 1 戶以上會被淹沒${now.multiple ? `，是同齡平均的 ${now.multiple.toFixed(1)} 倍` : ''}。沒有人會買下這樣的房子，卻很多人每天住在這樣的身體裡。好消息是：和真的火山不同，這座火山可以降溫，試著勾選左邊的改變看看。`;
+        else if (now.risk >= 10) insight = `「${rtxt(now)}」聽起來不大，但換成合約上的火山條款，多數人都不敢簽。這是中度風險，建議與醫護人員討論追蹤方式；勾選左邊的改變，看看能降到多少。`;
+        else if (now.risk >= 5) insight = `目前屬低風險，但火山還有低度活動。維持不吸菸、血壓與血脂在目標範圍內，就是持續為它降溫。`;
+        else insight = `火山接近休眠。保持現在的狀態，依健檢週期追蹤即可。`;
+        $('cvdInsight').textContent = insight;
+      }
+      return { init, update };
     })();
 
     // =============================================================
@@ -2988,6 +3344,48 @@
       scene.add(g);
       liftProp = { group: g, torso, t: 0 };
     }
+    // 十年心血管風險（火山腳下的房子）：健檢分析與健康管理島上的迷你模型；點它打開工具
+    const CVD_PROP = { module: 6, r: 19, deg: 140 };
+    let cvdProp = null;
+    function buildCvdProp() {
+      const m = modById(CVD_PROP.module);
+      if (!m) return;
+      const [ox, oz] = polar(CVD_PROP.r, CVD_PROP.deg);
+      const g = new THREE.Group();
+      g.position.set(m.gridPos.x + ox, tileTop(m), m.gridPos.z + oz);
+      g.rotation.y = THREE.MathUtils.degToRad(25);
+      g.scale.setScalar(1.3);
+      const mat = (c, extra) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85 }, extra || {}));
+      const mesh = (geo, mt, x, y, z) => { const o = new THREE.Mesh(geo, mt); o.position.set(x, y, z); o.castShadow = true; return o; };
+      g.add(mesh(new THREE.CylinderGeometry(3.6, 3.6, 0.12, 24), mat('#dcd3bf'), 0, 0.06, 0));              // 底座
+      g.add(mesh(new THREE.ConeGeometry(2.3, 2.6, 7), mat('#3b3f4a', { flatShading: true }), -0.6, 1.3, -0.4)); // 火山
+      const lavaMat = new THREE.MeshStandardMaterial({ color: '#ff4d1f', emissive: '#ff6a2a', emissiveIntensity: 1.2, roughness: 0.6 });
+      g.add(mesh(new THREE.CylinderGeometry(0.42, 0.3, 0.3, 10), lavaMat, -0.6, 2.5, -0.4));                 // 火山口
+      const smokeMat = new THREE.MeshStandardMaterial({ color: '#cbd5e1', transparent: true, opacity: 0.5, roughness: 1 });
+      const smokes = [0, 1, 2].map(i => { const sm = mesh(new THREE.SphereGeometry(0.28, 8, 6), smokeMat, -0.6, 2.8 + i * 0.6, -0.4); sm.castShadow = false; g.add(sm); return sm; });
+      g.add(mesh(new THREE.BoxGeometry(1.0, 0.8, 0.9), mat('#f1e3c6'), 1.9, 0.5, 0.9));                     // 房子
+      const roof = mesh(new THREE.ConeGeometry(0.85, 0.6, 4), mat('#c2410c', { flatShading: true }), 1.9, 1.2, 0.9);
+      roof.rotation.y = Math.PI / 4; g.add(roof);
+      g.add(mesh(new THREE.BoxGeometry(2.2, 1.3, 0.1), mat('#0f172a'), -2.6, 1.6, 1.6));                     // 看板
+      g.add(mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.6, 6), mat('#94a3b8'), -2.6, 0.8, 1.6));
+      g.traverse(o => { if (o.isMesh) { o.userData.cvd = true; pickables.push(o); } });
+      prepColors(g);
+      scene.add(g);
+      cvdProp = { group: g, lavaMat, smokes, t: 0 };
+    }
+    function updateCvdProp(dt) {
+      if (!cvdProp) return;
+      cvdProp.t += dt;
+      cvdProp.lavaMat.emissiveIntensity = 0.9 + Math.sin(cvdProp.t * 2.1) * 0.4;
+      cvdProp.smokes.forEach((sm, i) => {
+        const u = ((cvdProp.t * 0.35 + i / 3) % 1);                 // 0→1 往上飄
+        sm.position.set(-0.6 + Math.sin(cvdProp.t * 0.8 + i) * 0.25 * u, 2.7 + u * 2.2, -0.4);
+        const k = 0.6 + u * 1.2;
+        sm.scale.setScalar(k);
+        sm.material.opacity = 0.5 * (1 - u);
+      });
+    }
+
     function updateLiftProp(dt) {
       if (!liftProp) return;
       liftProp.t = (liftProp.t + dt / 4.2) % 1;   // 一個循環 4.2 秒：彎下→停→抬起→停
@@ -3731,6 +4129,8 @@
           const [x, z] = polar(pathR - 3.2, i * 60 + 15 + mod.id * 7);
           if (mod.id === 0 && Math.abs(x) < 23 && Math.abs(z) < 12) continue;
           if (Math.abs(x) < 4.5 && z > 0) continue; // 讓開通往門口的岔路
+          if (mod.id === CVD_PROP.module) { const [px, pz] = polar(CVD_PROP.r, CVD_PROP.deg); if (Math.hypot(x - px, z - pz) < 6.5) continue; }
+          if (mod.id === LIFT_PROP.module) { const [px, pz] = polar(LIFT_PROP.r, LIFT_PROP.deg); if (Math.hypot(x - px, z - pz) < 6.5) continue; }
           C.bush(x, z, 0.6 + Math.random() * 0.35);
         }
       }
@@ -3904,6 +4304,7 @@
       buildPedestrians();
 
       buildLiftProp();
+      buildCvdProp();
 
       DOCTORS.forEach(doc => {
         const docMesh = buildDoctorCharacter(doc);
@@ -4359,6 +4760,19 @@
           () => focusDoctor(doc), new THREE.Vector3(doc.pos.x, doc.pos.y + 15, doc.pos.z), { doctor: doc });
       });
 
+      // 十年心血管風險小場景的標籤
+      {
+        const m = modById(CVD_PROP.module);
+        if (m) {
+          const [ox, oz] = polar(CVD_PROP.r, CVD_PROP.deg);
+          makePin('island-pin', `
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-rose-400/60 text-rose-300 text-[11px] font-bold shadow-xl">
+            ${svgIcon('heart-pulse')}
+            <span>心血管風險</span>
+          </div>`, '互動工具：十年心血管風險（火山腳下的房子）',
+            () => { sound.playClick(); openCvdTool('pin'); }, new THREE.Vector3(m.gridPos.x + ox, tileTop(m) + 6, m.gridPos.z + oz), { cvd: true });
+        }
+      }
       // 搬抬演示小場景的標籤
       {
         const m = modById(LIFT_PROP.module);
@@ -4917,6 +5331,7 @@
         if (atmosphereParticles) atmosphereParticles.rotation.y = motionTime * 0.02;
         updateWalkers(md);
         updateLiftProp(md);
+        updateCvdProp(md);
         if (routeArrowMat) routeArrowMat.map.offset.x -= md * 0.35;
         updatePedestrians(md);
       }
@@ -4967,6 +5382,7 @@
         const ud = hits[i].object.userData;
         if (ud.doctor) return { doctor: ud.doctor };
         if (ud.lift) return { lift: true };
+        if (ud.cvd) return { cvd: true };
         if (ud.module) return { module: ud.module };
       }
       return null;
@@ -5007,6 +5423,9 @@
       } else if (hit.lift) {
         sound.playClick();
         openLiftDemo('island');
+      } else if (hit.cvd) {
+        sound.playClick();
+        openCvdTool('island');
       } else {
         sound.playClick();
         if (hit.module.type === 'region') selectRegionNode(hit.module);
@@ -5309,6 +5728,7 @@
 
     function openDrawer(mod) {
       document.getElementById('drawerLiftBtn').classList.toggle('hidden', !(mod.id === 1 || mod.id === 5));
+      document.getElementById('drawerCvdBtn').classList.toggle('hidden', !(mod.id === 6 || mod.id === 2));
       document.getElementById('drawerIcon').innerHTML = svgIcon(mod.icon, 'icon-lg');
       document.getElementById('drawerBadge').textContent = mod.badge;
       document.getElementById('drawerTitle').textContent = mod.name;
@@ -5372,7 +5792,8 @@
     const contactModal = document.getElementById('contactModal');
     const toolsModal = document.getElementById('toolsModal');
     const liftModal = document.getElementById('liftModal');
-    const ALL_MODALS = [doctorsModal, marketModal, historyModal, calcModal, contactModal, toolsModal, liftModal];
+    const cvdModal = document.getElementById('cvdModal');
+    const ALL_MODALS = [doctorsModal, marketModal, historyModal, calcModal, contactModal, toolsModal, liftModal, cvdModal];
 
     // 諮詢管道：以資料檔為準套用到所有按鈕（HTML 內已有預設網址，資料檔沒載入時仍可使用）
     // 量測頁首實際高度，讓服務路徑列、地區卡片、巡航橫幅排在它下方（手機頁首會因螢幕寬度換行）
@@ -5651,6 +6072,16 @@
     document.getElementById('toolsToCalc').addEventListener('click', () => { sound.playClick(); closeModal(toolsModal); openModal(calcModal); track('island_calc_open'); });
     document.getElementById('toolsToLift').addEventListener('click', () => { sound.playClick(); closeModal(toolsModal); openLiftDemo('tools'); });
     document.getElementById('drawerLiftBtn').addEventListener('click', () => { sound.playClick(); openLiftDemo('drawer'); });
+    document.getElementById('toolsToCvd').addEventListener('click', () => { sound.playClick(); closeModal(toolsModal); openCvdTool('tools'); });
+    document.getElementById('drawerCvdBtn').addEventListener('click', () => { sound.playClick(); openCvdTool('drawer'); });
+    document.getElementById('cvdToService').addEventListener('click', () => { sound.playClick(); closeModal(cvdModal); selectModule(modById(6)); });
+    document.getElementById('cvdToContact').addEventListener('click', () => { sound.playClick(); closeModal(cvdModal); openModal(contactModal); });
+    function openCvdTool(from) {
+      CvdTool.init();
+      openModal(cvdModal);
+      CvdTool.update();
+      track('island_cvd_open', { from });
+    }
     document.getElementById('liftToService').addEventListener('click', () => { sound.playClick(); closeModal(liftModal); selectModule(modById(1)); });
     document.getElementById('liftToContact').addEventListener('click', () => { sound.playClick(); closeModal(liftModal); openModal(contactModal); });
     function openLiftDemo(from) {
@@ -6185,6 +6616,7 @@
         setLoader(1, '準備完成');
         if (location.hash === '#calc') setTimeout(() => openModal(calcModal), 1200);
         if (location.hash === '#lift') setTimeout(() => openLiftDemo('link'), 1200);
+        if (location.hash === '#cvd') setTimeout(() => openCvdTool('link'), 1200);
         track('island_ready', { ms: Math.round(performance.now() - t0) });
         // 載入畫面至少停 900 毫秒，避免一閃而過
         setTimeout(() => {
