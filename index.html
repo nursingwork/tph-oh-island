@@ -1325,13 +1325,23 @@
           <div id="liftStage" class="relative w-full aspect-[520/340] rounded-xl overflow-hidden bg-[#0b1220]">
             <canvas id="liftCanvas" class="absolute inset-0 w-full h-full touch-none" role="img" aria-label="3D 人形與腰椎，顯示不同搬抬姿勢下腰椎的彎曲與椎間盤受壓情形；可用滑鼠或手指拖曳旋轉"></canvas>
             <svg id="liftSvg" viewBox="0 0 520 340" class="absolute inset-0 w-full h-full hidden" role="img" aria-label="側面的人形與腰椎，顯示不同搬抬姿勢下腰椎的彎曲與椎間盤受壓情形"></svg>
-            <div class="absolute left-2 top-2 text-[10px] text-slate-400 pointer-events-none">拖曳可旋轉視角</div>
+            <div id="liftDragHint" class="absolute left-2 top-2 text-[10px] text-slate-400 pointer-events-none">拖曳可旋轉視角</div>
             <button id="liftResetView" type="button" class="absolute right-2 top-2 px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-800/80 border border-white/10 text-slate-300 hover:text-white">重設視角</button>
           </div>
           <div class="flex flex-wrap gap-1.5 px-1 pb-1">
             <button type="button" data-lift-preset="0" class="lift-preset px-2.5 py-1 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">彎腰搬抬</button>
             <button type="button" data-lift-preset="0.5" class="lift-preset px-2.5 py-1 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">半蹲（常見的自然姿勢）</button>
             <button type="button" data-lift-preset="1" class="lift-preset px-2.5 py-1 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">屈膝直背</button>
+          </div>
+          <div class="flex items-center gap-2 px-1 pt-1 pb-1">
+            <button id="liftPlay" type="button" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-extrabold bg-gradient-to-r from-amber-500 to-orange-500 text-slate-900 hover:brightness-110 transition flex items-center gap-1.5" aria-label="播放：把物品搬起來">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg><span id="liftPlayText">搬起來</span>
+            </button>
+            <label class="flex-1 min-w-0">
+              <span class="sr-only">搬抬過程</span>
+              <input id="liftProgress" type="range" min="0" max="100" value="0" class="w-full accent-amber-400" aria-label="搬抬過程：從地上到站直">
+              <span class="flex justify-between text-[10px] text-slate-500"><span>剛離地</span><span>站直、抱在身前</span></span>
+            </label>
           </div>
         </div>
         <!-- 控制與讀數 -->
@@ -1354,7 +1364,7 @@
             <div>
               <div class="flex justify-between text-slate-300"><span class="font-bold">腰部承受的力矩</span><span id="liftMomentText" class="text-slate-400"></span></div>
               <div class="h-2 mt-1.5 rounded-full bg-slate-700 overflow-hidden"><div id="liftMomentBar" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#84c845"></div></div>
-              <p class="text-[10px] text-slate-500 mt-1">相對值：以「彎腰、伸長手臂、25 公斤」為 100%</p>
+              <p class="text-[10px] text-slate-500 mt-1">相對值：以「彎腰、伸長手臂、25 公斤」為 100%｜<span id="liftPeakText"></span></p>
             </div>
             <div>
               <div class="flex justify-between text-slate-300"><span class="font-bold">腰椎彎曲與椎間盤前緣受壓</span><span id="liftFlexText" class="text-slate-400"></span></div>
@@ -1374,6 +1384,7 @@
               <div class="mt-2 pl-7 space-y-1.5">
                 <p>醫學教學常用一種桌上型的搬抬示範模型：人偶可以用「彎腰」或「屈膝直背」兩種姿勢舉起重物，從側面看得到脊椎。彎腰時腰椎向前彎，椎間盤前緣被壓扁、後緣張開；屈膝直背時椎骨排列整齊。</p>
                 <p>上面的 3D 演示重現了這個對比，並多加了教具沒有的兩個變數：<strong class="text-slate-100">物品離身體的距離</strong>和<strong class="text-slate-100">重量</strong>。拖曳畫面可以轉到不同角度看脊椎。</p>
+                <p>按「搬起來」可以看到物品從地上被抬起、人慢慢站直的過程。過程中最吃力的是物品剛離地的那一刻，畫面會記下這次搬抬的最高負荷。</p>
               </div>
             </details>
             <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
@@ -1594,6 +1605,20 @@
   <script>
     'use strict';
 
+    // [備援] 3D 程式庫沒有載入時（例如被醫院或公司網路封鎖 CDN）：先放一個不會出錯的替身，
+    //   讓頁面上的 2D 工具（試算器、十年心血管風險、搬抬演示 2D 版）、文字內容與聯絡方式仍可使用；
+    //   3D 場景則改為顯示備援畫面（canRender3D 會檢查 HAS_THREE）
+    const HAS_THREE = typeof window.THREE === 'object' && !!window.THREE && typeof window.THREE.WebGLRenderer === 'function';
+    if (!HAS_THREE) {
+      const dummy = () => new Proxy(function () {}, {
+        get: (t, key) => (key === Symbol.toPrimitive ? () => 0 : dummy()),
+        apply: () => dummy(),
+        construct: () => dummy()
+      });
+      window.THREE = new Proxy({}, { get: () => dummy() });
+      console.warn('[3D] three.js 沒有載入，改用 2D 備援模式');
+    }
+
     // =============================================================
     // 0. 環境偵測與共用常數
     // =============================================================
@@ -1703,10 +1728,12 @@
     const LiftDemo = (() => {
       const NS = 'http://www.w3.org/2000/svg';
       const PX_PER_M = 190;                     // 2D 備援圖的比例：1 公尺 = 190 px；3D 直接用公尺
-      const L = { shank: 85, thigh: 85, sacrum: 14, vert: 11, disc: 4.5, thorax: 22, headR: 16, arm: 118 };
+      const L = { shank: 85, thigh: 85, sacrum: 14, vert: 11, disc: 4.5, thorax: 22, headR: 16, arm: 134 };   // 手臂：肩到握點約 0.7 m
       const SHARE = [0.26, 0.24, 0.2, 0.16, 0.14]; // L5→L1 的彎曲分配
-      const state = { p: 0, d: 0.4, w: 10 };    // 目標值
-      const cur = { p: 0, d: 0.4 };             // 顯示值（平滑追上目標）
+      const state = { p: 0, d: 0.4, w: 10, l: 0 };   // 目標值
+      const cur = { p: 0, d: 0.4, l: 0 };             // 顯示值（平滑追上目標）
+      let playing = 0;                                // 1 = 正在搬起，-1 = 正在放下，0 = 停止
+      const LIFT_SECONDS = 2.2;
       let svg = null, els = null, raf = 0, inited = false, mode = '3d';
       const G = {};                             // 3D 物件
       const rad = (deg) => deg * Math.PI / 180;
@@ -1715,14 +1742,12 @@
       const fmt = (x, y) => `${x.toFixed(1)},${y.toFixed(1)}`;
 
       // ---- 共用：連桿姿勢（像素座標，y 向下，地面 y = 320）----
-      function pose(p, d) {
-        const A = { x: 140, y: 320 };
-        const shankLean = rad(lerp(4, 38, p));
-        const K = { x: A.x + Math.sin(shankLean) * L.shank, y: A.y - Math.cos(shankLean) * L.shank };
-        const thighAng = rad(lerp(-6, -82, p));      // 從垂直量起，負值 = 髖在膝的後方
-        const H = { x: K.x + Math.sin(thighAng) * L.thigh, y: K.y - Math.cos(thighAng) * L.thigh };
-        const trunkLean = rad(lerp(88, 32, p));      // 軀幹前傾（從垂直量起）
-        const lumbarFlex = rad(lerp(40, 12, p));
+      const easeLift = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      // l：搬起的過程，0 = 抓住物品、剛離地；1 = 站直、物品抱在身前（腰部高度）
+      // 物品的高度（像素）：與 3D 紙箱尺寸一致，重量越重箱子越大
+      const boxHpx = () => (0.2 + 0.008 * state.w) * PX_PER_M;
+      // 由骨盆角度往上組出腰椎、胸椎、肩與頭
+      function upperBody(H, trunkLean, lumbarFlex) {
         let ang = trunkLean - lumbarFlex;            // 骶骨（骨盆）的傾斜
         let x = H.x + Math.sin(ang) * L.sacrum, y = H.y - Math.cos(ang) * L.sacrum;
         const segs = [];
@@ -1736,17 +1761,52 @@
         }
         const top = { x, y };
         const S = { x: top.x + Math.sin(trunkLean) * L.thorax, y: top.y - Math.cos(trunkLean) * L.thorax };
-        const headC = { x: S.x + Math.sin(trunkLean) * (L.headR + 10) + 4, y: S.y - Math.cos(trunkLean) * (L.headR + 10) };
+        return { segs, top, S };
+      }
+      // l：搬起的過程，0 = 雙手抓住放在地上的物品；1 = 站直、物品抱在腰前
+      function pose(p, d, l = 0) {
+        const e = easeLift(Math.max(0, Math.min(1, l)));
+        const bh = boxHpx();
+        const A = { x: 140, y: 320 };
         const base = lerp(62, 30, p);
-        const box = { x: H.x + base + d * 100, y: 320 };
-        const hand = { x: box.x, y: box.y - 40 };
+        const grip = { x: A.x + base + d * 100, y: 320 - bh / 2 };   // 起點：抓住地上物品的兩側（箱子高度的一半）
+        // 起點姿勢：依姿勢滑桿決定膝、髖與軀幹角度；手搆不到地上的物品時，自動多彎一點腰與膝
+        let shank = lerp(4, 38, p), thigh = lerp(-6, -82, p), trunk = lerp(105, 45, p), lumbar = lerp(42, 14, p);
+        const legsAt = (sh, th) => {
+          const K = { x: A.x + Math.sin(rad(sh)) * L.shank, y: A.y - Math.cos(rad(sh)) * L.shank };
+          const H = { x: K.x + Math.sin(rad(th)) * L.thigh, y: K.y - Math.cos(rad(th)) * L.thigh };
+          return { K, H };
+        };
+        let extraTrunk = 0, extraKnee = 0;
+        for (let i = 0; i < 40; i++) {
+          const { H } = legsAt(shank + extraKnee, thigh - extraKnee * 1.6);
+          const { S } = upperBody(H, rad(trunk + extraTrunk), rad(lumbar + extraTrunk * 0.25));
+          if (Math.hypot(grip.x - S.x, grip.y - S.y) <= L.arm * 0.99) break;
+          // 屈膝類的姿勢優先多蹲一點、保持背部；彎腰類的姿勢優先多彎腰
+          if (p >= 0.5) { if (extraKnee < 18) extraKnee += 1.5; else extraTrunk += 2; }
+          else { if (extraTrunk < 30) extraTrunk += 2; else extraKnee += 1.5; }
+        }
+        shank += extraKnee; thigh -= extraKnee * 1.6; trunk += extraTrunk; lumbar += extraTrunk * 0.25;
+        // 搬起的過程：所有角度往站直的姿勢內插
+        const { K, H } = legsAt(lerp(shank, 3, e), lerp(thigh, -3, e));
+        const trunkLean = rad(lerp(trunk, 8, e));     // 站直時略前傾
+        const lumbarFlex = rad(lerp(lumbar, 5, e));
+        const { segs, top, S } = upperBody(H, trunkLean, lumbarFlex);
+        const headC = { x: S.x + Math.sin(trunkLean) * (L.headR + 10) + 4, y: S.y - Math.cos(trunkLean) * (L.headR + 10) };
+        // 手的位置：起點是地上物品兩側；終點是腰前（箱子不穿過身體，距離滑桿越大抱得越遠）
+        const endHand = { x: H.x + 22 + bh / 2 + d * 60, y: H.y - 14 };
+        const hand = { x: lerp(grip.x, endHand.x, e), y: lerp(grip.y, endHand.y, e) };
         const dx = hand.x - S.x, dy = hand.y - S.y, dl = Math.hypot(dx, dy);
-        if (dl > L.arm) { hand.x = S.x + dx / dl * L.arm; hand.y = S.y + dy / dl * L.arm; box.x = hand.x; box.y = Math.min(hand.y + 40, 320); }
+        if (dl > L.arm) { hand.x = S.x + dx / dl * L.arm; hand.y = S.y + dy / dl * L.arm; }   // 搬起途中搆不到時手臂伸直
+        const box = { x: hand.x, y: Math.min(hand.y + bh / 2, 320) };                           // 物品底部；起點一定落在地面
+        // 手肘：兩個可能的位置中取「比較低、比較靠身體」的那一個，抱在腰前時手肘自然下垂
         const mid = { x: (S.x + hand.x) / 2, y: (S.y + hand.y) / 2 };
         const reach = Math.hypot(hand.x - S.x, hand.y - S.y);
-        const bend = Math.sqrt(Math.max(0, (L.arm / 2) ** 2 - (reach / 2) ** 2)) * 0.9;
+        const bend = Math.sqrt(Math.max(0, (L.arm / 2) ** 2 - (reach / 2) ** 2));
         const nx = -(hand.y - S.y) / (reach || 1), ny = (hand.x - S.x) / (reach || 1);
-        const elbow = { x: mid.x - nx * bend, y: mid.y - ny * bend };
+        const c1 = { x: mid.x + nx * bend, y: mid.y + ny * bend }, c2 = { x: mid.x - nx * bend, y: mid.y - ny * bend };
+        const score = (c) => c.y - c.x * 0.5;            // 越低、越靠後越自然
+        const elbow = score(c1) >= score(c2) ? c1 : c2;
         return { A, K, H, S, headC, segs, top, box, hand, elbow, trunkLean, lumbarFlex };
       }
       function moment(w, P) {
@@ -1765,10 +1825,19 @@
         if (inited) return;
         inited = true;
         const posture = document.getElementById('liftPosture'), dist = document.getElementById('liftDist'), weight = document.getElementById('liftWeight');
-        posture.addEventListener('input', () => { state.p = posture.value / 100; });
-        dist.addEventListener('input', () => { state.d = dist.value / 100; });
+        const progress = document.getElementById('liftProgress');
+        const resetLift = () => { playing = 0; state.l = 0; progress.value = 0; updatePlayButton(); };
+        posture.addEventListener('input', () => { state.p = posture.value / 100; resetLift(); });
+        dist.addEventListener('input', () => { state.d = dist.value / 100; resetLift(); });
         weight.addEventListener('input', () => { state.w = +weight.value; });
-        document.querySelectorAll('.lift-preset').forEach(b => b.addEventListener('click', () => { state.p = +b.dataset.liftPreset; posture.value = state.p * 100; }));
+        document.querySelectorAll('.lift-preset').forEach(b => b.addEventListener('click', () => { state.p = +b.dataset.liftPreset; posture.value = state.p * 100; resetLift(); }));
+        progress.addEventListener('input', () => { playing = 0; state.l = progress.value / 100; cur.l = state.l; updatePlayButton(); });
+        document.getElementById('liftPlay').addEventListener('click', () => {
+          if (playing) { playing = 0; }
+          else playing = state.l >= 0.99 ? -1 : 1;    // 已經站直 → 放下；否則 → 搬起
+          updatePlayButton();
+          track('island_lift_play', { posture: Math.round(state.p * 100), distance: Math.round(state.d * 100) });
+        });
         state.p = posture.value / 100; state.d = dist.value / 100; state.w = +weight.value;
         if (canRender3D()) {
           try { init3D(); return; } catch (e) { console.warn('[搬抬演示] 3D 初始化失敗，改用 2D：', e); }
@@ -1776,6 +1845,7 @@
         mode = '2d';
         document.getElementById('liftCanvas').classList.add('hidden');
         document.getElementById('liftResetView').classList.add('hidden');
+        document.getElementById('liftDragHint').classList.add('hidden');   // 2D 版不能旋轉，不顯示提示
         document.getElementById('liftSvg').classList.remove('hidden');
         init2D();
       }
@@ -1942,6 +2012,12 @@
         const dx = box.x - h.x;
         G.distLine.position.set(h.x + dx / 2, 0.01, 0.3); G.distLine.scale.set(Math.max(0.01, dx), 1, 1);
         G.distA.position.set(h.x, 0.04, 0.3); G.distB.position.set(box.x, 0.04, 0.3);
+        // 鏡頭跟著人站起來：使用者沒有自己轉動視角時，注視點隨頭部高度上移，站直時頭部不會被切掉
+        if (!G.userMoved) {
+          const ty = Math.max(0.55, head.y * 0.5 + 0.08);
+          G.ctl.target.y += (ty - G.ctl.target.y) * 0.12;
+          G.cam.position.y += ((ty + 0.6) - G.cam.position.y) * 0.12;
+        }
         G.ctl.update();
         G.r.render(G.scene, G.cam);
         return flexNorm;
@@ -1977,7 +2053,7 @@
         els.head.setAttribute('cx', P.headC.x); els.head.setAttribute('cy', P.headC.y);
         const armPath = `M${fmt(P.S.x, P.S.y)} L${fmt(P.elbow.x, P.elbow.y)} L${fmt(P.hand.x, P.hand.y)}`;
         els.arm.setAttribute('d', armPath); els.armBack.setAttribute('d', armPath);
-        els.box.setAttribute('transform', `translate(${P.box.x.toFixed(1)} ${P.box.y.toFixed(1)})`);
+        els.box.setAttribute('transform', `translate(${P.box.x.toFixed(1)} ${P.box.y.toFixed(1)}) scale(${(boxHpx() / 40).toFixed(3)})`);  // 2D 箱子與 3D 同尺寸
         els.boxLabel.textContent = `${state.w} kg`;
         const s0 = P.segs[0], sAng = P.trunkLean - P.lumbarFlex, fx = Math.cos(sAng), fy = Math.sin(sAng);
         els.sacrum.setAttribute('points', [fmt(P.H.x + fx * 7, P.H.y + fy * 7), fmt(P.H.x - fx * 9, P.H.y - fy * 9), fmt(s0.bx - fx * 7, s0.by - fy * 7), fmt(s0.bx + fx * 5, s0.by + fy * 5)].join(' '));
@@ -2001,11 +2077,16 @@
 
       // ---- 讀數（兩種模式共用）----
       function draw() {
-        const P = pose(cur.p, cur.d);
+        const P = pose(cur.p, cur.d, cur.l);
         const flexNorm = mode === '3d' ? draw3D(P) : draw2D(P);
         const Mnow = moment(state.w, P);
         const Mmax = moment(25, pose(0, 1));
         const Mbest = moment(state.w, pose(1, 0));
+        // 這一次搬抬過程中的最大力矩（取樣整個過程）
+        let Mpeak = 0;
+        for (let t = 0; t <= 1.0001; t += 0.1) Mpeak = Math.max(Mpeak, moment(state.w, pose(cur.p, cur.d, t)));
+        const peakEl = document.getElementById('liftPeakText');
+        if (peakEl) peakEl.textContent = `這次搬抬最吃力的瞬間：${Math.round(Mpeak / Mmax * 100)}%`;
         const ratio = Mnow / Mmax, vsBest = Mnow / Mbest;
         const bar = document.getElementById('liftMomentBar');
         bar.style.width = `${Math.round(ratio * 100)}%`; bar.style.background = color(ratio);
@@ -2017,20 +2098,38 @@
         document.getElementById('liftDistText').textContent = `${((P.box.x - P.H.x) / PX_PER_M * 100).toFixed(0)} cm`;
         document.getElementById('liftWeightText').textContent = `${state.w} 公斤`;
         let insight;
-        if (cur.d > 0.6) insight = `物品離身體遠，力矩是「同樣姿勢、物品貼近」的約 ${(Mnow / moment(state.w, pose(cur.p, 0))).toFixed(1)} 倍。先把物品拉近，比換姿勢更有效。`;
+        if (cur.l > 0.95) insight = `站直後物品抱在身前，力矩降到 ${Math.round(Mnow / Mmax * 100)}%。整個搬抬過程中最吃力的是剛離地的那一刻（${Math.round(Mpeak / Mmax * 100)}%），所以「先把物品拉近再抬起」最重要。`;
+        else if (cur.l > 0.05) insight = `搬起的過程中，身體越直、物品越靠近，腰部的力矩就越小。拖動「搬抬過程」可以停在任何一刻觀察。`;
+        else if (cur.d > 0.6) insight = `物品離身體遠，力矩是「同樣姿勢、物品貼近」的約 ${(Mnow / moment(state.w, pose(cur.p, 0))).toFixed(1)} 倍。先把物品拉近，比換姿勢更有效。`;
         else if (cur.p < 0.3) insight = `彎腰搬抬：腰椎彎曲大，椎間盤前緣受壓；力矩約為「屈膝、貼近」的 ${vsBest.toFixed(1)} 倍。物品已經靠近身體，是減輕負荷最重要的一步。`;
         else if (cur.p > 0.7) insight = `屈膝直背：腰椎排列整齊、剪力較低，但壓縮力不一定比彎腰低，膝蓋與大腿的負擔較大。物品貼近身體、放在雙腳之間，才是這個姿勢真正的優勢。`;
         else insight = `半蹲是多數人自然會採用的方式：腰椎有些彎曲，腿也分擔一部分。研究顯示沒有哪一種姿勢對所有人都最好；物品靠近身體、減少重量與次數，比堅持某一種姿勢更重要。`;
         document.getElementById('liftInsight').textContent = insight;
       }
-      function loop() {
+      function updatePlayButton() {
+        const txt = document.getElementById('liftPlayText');
+        const icon = document.querySelector('#liftPlay use');
+        if (!txt) return;
+        if (playing) { txt.textContent = '暫停'; icon.setAttribute('href', '#i-pause'); }
+        else if (state.l >= 0.99) { txt.textContent = '放下'; icon.setAttribute('href', '#i-play'); }
+        else { txt.textContent = state.l > 0.01 ? '繼續搬起' : '搬起來'; icon.setAttribute('href', '#i-play'); }
+      }
+      let lastT = 0;
+      function loop(now = performance.now()) {
+        const dt = Math.min(0.05, lastT ? (now - lastT) / 1000 : 0.016); lastT = now;
+        if (playing) {
+          state.l = Math.max(0, Math.min(1, state.l + playing * dt / LIFT_SECONDS));
+          if (state.l === 1 || state.l === 0) { playing = 0; updatePlayButton(); }
+          const prog = document.getElementById('liftProgress'); if (prog) prog.value = Math.round(state.l * 100);
+        }
         const k = REDUCED_MOTION ? 1 : 0.14;
         cur.p += (state.p - cur.p) * k; cur.d += (state.d - cur.d) * k;
+        cur.l = playing || REDUCED_MOTION ? state.l : cur.l + (state.l - cur.l) * 0.3;
         draw();
         if (!liftModal.classList.contains('hidden')) raf = requestAnimationFrame(loop);
       }
-      function start() { cancelAnimationFrame(raf); if (mode === '3d') onResize(); loop(); }
-      return { init, start };
+      function start() { cancelAnimationFrame(raf); lastT = 0; if (mode === '3d') onResize(); updatePlayButton(); loop(); }
+      return { init, start, debug: () => G };   // debug：供自動測試讀取 3D 物件位置
     })();
 
     // =============================================================
@@ -6567,7 +6666,7 @@
     // 16. 啟動
     // =============================================================
     function canRender3D() {
-      if (!window.THREE || !THREE.OrbitControls || !window.TWEEN) return false;
+      if (!HAS_THREE || !window.THREE || !THREE.OrbitControls || !window.TWEEN) return false;
       try {
         const c = document.createElement('canvas');
         return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
