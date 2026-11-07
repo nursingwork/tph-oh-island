@@ -90,6 +90,8 @@ const html = `<!DOCTYPE html>
   <meta property="og:image" content="${SITE}/assets/og-cover.jpg">
   <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
   <link rel="stylesheet" href="tailwind.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D66JKDGD3F"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-D66JKDGD3F',{allow_google_signals:false,allow_ad_personalization_signals:false});</script>
   <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
   <style>body{background:#060913} html{scroll-behavior:smooth} @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}</style>
 </head>
@@ -251,8 +253,9 @@ const html = `<!DOCTYPE html>
       </ul>
     </section>
   </main>
-  <footer class="max-w-4xl mx-auto px-4 py-8 text-xs text-slate-400">
-    衛生福利部臺北醫院 職業醫學科 ｜ <a href="index.html" class="underline">回到 3D 地圖版</a>
+  <footer class="max-w-4xl mx-auto px-4 py-8 text-xs text-slate-400 space-y-2">
+    <p>衛生福利部臺北醫院 職業醫學科 ｜ <a href="index.html" class="underline">回到 3D 地圖版</a></p>
+    <p id="privacy">隱私說明：本網站使用 Google Analytics 統計匿名的瀏覽數據（例如瀏覽頁面、點擊的服務與工具），用於改善網站內容，不用於廣告。互動工具中輸入的健康數值只在您的瀏覽器中計算，不會上傳或儲存。</p>
   </footer>
 </body>
 </html>

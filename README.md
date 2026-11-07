@@ -80,6 +80,10 @@ node build-text-page.js
 
 會依 island-data.js 重新產生 `services.html`、`llms.txt`、`sitemap.xml`。常見問題（FAQ）的內容寫在 `build-text-page.js` 的 `FAQ` 陣列，要增修也在那裡改。
 
+## 流量統計（GA4）
+
+評估 ID：`G-D66JKDGD3F`，設定在 `index.html` 與 `build-text-page.js` 開頭。已關閉 Google 信號與廣告個人化。點擊事件由程式裡的 `track()` 送出，事件名稱見 GA4「報表 → 參與 → 事件」。
+
 ## 效能設定
 
 - 中文字使用各平台內建字型（iPhone 蘋方、Android 思源黑體、Windows 微軟正黑體），只從 Google Fonts 載入英數字型 Plus Jakarta Sans，而且不阻擋畫面顯示。
