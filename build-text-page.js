@@ -170,16 +170,17 @@ const html = `<!DOCTYPE html>
 
     <section id="lifting" aria-labelledby="h-lift">
       <h2 id="h-lift" class="text-xl font-extrabold text-white">搬抬時的腰椎負荷（互動演示）</h2>
-      <p class="mt-2 text-sm text-slate-300 leading-relaxed">3D 地圖版有一個互動演示，仿照教學用的搬抬示範模型：側面的人形可以在「彎腰」與「屈膝直背」之間切換，看腰椎的彎曲與椎間盤前緣受壓的情形，並可調整物品離身體的距離與重量，觀察腰部力矩的變化。<a class="underline text-brand-300" href="index.html#lift">開啟互動演示</a></p>
+      <p class="mt-2 text-sm text-slate-300 leading-relaxed">3D 地圖版有一個互動演示，仿照教學用的搬抬示範模型：側面的人形可以在「彎腰」與「屈膝直背」之間切換，看腰椎的彎曲與椎間盤前緣受壓的情形，並可調整物品離身體的距離與重量，觀察腰椎受力的變化。<a class="underline text-brand-300" href="index.html#lift">開啟互動演示</a></p>
+      <p class="mt-2 text-sm text-slate-300">勞安所 2022 年全國調查（4,009 名受僱者），39.2% 過去一年有下背（腰部）痠痛；近一年（114 年 7 月至 115 年 6 月）勞工職業災害保險認定的職業病 582 件中，職業性下背痛與手臂頸肩疾病合計約占 65%（勞安所 ILOSH111-A302；勞保局職業病給付認定率統計）。</p>
       <h3 class="mt-4 font-bold text-brand-300">研究證據摘要</h3>
       <ul class="mt-1 list-disc pl-5 space-y-1 text-sm text-slate-300">
-        <li>比較彎腰與屈膝搬抬的生物力學研究顯示，腰椎壓縮力兩者相近，屈膝能降低的是剪力與彎曲力矩；回顧的結論是證據不足以把屈膝搬抬當作預防下背痛的方法（van Dieën 等，Clinical Biomechanics，1999）。</li>
-        <li>腰椎承受的力主要受負荷力矩、搬抬速度與加速度影響；物品的寬度與放置高度比姿勢更關鍵，物品能放在雙腳之間時屈膝才能真正降低壓縮力（Kingma 等，Physical Therapy，2006）。</li>
-        <li>Cochrane 系統性回顧（9 篇隨機試驗、兩萬多名員工）顯示，單純的搬抬姿勢訓練，不論是否搭配輔具，都沒有減少腰痛、失能或病假（Verbeek 等，2011）。</li>
+        <li>蹲下、背打直的好處，主要來自讓物品更貼近身體；若蹲下了、物品仍在前方遠處，腰椎壓縮力與彎腰相近（van Dieën 等，Clinical Biomechanics，1999）。</li>
+        <li>物品能放在兩腳之間時，蹲下搬才能真正降低腰椎負荷；物品的寬度與放置高度影響很大（Kingma 等，Physical Therapy，2006）。</li>
+        <li>光靠姿勢訓練不夠：單純的搬抬姿勢訓練沒有減少腰痛、失能或病假，需要搭配作業改善（Verbeek 等，Cochrane 系統性回顧，2011）。</li>
       </ul>
-      <h3 class="mt-4 font-bold text-brand-300">比姿勢更有效的做法</h3>
+      <h3 class="mt-4 font-bold text-brand-300">搬抬的建議</h3>
       <ul class="mt-1 list-disc pl-5 space-y-1 text-sm text-slate-300">
-        <li>讓物品靠近身體，能放在雙腳之間最好</li>
+        <li>蹲下、背打直，把物品拉到兩腳之間、貼近身體，再用腿站起來</li>
         <li>避免扭轉：先轉腳，再轉身</li>
         <li>把常搬的物品放在膝蓋到胸口之間的高度，不要放地上</li>
         <li>分批搬、兩人搬，或用推車、吊具、升降台減少重量與次數</li>

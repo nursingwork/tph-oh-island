@@ -1310,7 +1310,7 @@
 
   <!-- ================= 彈出面板：搬抬時的腰椎負荷（互動演示） ================= -->
   <div id="liftModal" role="dialog" aria-modal="true" aria-labelledby="liftModalTitle" class="modal fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
-    <div class="glass-morphism w-full max-w-3xl max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl p-5 md:p-7 relative border border-white/20">
+    <div class="glass-morphism w-full max-w-5xl max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl p-5 md:p-7 relative border border-white/20">
       <button type="button" data-close aria-label="關閉" class="absolute top-5 right-5 text-slate-400 hover:text-white flex"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
       <div class="flex items-center gap-3.5 mb-4 pr-8">
         <div class="w-12 h-12 shrink-0 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center border border-amber-500/30" aria-hidden="true"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-activity"></use></svg></div>
@@ -1320,19 +1320,15 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <!-- 側面圖 -->
-        <div class="md:col-span-3 rounded-2xl bg-slate-900/70 border border-white/10 p-2">
+      <div class="grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-4">
+        <!-- 左：3D 畫面與播放 -->
+        <div class="lg:col-span-7 lg:row-start-1 space-y-3">
+          <div class="rounded-2xl bg-slate-900/70 border border-white/10 p-2">
           <div id="liftStage" class="relative w-full aspect-[520/340] rounded-xl overflow-hidden bg-[#0b1220]">
             <canvas id="liftCanvas" class="absolute inset-0 w-full h-full touch-none" role="img" aria-label="3D 人形與腰椎，顯示不同搬抬姿勢下腰椎的彎曲與椎間盤受壓情形；可用滑鼠或手指拖曳旋轉"></canvas>
             <svg id="liftSvg" viewBox="0 0 520 340" class="absolute inset-0 w-full h-full hidden" role="img" aria-label="側面的人形與腰椎，顯示不同搬抬姿勢下腰椎的彎曲與椎間盤受壓情形"></svg>
             <div id="liftDragHint" class="absolute left-2 top-2 text-[10px] text-slate-400 pointer-events-none">拖曳可旋轉視角</div>
             <button id="liftResetView" type="button" class="absolute right-2 top-2 px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-800/80 border border-white/10 text-slate-300 hover:text-white">重設視角</button>
-          </div>
-          <div class="flex flex-wrap gap-1.5 px-1 pb-1">
-            <button type="button" data-lift-preset="0" class="lift-preset px-2.5 py-1 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">彎腰搬抬</button>
-            <button type="button" data-lift-preset="0.5" class="lift-preset px-2.5 py-1 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">半蹲（常見的自然姿勢）</button>
-            <button type="button" data-lift-preset="1" class="lift-preset px-2.5 py-1 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">屈膝直背</button>
           </div>
           <div class="flex items-center gap-2 px-1 pt-1 pb-1">
             <button id="liftPlay" type="button" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-extrabold bg-gradient-to-r from-amber-500 to-orange-500 text-slate-900 hover:brightness-110 transition flex items-center gap-1.5" aria-label="播放：把物品搬起來">
@@ -1344,39 +1340,77 @@
               <span class="flex justify-between text-[10px] text-slate-500"><span>剛離地</span><span>站直、抱在身前</span></span>
             </label>
           </div>
-        </div>
-        <!-- 控制與讀數 -->
-        <div class="md:col-span-2 space-y-3 text-xs">
-          <label class="block">
-            <span class="flex justify-between text-slate-300 font-bold"><span>姿勢</span><span id="liftPostureText" class="text-slate-400 font-normal"></span></span>
-            <input id="liftPosture" type="range" min="0" max="100" value="0" class="w-full mt-1 accent-amber-400" aria-label="姿勢：彎腰到屈膝">
-            <span class="flex justify-between text-[10px] text-slate-500"><span>彎腰</span><span>屈膝</span></span>
-          </label>
-          <label class="block">
-            <span class="flex justify-between text-slate-300 font-bold"><span>物品離身體的距離</span><span id="liftDistText" class="text-slate-400 font-normal"></span></span>
-            <input id="liftDist" type="range" min="0" max="100" value="40" class="w-full mt-1 accent-amber-400" aria-label="物品離身體的距離">
-            <span class="flex justify-between text-[10px] text-slate-500"><span>貼近</span><span>伸長手臂</span></span>
-          </label>
-          <label class="block">
-            <span class="flex justify-between text-slate-300 font-bold"><span>物品重量</span><span id="liftWeightText" class="text-slate-400 font-normal"></span></span>
-            <input id="liftWeight" type="range" min="2" max="25" value="10" class="w-full mt-1 accent-amber-400" aria-label="物品重量（公斤）">
-          </label>
-          <div class="rounded-2xl bg-slate-800/70 border border-white/10 p-3 space-y-3">
-            <div>
-              <div class="flex justify-between text-slate-300"><span class="font-bold">腰部承受的力矩</span><span id="liftMomentText" class="text-slate-400"></span></div>
-              <div class="h-2 mt-1.5 rounded-full bg-slate-700 overflow-hidden"><div id="liftMomentBar" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#84c845"></div></div>
-              <p class="text-[10px] text-slate-500 mt-1">相對值：以「彎腰、伸長手臂、25 公斤」為 100%｜<span id="liftPeakText"></span></p>
-            </div>
-            <div>
-              <div class="flex justify-between text-slate-300"><span class="font-bold">腰椎彎曲與椎間盤前緣受壓</span><span id="liftFlexText" class="text-slate-400"></span></div>
-              <div class="h-2 mt-1.5 rounded-full bg-slate-700 overflow-hidden"><div id="liftFlexBar" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#84c845"></div></div>
-            </div>
-            <p id="liftInsight" class="text-slate-200 leading-relaxed"></p>
           </div>
         </div>
+        <!-- 右：設定與結果（桌機在右側跨兩列；手機排在畫面之後、重點說明之前） -->
+        <div class="lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:row-span-2 space-y-3 text-xs">
+          <div class="rounded-2xl bg-slate-900/60 border border-white/10 p-3 space-y-3">
+            <div>
+              <div class="flex justify-between text-slate-300 font-bold"><span>姿勢</span><span id="liftPostureText" class="text-slate-400 font-normal"></span></div>
+              <div class="grid grid-cols-3 gap-1.5 mt-1.5">
+                <button type="button" data-lift-preset="90" class="lift-preset py-1.5 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">彎腰</button>
+                <button type="button" data-lift-preset="50" class="lift-preset py-1.5 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">介於兩者之間</button>
+                <button type="button" data-lift-preset="30" class="lift-preset py-1.5 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">屈膝</button>
+              </div>
+              <input id="liftPosture" type="range" min="0" max="100" step="1" value="90" class="w-full mt-2 accent-amber-400" aria-label="姿勢微調：蹲彎指數，0 為完全屈膝、100 為完全彎腰">
+            </div>
+            <label class="block">
+              <span class="flex justify-between text-slate-300 font-bold"><span>物品離身體多遠</span><span id="liftDistText" class="text-slate-400 font-normal"></span></span>
+              <input id="liftDist" type="range" min="25" max="63" step="1" value="45" class="w-full mt-1 accent-amber-400" aria-label="物品水平距離 H（踝中點到手），25 到 63 公分">
+              <span class="flex justify-between text-[10px] text-slate-500"><span>貼近</span><span>伸長手臂</span></span>
+            </label>
+            <label class="block">
+              <span class="flex justify-between text-slate-300 font-bold"><span>物品重量</span><span id="liftWeightText" class="text-slate-400 font-normal"></span></span>
+              <input id="liftWeight" type="range" min="2" max="25" value="15" class="w-full mt-1 accent-amber-400" aria-label="物品重量（公斤）">
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="block"><span class="text-slate-400">性別</span>
+                <select id="liftSex" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2 py-1.5 text-slate-100"><option value="m">男</option><option value="f">女</option></select></label>
+              <label class="block"><span class="text-slate-400">身高 cm</span>
+                <input id="liftHeight" type="number" min="140" max="200" step="0.1" value="171.9" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2.5 py-1.5 text-slate-100"></label>
+              <label class="block"><span class="text-slate-400">體重 kg</span>
+                <input id="liftMass" type="number" min="35" max="150" step="0.1" value="74.3" class="w-full mt-1 bg-slate-900/70 border border-white/10 rounded-xl px-2.5 py-1.5 text-slate-100"></label>
+            </div>
+          </div>
+          <div class="rounded-2xl bg-slate-800/70 border border-white/10 p-3 space-y-3.5" aria-live="polite">
+            <div>
+              <div class="flex items-center justify-between gap-2"><span class="font-bold text-slate-300">腰椎（L5/S1）壓縮力</span><span id="liftCompChip" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-700 text-slate-200"></span></div>
+              <div id="liftCompText" class="mt-0.5 text-2xl font-extrabold text-white tabular-nums"></div>
+              <div class="relative h-2 mt-1 rounded-full bg-slate-700 overflow-hidden"><div id="liftCompBar" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#84c845"></div><div class="absolute top-0 bottom-0 w-px bg-white/70" style="left:53.1%" aria-hidden="true"></div><div id="liftCompGuide" class="absolute top-0 bottom-0 w-0.5 bg-amber-300" style="left:50%" aria-hidden="true"></div></div>
+              <p id="liftCompNote" class="text-[10px] text-slate-500 mt-1"></p>
+            </div>
+            <div>
+              <div class="flex items-center justify-between gap-2"><span class="font-bold text-slate-300">NIOSH 搬抬指數</span><span id="liftNioshChip" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-700 text-slate-200"></span></div>
+              <div id="liftNioshText" class="mt-0.5 text-lg font-extrabold text-white tabular-nums"></div>
+              <div class="h-2 mt-1 rounded-full bg-slate-700 overflow-hidden"><div id="liftNioshBar" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#84c845"></div></div>
+              <p id="liftNioshNote" class="text-[10px] text-slate-500 mt-1"></p>
+            </div>
+            <details class="group rounded-xl bg-slate-900/50 border border-white/5 px-3 py-2">
+              <summary class="cursor-pointer text-[11px] font-bold text-slate-400 hover:text-slate-200 list-none flex items-center justify-between">更多數據<span class="text-slate-500 group-open:rotate-180 transition-transform" aria-hidden="true">▾</span></summary>
+              <div class="mt-2 space-y-1.5 text-[11px]">
+                <div class="flex justify-between gap-2"><span class="text-slate-400">剪力</span><span id="liftShearText" class="text-slate-200 tabular-nums"></span></div>
+                <div class="flex justify-between gap-2"><span class="text-slate-400">髖部伸展力矩</span><span id="liftMomentText" class="text-slate-200 tabular-nums text-right"></span></div>
+                <div class="h-1.5 rounded-full bg-slate-700 overflow-hidden"><div id="liftMomentBar" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#84c845"></div></div>
+                <div class="flex justify-between gap-2"><span class="text-slate-400">這次搬抬的最大力矩</span><span id="liftPeakText" class="text-slate-200 tabular-nums"></span></div>
+                <div class="flex justify-between gap-2"><span class="text-slate-400">腰椎總彎曲</span><span id="liftFlexText" class="text-slate-200 tabular-nums"></span></div>
+                <div class="h-1.5 rounded-full bg-slate-700 overflow-hidden"><div id="liftFlexBar" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#84c845"></div></div>
+                <div class="flex justify-between gap-2"><span class="text-slate-400">德國 MDD 簡易估算</span><span id="liftCompMdd" class="text-slate-200 tabular-nums"></span></div>
+                <div class="flex justify-between gap-2"><span class="text-slate-400">以國人重量常數算的 RWL</span><span id="liftRwlTw" class="text-slate-200 tabular-nums"></span></div>
+                <div class="flex justify-between gap-2"><span class="text-slate-400">物品水平距離 H</span><span id="liftHText" class="text-slate-200 tabular-nums"></span></div>
+              </div>
+            </details>
+          </div>
+        </div>
+        <!-- 重點說明：桌機在左下；手機在結果之後 -->
+        <p id="liftInsight" class="lg:col-span-7 lg:row-start-2 self-start rounded-2xl bg-amber-500/10 border border-amber-400/25 p-3.5 text-[13px] text-slate-100 leading-relaxed"></p>
       </div>
 
       <div class="mt-5 space-y-5 text-xs text-slate-300 leading-relaxed">
+        <div class="rounded-2xl border border-amber-400/30 bg-amber-500/10 p-4 text-slate-200">
+          <p class="font-bold text-amber-200 mb-1">為什麼要重視搬抬？</p>
+          <p>每 10 位受僱者，約有 4 位過去一年有下背（腰部）痠痛；近一年認定的職業病中，職業性下背痛與手臂頸肩疾病約占 65%。</p>
+          <p class="mt-1 text-[10px] text-slate-500">資料來源：勞安所 2022 年勞動環境安全衛生認知調查（下背痠痛 39.2%）；勞保局職業病給付認定統計（114 年 7 月至 115 年 6 月，582 件中 376 件）。</p>
+        </div>
         <section aria-labelledby="liftFaqWorker">
           <h3 id="liftFaqWorker" class="text-sm font-extrabold text-white mb-2">常見問題｜給勞工與民眾</h3>
           <div class="space-y-2">
@@ -1389,28 +1423,28 @@
               </div>
             </details>
             <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>蹲著搬，是不是一定比彎腰安全？</span></summary>
+              <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>為什麼衛教都說「蹲下、背打直」？</span></summary>
               <div class="mt-2 pl-7 space-y-1.5">
-                <p>不一定。研究比較兩種姿勢，腰椎承受的壓力其實差不多，蹲著搬甚至稍高；蹲著搬能減少的，主要是讓椎骨前後錯動的力量。蹲著搬也比較費力，膝蓋與大腿的負擔較大。</p>
-                <p>所以沒有哪一種姿勢對每個人都最好。腰部不適的人常覺得屈膝比較舒服；膝蓋不好、或需要反覆搬很多次的人，常覺得半蹲或稍微彎腰比較省力。</p>
+                <p>蹲下、背打直最大的好處，是讓你能把物品拉近身體，腰部的負擔才會真正下降。研究也發現，如果蹲下了、箱子卻還在前方遠處，腰椎的負荷並不會比彎腰低多少。</p>
+                <p>所以完整的做法是：<strong class="text-slate-100">蹲下、背打直，把箱子拉到兩腳之間、貼近身體，再用腿站起來。</strong>蹲著搬比較費力，膝蓋不適或無法蹲下的人，至少要做到讓物品貼近身體，並減輕重量。</p>
               </div>
             </details>
             <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
               <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>什麼最影響腰部的負擔？</span></summary>
               <div class="mt-2 pl-7 space-y-1.5">
-                <p><strong class="text-slate-100">物品離身體多遠。</strong>腰部承受的力，大約是「重量 × 物品離腰的水平距離」。把「物品離身體的距離」滑桿往右拉，會看到力矩上升得比換姿勢還快。</p>
-                <p>其次是重量、搬的速度與有沒有扭轉身體。物品窄到可以放在雙腳之間時，屈膝搬才真正有優勢，因為物品能貼近身體。</p>
+                <p><strong class="text-slate-100">物品離身體多遠。</strong>腰部承受的力，大約是「重量 × 物品離腰的水平距離」。把「物品離身體多遠」滑桿往右拉，會看到負荷上升得比換姿勢還快。</p>
+                <p>其次是重量、搬的速度與有沒有扭轉身體。蹲下時把物品放在兩腳之間，就能貼近身體，這正是「蹲下搬」真正有效的原因。</p>
               </div>
             </details>
             <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
               <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>搬東西時，實際上怎麼做比較好？</span></summary>
               <div class="mt-2 pl-7">
                 <ul class="list-disc pl-5 space-y-1">
-                  <li><strong class="text-slate-100">先靠近，再搬</strong>：讓物品貼近身體，能放在雙腳之間最好。</li>
+                  <li><strong class="text-slate-100">蹲下、背打直、貼近身體</strong>：把物品拉到兩腳之間，再用腿站起來。</li>
                   <li><strong class="text-slate-100">先轉腳，再轉身</strong>：不要只扭腰。</li>
                   <li><strong class="text-slate-100">慢慢來</strong>：不要猛然用力抬起。</li>
                   <li><strong class="text-slate-100">太重就分批或找人幫忙</strong>，能用推車、升降台就用。</li>
-                  <li><strong class="text-slate-100">選自己舒服的姿勢</strong>：在上面幾點都做到的前提下，彎腰、半蹲或屈膝都可以。</li>
+                  <li><strong class="text-slate-100">膝蓋不適、無法蹲下時</strong>：至少讓物品貼近身體，並減輕重量或請人幫忙。</li>
                 </ul>
               </div>
             </details>
@@ -1430,8 +1464,9 @@
             <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
               <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>為什麼只教「正確搬抬姿勢」不夠？</span></summary>
               <div class="mt-2 pl-7 space-y-1.5">
-                <p>Cochrane 系統性回顧納入 9 篇隨機試驗、兩萬多名員工，發現單純的搬抬姿勢訓練，不論有沒有搭配輔具，都沒有減少腰痛、失能或病假。受訓的人知識增加了，但不一定轉化成行為改變。</p>
-                <p>姿勢教育可以作為輔助，真正有效的是從作業本身著手：減少要搬的重量與次數、調整物品放置的高度、提供搬運輔具。</p>
+                <p>正確的搬抬姿勢是基本功，但光靠姿勢不夠。Cochrane 系統性回顧納入 9 篇隨機試驗、兩萬多名員工，發現單純的搬抬姿勢訓練，沒有減少腰痛、失能或病假；受訓的人知識增加了，但不一定轉化成行為。</p>
+                <p>所以姿勢衛教要搭配作業改善：減輕重量與次數、讓物品能貼近身體、調整放置高度、提供推車或輔具。這也是職安署《人因性危害預防計畫指引》的改善方向，指引並列出 NIOSH 抬舉公式、KIM 等評估方法。</p>
+                <p>痠痛也直接影響工作能力：勞安所分析全國調查資料發現，肩膀、臀或大腿、膝蓋任一部位痠痛而影響工作且有請假者，工作能力較弱的機會是沒有痠痛者的 11～38 倍；痠痛但不影響工作者也有 1.9～2.5 倍（勞安所《職場肌肉骨骼傷病健康管理指引》第二版，引用 ILOSH105-A317）。</p>
               </div>
             </details>
             <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
@@ -1447,9 +1482,93 @@
             </details>
             <details class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
               <summary class="cursor-pointer font-bold text-white flex items-start gap-2 list-none"><span class="shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold flex items-center justify-center mt-px">Q</span><span>演示的數值怎麼來的？有什麼限制？</span></summary>
-              <div class="mt-2 pl-7 space-y-1.5">
-                <p>人形以簡化的連桿模型繪製；腰部力矩以「上半身重量（35 公斤）× 前傾距離＋物品重量 × 物品的水平距離」估算，只顯示相對高低與倍數。這是衛教用的示意，不是個人或作業的評估結果；實際作業的負荷，請以現場評估為準。</p>
-                <p class="text-slate-400">參考文獻：van Dieën 等，<em>Clinical Biomechanics</em>，1999；Kingma 等，<em>Physical Therapy</em>，2006；von Arx 等，<em>Frontiers in Bioengineering and Biotechnology</em>，2021；Verbeek 等，<em>Cochrane Database of Systematic Reviews</em>，2011；Saraceni 等，<em>JOSPT</em>，2020。</p>
+              <div class="mt-2 pl-7 space-y-2">
+                <p>所有計算用的數字都有出處，上標為下方文獻編號；畫面的動畫路徑與顏色只影響顯示。核心模型採用勞安所以國人資料建立的 Chaffin 二維模式 <sup>[3]</sup>。</p>
+                <p class="font-bold text-slate-100">一、人體參數（國人資料）</p>
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>節段長度與質量、手肘至握點距離 <sup>[1]</sup>；節段重心位置 <sup>[3]</sup>；男女分列。節段質量與重心目前只有 1990 年代的調查，仍是國內唯一的官方資料。</li>
+                  <li>預設身高、體重採勞安所 3D 人體計測調查累計 841 人的平均值：男 171.9 cm、74.3 kg；女 158.9 cm、58.8 kg，可自行輸入 <sup>[2]</sup>。由節段比例推算的肩高，與最新累計 1,116 人的實測值相差 1% 以內。</li>
+                  <li>L5/S1 位於髖到肩連線的 19.2%；L5/S1 以上的軀幹占軀幹質量 71.43% <sup>[3]</sup>。</li>
+                </ul>
+                <p class="font-bold text-slate-100">二、剛離地時的姿勢</p>
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>姿勢滑桿為蹲彎指數 StSq，屈膝多低於 30、彎腰多高於 90 <sup>[13]</sup>；本模型以肩關節代替 C7。</li>
+                  <li>腰椎總彎曲：彎腰 35.9°、屈膝 25.1° <sup>[14]</sup>，依各節屈伸活動範圍分配 <sup>[16]</sup>；膝踝角度比例 <sup>[15]</sup>。</li>
+                  <li>程式求出同時滿足「伸直的手臂握到地上的箱子」與 StSq 定義的膝角與骨盆角。</li>
+                </ul>
+                <p class="font-bold text-slate-100">三、髖部伸展力矩</p>
+                <p class="font-mono text-[11px] text-slate-200 bg-slate-800/70 rounded-lg px-3 py-2">M = g × Σ（節段質量 × 重心到髖的水平距離）＋ g × 物重 × 握點到髖的水平距離</p>
+                <p class="font-bold text-slate-100">四、L5/S1 壓縮力（Chaffin 懸臂式低背模型）<sup>[3][9]</sup></p>
+                <p class="font-mono text-[11px] text-slate-200 bg-slate-800/70 rounded-lg px-3 py-2">① M = 上半身重 × b ＋ 物重 × h（對 L5/S1）<br>② 腹內壓 P_A = 10⁻⁴ × [43 − 0.36 × (180 − θH)] × M^1.8（mmHg，上限 150）<br>③ 腹部力 F_A = P_A × 465 cm²<br>④ 背肌力 F_m =（M − D × F_A）÷ E；E = 4.75 cm，D = 0.067 ＋ 0.082 × sin(180° − θH)<br>⑤ 壓縮力 = cos α ×（上方總重 ＋ 物重）− F_A ＋ F_m；剪力 = sin α ×（上方總重 ＋ 物重）</p>
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>背肌力臂 4.75 cm 為勞安所以 MRI 量測國人的平均值，腹部力力臂 D 與腹壓上限亦依同一報告 <sup>[3]</sup>；θH 為膝－髖－肩夾角；椎間盤平面角 α 依 Anderson 的迴歸式 <sup>[10]</sup>。國內另有研究以同一模型開發搬抬評估工具 <sup>[8]</sup>。</li>
+                  <li>驗證：以本網站的計算程式重算勞安所報告中的兩個驗證樣本，剪力與報告完全相同，壓縮力分別相差 ＋0.7% 與 ＋8.8% <sup>[3]</sup>。</li>
+                </ul>
+                <p class="font-bold text-slate-100">五、NIOSH 搬抬指數 <sup>[11]</sup></p>
+                <p class="font-mono text-[11px] text-slate-200 bg-slate-800/70 rounded-lg px-3 py-2">RWL = 23 × (25 / H) × (1 − 0.003 × |V − 75|) × (0.82 + 4.5 / D) × AM × FM × CM；LI = 物重 ÷ RWL</p>
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>NIOSH 抬舉公式是職安署《人因性危害預防計畫指引》列舉的評估方法之一 <sup>[22]</sup>。H 預設 45 cm（地面搬抬 H ≈ 25 ＋ 箱寬 ÷ 2）；箱子採最佳容器 40 × 30 cm；AM、FM、CM 取 1.0（對稱、偶爾搬、有把手）。</li>
+                  <li>LI 1 以下多數健康勞工可接受；1～3 部分勞工風險增加；大於 3 多數勞工風險增加。</li>
+                  <li>「更多數據」另列以國人重量常數 17 kg 代入的 RWL <sup>[5]</sup>。該研究以心物法資料推算，年輕男性（99%）為 24 kg、女性（75%）為 17 kg，同時考慮男女時取 17 kg，低於 NIOSH 的 23 kg；實驗條件（指節至肩高、箱寬 36 cm）與 NIOSH 不同，僅供參考。</li>
+                </ul>
+                <p class="font-bold text-slate-100">六、判讀與對照</p>
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>黃線為《職業性腰椎椎間盤突出認定參考指引》的單次腰部應力參考值，男 3.2 kN、女 2.5 kN <sup>[4]</sup>；白線為 NIOSH 3400 N <sup>[12]</sup>。國內研究以 MRI 評估 553 名受試者，發現預測椎間盤突出的最佳單次閾值為男性 3000 N、女性 2800 N，也支持依性別區分判讀 <sup>[7]</sup>。判讀線與本模型來自不同研究，僅供相對比較；指引的認定還需要每日與一生的累積負荷，演示不能用來判斷是否為職業病。</li>
+                  <li>國內對照：物流配送員研究（3DSSPP，平均搬運 13.8 kg）出貨作業低於 3400 N，車廂內疊貨 3532 N、配送 3847 N <sup>[6]</sup>；指引附錄二的軟體模擬（170 cm、70 kg），蹲姿 10 kg 為 2.4～2.9 kN、20 kg 為 3.8～4.2 kN <sup>[4]</sup>。三者姿勢設定不同，僅供數量級對照。</li>
+                </ul>
+                <p class="font-bold text-slate-100">七、腰椎的畫法</p>
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>椎體與椎間盤尺寸 <sup>[18][19]</sup>、頭部大小 <sup>[17]</sup>，只影響畫面；椎間盤繞中心旋轉，顏色為該節彎曲 ÷ 該節活動範圍 <sup>[16]</sup>。</li>
+                </ul>
+                <p class="font-bold text-slate-100">模型限制</p>
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>靜態計算，未考慮搬抬速度；單一背肌模型可能高估壓縮力，靜態模型則可能低估實際負荷。</li>
+                  <li>假設：剛離地時手臂伸直、握點在箱高一半；椎體各節採 L1 尺寸；L5/S1 以上軀幹的重心同整段軀幹，沿肩到髖的直線計算。</li>
+                  <li>搬起過程的中間影格為動畫內插，數值只供參考。</li>
+                </ul>
+                <div class="text-slate-400 text-[11px] leading-relaxed space-y-2">
+                  <p class="font-bold text-slate-300">參考文獻</p>
+                  <div><p class="text-slate-300">國內官方資料與研究（主要依據）</p>
+                  <ol class="list-decimal pl-5 space-y-0.5" start="1">
+                    <li>勞動部勞動及職業安全衛生研究所。人體計測資料庫：我國人體肢段特性資料、人體計測資料庫簡介及重要計測值（IOSH84-H121、IOSH85-H121）。</li>
+                    <li>勞動部勞動及職業安全衛生研究所。我國勞工人體計測調查研究 1～5（ILOSH110-H301、ILOSH111-H308、ILOSH112-H311、ILOSH113-H308、ILOSH114-H3106）。2021～2026。</li>
+                    <li>勞動部勞動及職業安全衛生研究所。以生物力學法評估勞工下背傷害之研究：檢核表之製作（IOSH87-H334）。1998。（目前國內唯一以國人資料建立的下背生物力學模式）</li>
+                    <li>勞動部。職業性腰椎椎間盤突出認定參考指引。107 年 5 月修正。</li>
+                    <li>陳志勇、李永輝。我國人工搬運重量常數設定探討。勞工安全衛生研究季刊。1998;6(3)。（目前國內唯一的重量常數研究）</li>
+                    <li>邱敏綺、陳信宏、羅宜文、吳欣潔。物流業配送員下背受力分析。勞動及職業安全衛生研究季刊。2022 年 6 月。</li>
+                    <li>Hung IYJ, Shih TTF, Chen BB, Liou SH, Ho IK, Guo YL. The roles of lumbar load thresholds in cumulative lifting exposure to predict disk protrusion in an Asian population. <em>BMC Musculoskelet Disord</em>. 2020;21:169.</li>
+                    <li>Lu SY, Ing YS, Lee CL, Pan YT. <em>AHFE Physical Ergonomics I</em>. 2018.（勞安所資助）</li>
+                  </ol></div>
+                  <div><p class="text-slate-300">國際文獻：模型公式與判讀標準（上列國內報告亦引用）</p>
+                  <ol class="list-decimal pl-5 space-y-0.5" start="9">
+                    <li>Chaffin DB, Andersson GBJ, Martin BJ. <em>Occupational Biomechanics</em>. 第 6 章 6.5.1 節。</li>
+                    <li>Anderson CK, Chaffin DB, Herrin GD. <em>Spine</em>. 1986;11(5):456–462.</li>
+                    <li>Waters TR, et al. Revised NIOSH equation for the design and evaluation of manual lifting tasks. <em>Ergonomics</em>. 1993;36(7):749–776.</li>
+                    <li>NIOSH. <em>Work Practices Guide for Manual Lifting</em>. 1981.</li>
+                  </ol></div>
+                  <div><p class="text-slate-300">國際文獻：剛離地姿勢的推算</p>
+                  <ol class="list-decimal pl-5 space-y-0.5" start="13">
+                    <li>Schmid S. The Stoop-Squat-Index. 2021. arXiv:2108.05795.</li>
+                    <li>von Arx M, et al. <em>Front Bioeng Biotechnol</em>. 2021. doi:10.3389/fbioe.2021.769117.</li>
+                    <li>Hwang S, et al. <em>BMC Musculoskelet Disord</em>. 2009;10:15.</li>
+                    <li>White AA, Panjabi MM. <em>Clinical Biomechanics of the Spine</em>, 2nd ed. 1990.</li>
+                  </ol></div>
+                  <div><p class="text-slate-300">國際文獻：脊椎與頭部的畫法（不影響數值）</p>
+                  <ol class="list-decimal pl-5 space-y-0.5" start="17">
+                    <li>Winter DA. <em>Biomechanics and Motor Control of Human Movement</em>, 4th ed. 2009.（Drillis &amp; Contini 資料）</li>
+                    <li>腰椎形態統合分析。<em>Surg Radiol Anat</em>. 2024. doi:10.1007/s00276-024-03509-4.</li>
+                    <li>Mansur DI, et al. <em>J Lumbini Med Coll</em>. 2020;8(1).</li>
+                  </ol></div>
+                  <div><p class="text-slate-300">國內背景資料與指引（不參與計算）</p>
+                  <ol class="list-decimal pl-5 space-y-0.5" start="20">
+                    <li>勞動部勞動及職業安全衛生研究所。2022 年勞動環境安全衛生認知調查（ILOSH111-A302）。</li>
+                    <li>勞動部勞工保險局。申請勞工職業災害保險職業病給付認定率：按給付種類、職業病成因及性別分。114 年 7～12 月、115 年 1～6 月。</li>
+                    <li>勞動部職業安全衛生署。人因性危害預防計畫指引（初版）。103 年 8 月。</li>
+                    <li>勞動部勞動及職業安全衛生研究所。職場肌肉骨骼傷病健康管理指引第二版（ILOSH110-T-174）。110 年 9 月；王子娟、謝曼麗。工作能力與健康管理探討研究（ILOSH105-A317）。2016。</li>
+                  </ol></div>
+                  <p>研究證據（不參與計算）：van Dieën 1999、Kingma 2006、Verbeek 2011（Cochrane）、Saraceni 2020，說明搬抬姿勢與腰痛的關係。</p>
+                </div>
+                <p>本演示為衛教用途，不是個人或作業的評估結果；實際作業的負荷，請以現場評估為準。</p>
               </div>
             </details>
           </div>
@@ -1724,15 +1843,68 @@
     //   以簡化的連桿模型畫出側面人形：腳踝→膝→髖→骶骨→腰椎 L5～L1→胸椎→頭，手臂連到物品。
     //   姿勢 0（彎腰）→ 1（屈膝）：膝蓋彎曲增加、軀幹前傾減少、腰椎彎曲由約 40° 降到約 12°
     //   腰椎彎曲分配到五個椎間關節（下段較多），椎間盤畫成楔形：前緣壓扁、後緣張開
-    //   力矩 = 9.81 ×（上半身 35 kg × 上半身重心的水平距離 ＋ 物品重量 × 物品的水平距離），只顯示相對值
+    //   力矩 = 9.81 ×（上半身質量 × 上半身重心的水平距離 ＋ 物品重量 × 物品的水平距離），只顯示相對值
+    //   上半身（頭、手臂、軀幹，HAT）參數依 Winter, Biomechanics and Motor Control of Human Movement, 4th ed. (2009)：
+    //   質量 = 體重 × 0.678；重心位於髖關節（大轉子）到肩關節連線的 0.626 處；示範體重 70 kg
     // =============================================================
     const LiftDemo = (() => {
       const NS = 'http://www.w3.org/2000/svg';
-      const PX_PER_M = 190;                     // 2D 備援圖的比例：1 公尺 = 190 px；3D 直接用公尺
-      const L = { shank: 85, thigh: 85, sacrum: 14, vert: 11, disc: 4.5, thorax: 22, headR: 16, arm: 134 };   // 手臂：肩到握點約 0.7 m
-      const SHARE = [0.26, 0.24, 0.2, 0.16, 0.14]; // L5→L1 的彎曲分配
-      const state = { p: 0, d: 0.4, w: 10, l: 0 };   // 目標值
-      const cur = { p: 0, d: 0.4, l: 0 };             // 顯示值（平滑追上目標）
+      const PX_PER_M = 190;                     // 繪圖比例：1 公尺 = 190 px（只影響畫面，不影響計算）
+      // =====================================================================
+      // 文獻參數：每個數字都標出處，編號與「演示的數值怎麼來的」參考文獻相同
+      // [1]  勞安所人體計測資料庫（IOSH84-H121、IOSH85-H121）：節段長度、質量；表 1 手肘至握拳中心距離
+      // [2]  勞安所 我國勞工人體計測調查研究系列（ILOSH110-H301～ILOSH114-H3106）：預設身高、體重
+      // [17]  Winter (2009)，引用 Drillis & Contini：下巴高 0.870H（只用於畫出頭部）
+      // [13]  Schmid (2021)：Stoop-Squat Index（屈膝 < 30、彎腰 > 90）
+      // [14]  von Arx 等 (2021)：搬抬時腰椎前凸活動範圍
+      // [15]  Hwang 等 (2009)：屈膝搬抬 10 kg 的踝、膝角度
+      // [16]  White & Panjabi (1990)：腰椎各節屈伸活動範圍
+      // [18]  腰椎形態統合分析（Surg Radiol Anat, 2024）：L1 椎體高度、終板深度與寬度
+      // [19]  Mansur 等 (2020)：腰椎椎間隙中間高度
+      // [3] 勞安所 IOSH87-H334 以生物力學法評估勞工下背傷害之研究：國人版 Chaffin 二維模式
+      //      （節段重心、背肌力臂 4.75 cm、腹部力力臂 D、L5/S1 位於髖→肩 19.2%、L5/S1 以上軀幹 71.43%、腹壓上限 150 mmHg）
+      // [9] Chaffin & Andersson，Occupational Biomechanics 第 6 章 6.5.1 節：懸臂式低背模型（式 6.51、6.52）
+      // [10] Anderson, Chaffin & Herrin (1986)：L5/S1 椎間盤平面角 α
+      // [4] 職業性腰椎椎間盤突出認定參考指引：單次腰部應力男 3.2 kN、女 2.5 kN；德國 MDD 估算
+      // [11] Waters 等 (1993)：NIOSH 修訂版搬抬公式    [12] NIOSH (1981)：3400 N、6400 N
+      // [5]  陳志勇、李永輝 (1998)：國人人工搬運重量常數；同時考慮男女時為 17 kg（男性 99% 為 24 kg、女性 75% 為 17 kg）
+      // =====================================================================
+      // 國人節段參數 [1][3]：長度占身高、m 占體重、com 為重心距近端（靠近心臟的關節）占節段長
+      const SEG = {
+        m: { ankleH: 0.040, shank: 0.208, thigh: 0.257, trunk: 0.315, upperArm: 0.193, forearm: 0.145, hand: 0.108,
+             hn: { m: 0.0739, com: 0.496 }, trunkM: { m: 0.4496, com: 0.602 },
+             ua: { m: 0.0376, com: 0.427 }, fa: { m: 0.0138, com: 0.466 }, hd: { m: 0.0060, com: 0.420 },
+             elbowGrip: 306.00 / 1687.73 },                    // 男性；手肘至握拳中心 306.00 mm ÷ 身高 1687.73 mm [1]
+        f: { ankleH: 0.038, shank: 0.206, thigh: 0.265, trunk: 0.309, upperArm: 0.180, forearm: 0.138, hand: 0.108,
+             hn: { m: 0.0684, com: 0.433 }, trunkM: { m: 0.4531, com: 0.527 },
+             ua: { m: 0.0322, com: 0.462 }, fa: { m: 0.0089, com: 0.409 }, hd: { m: 0.0038, com: 0.537 },
+             elbowGrip: 271.27 / 1563.05 }                     // 女性；271.27 mm ÷ 1563.05 mm [1]
+      };
+      const segOf = () => SEG[body.sex] || SEG.m;
+      const REF = {
+        chinH: 0.870,                                                                               // [17]
+        l5Frac: 0.192, aboveL5: 0.7143,                                                             // [3] L5/S1 位於髖→肩 19.2%；L5/S1 以上軀幹占 71.43%
+        vbh: (24.54 + 26.57) / 2, endplate: (31.04 + 32.27) / 2, vbWidth: (41.09 + 43.97) / 2,      // [18] mm
+        discM: [11.10, 11.96, 11.36, 10.32, 8.87],                                                  // [19] mm，L5-S1 → L1-L2
+        rom: [17, 16, 15, 14, 12],                                                                  // [16] 度，L5-S1 → L1-L2
+        lumbarStoop: 35.9, lumbarSquat: 25.1,                                                       // [14] 度
+        stsqSquat: 30, stsqStoop: 90,                                                               // [13]
+        ankleKnee: 7.32 / 18.65,                                                                    // [15]
+        LC: 23, LCtw: 17 /* 國人重量常數，不分性別 */, Hmin: 25, Hmax: 63, boxLen: 40, boxH: 30,                   // [11][5] kg、cm
+        esArm: 0.0475, faMax: 929.8, diaphragm: 465, mmHgToNcm2: 0.0133,                            // [3][9] m、N、cm²、N/cm²
+        compAction: 3400, compMax: 6400, shearLimit: 1000,                                          // [12] N
+        guideComp: { m: 3200, f: 2500 }, mddBase: 1800, mddPerKg: 75                                // [4] N、N、N/kg
+      };
+      const abdArm = (thetaH) => 0.067 + 0.082 * Math.sin((180 - thetaH) * Math.PI / 180);          // [3] 腹部力力臂 D（m）
+
+      const SUM_ROM = REF.rom.reduce((a, b) => a + b, 0);
+      // 預設身高、體重：勞安所 ILOSH112-H311 累計 841 人的平均值（男 171.9 cm、74.3 kg；女 158.9 cm、58.8 kg）[2]
+      //   ILOSH114-H3106 累計 1,116 人的平均身高（男 171.5、女 158.8 cm）幾乎相同，但報告未列出平均體重
+      const DEFAULT_BODY = { m: { h: 171.9, m: 74.3 }, f: { h: 158.9, m: 58.8 } };
+      const body = { sex: 'm', h: 171.9, m: 74.3 };
+      const GROUND = 320;
+      const state = { s: REF.stsqStoop, H: REF.Hmin + REF.boxLen / 2, w: 15, l: 0 };   // H 預設 45 cm：[4] 地面搬抬 H ≈ 25 + W/2；重量 15 kg：[13][17][14] 的研究用箱重
+      const cur = { l: 0 };
       let playing = 0;                                // 1 = 正在搬起，-1 = 正在放下，0 = 停止
       const LIFT_SECONDS = 2.2;
       let svg = null, els = null, raf = 0, inited = false, mode = '3d';
@@ -1741,82 +1913,188 @@
       const lerp = (a, b, t) => a + (b - a) * t;
       const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent || svg).appendChild(e); return e; };
       const fmt = (x, y) => `${x.toFixed(1)},${y.toFixed(1)}`;
+      const easeLift = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;   // 動畫用的速度曲線（只影響畫面中間影格）
+      const px = (m) => m * PX_PER_M;
 
-      // ---- 共用：連桿姿勢（像素座標，y 向下，地面 y = 320）----
-      const easeLift = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-      // l：搬起的過程，0 = 抓住物品、剛離地；1 = 站直、物品抱在身前（腰部高度）
-      // 物品的高度（像素）：與 3D 紙箱尺寸一致，重量越重箱子越大
-      const boxHpx = () => (0.2 + 0.008 * state.w) * PX_PER_M;
-      // 由骨盆角度往上組出腰椎、胸椎、肩與頭
-      function upperBody(H, trunkLean, lumbarFlex) {
-        let ang = trunkLean - lumbarFlex;            // 骶骨（骨盆）的傾斜
-        let x = H.x + Math.sin(ang) * L.sacrum, y = H.y - Math.cos(ang) * L.sacrum;
+      // 依身高換算的尺寸（像素）
+      function dims() {
+        const Hm = body.h / 100, S = segOf();
+        const lumbarM = (REF.discM.reduce((a, b) => a + b, 0) + 5 * REF.vbh) / 1000;
+        const shoulderH = S.ankleH + S.shank + S.thigh + S.trunk;          // 肩高 = 踝高 + 小腿 + 大腿 + 軀幹
+        return {
+          ankle: px(S.ankleH * Hm), shank: px(S.shank * Hm), thigh: px(S.thigh * Hm),
+          trunk: px(S.trunk * Hm), pelvis: px(REF.l5Frac * S.trunk * Hm),       // [3] 髖→L5/S1 為軀幹長的 19.2%
+          thorax: px(S.trunk * Hm * (1 - REF.l5Frac) - lumbarM),
+          headNeck: px((1 - shoulderH) * Hm),                               // 頭頸段：肩到頭頂
+          vh: px(REF.vbh / 1000), dm: REF.discM.map(v => px(v / 1000)), depth: px(REF.endplate / 1000),
+          ua: px(S.upperArm * Hm), fa: px(S.forearm * Hm), hand: px(S.hand * Hm),
+          faGrip: px(S.elbowGrip * Hm),                                     // 手肘到握拳中心：勞安所實測值占身高 [1]
+          neck: px(Math.max(0.02, REF.chinH - shoulderH) * Hm), headR: px((1 - REF.chinH) / 2 * Hm),
+          boxL: px(REF.boxLen / 100), boxH: px(REF.boxH / 100)
+        };
+      }
+      // 腿：膝屈曲 k（度），踝背屈 = k × [14] 的踝膝比
+      function legs(k, D, A) {
+        const a = rad(REF.ankleKnee * k), th = rad(REF.ankleKnee * k - k);
+        const K = { x: A.x + Math.sin(a) * D.shank, y: A.y - Math.cos(a) * D.shank };
+        const Hp = { x: K.x + Math.sin(th) * D.thigh, y: K.y - Math.cos(th) * D.thigh };
+        return { K, Hp };
+      }
+      // 由骨盆傾角往上組出腰椎（L5→L1）、胸段與肩；腰椎總彎曲依 [15] 的活動範圍比例分配到各節
+      function upperBody(Hp, pelvis, lumbar, D) {
+        let ang = pelvis;
+        const L5 = { x: Hp.x + Math.sin(pelvis) * D.pelvis, y: Hp.y - Math.cos(pelvis) * D.pelvis };   // [19] L5/S1 位置
+        let x = L5.x, y = L5.y;
         const segs = [];
         for (let i = 0; i < 5; i++) {
-          const joint = lumbarFlex * SHARE[i];
-          ang += joint;
-          segs.push({ bx: x, by: y, ang, flex: joint });
-          x += Math.sin(ang) * L.disc; y -= Math.cos(ang) * L.disc;
-          segs[i].vx = x; segs[i].vy = y;
-          x += Math.sin(ang) * L.vert; y -= Math.cos(ang) * L.vert;
+          const flex = lumbar * REF.rom[i] / SUM_ROM;
+          const bx = x, by = y, prev = ang;
+          ang += flex;
+          const mid = prev + flex / 2;                          // 椎間盤繞中心旋轉：中線沿兩節方向的平均
+          x += Math.sin(mid) * D.dm[i]; y -= Math.cos(mid) * D.dm[i];
+          const vx = x, vy = y;
+          x += Math.sin(ang) * D.vh; y -= Math.cos(ang) * D.vh;
+          segs.push({ bx, by, vx, vy, ang, mid, flex, dm: D.dm[i], rom: rad(REF.rom[i]) });
         }
         const top = { x, y };
-        const S = { x: top.x + Math.sin(trunkLean) * L.thorax, y: top.y - Math.cos(trunkLean) * L.thorax };
-        return { segs, top, S };
+        const S = { x: x + Math.sin(ang) * D.thorax, y: y - Math.cos(ang) * D.thorax };
+        return { segs, top, S, L5 };
       }
-      // l：搬起的過程，0 = 雙手抓住放在地上的物品；1 = 站直、物品抱在腰前
-      function pose(p, d, l = 0) {
-        const e = easeLift(Math.max(0, Math.min(1, l)));
-        const bh = boxHpx();
-        const A = { x: 140, y: 320 };
-        const base = lerp(62, 30, p);
-        const grip = { x: A.x + base + d * 100, y: 320 - bh / 2 };   // 起點：抓住地上物品的兩側（箱子高度的一半）
-        // 起點姿勢：依姿勢滑桿決定膝、髖與軀幹角度；手搆不到地上的物品時，自動多彎一點腰與膝
-        let shank = lerp(4, 38, p), thigh = lerp(-6, -82, p), trunk = lerp(105, 45, p), lumbar = lerp(42, 14, p);
-        const legsAt = (sh, th) => {
-          const K = { x: A.x + Math.sin(rad(sh)) * L.shank, y: A.y - Math.cos(rad(sh)) * L.shank };
-          const H = { x: K.x + Math.sin(rad(th)) * L.thigh, y: K.y - Math.cos(rad(th)) * L.thigh };
-          return { K, H };
+      // 起點姿勢求解：同時滿足 (1) 伸直的手臂剛好握到地上箱子的握點；(2) 髖下降 ÷ 肩下降 = 1 − StSq/100（[17] 的定義）
+      const startCache = new Map();
+      function solveStart(s, Hcm) {
+        const key = `${body.sex}|${body.h}|${s.toFixed(1)}|${Hcm.toFixed(1)}`;
+        if (startCache.has(key)) return startCache.get(key);
+        const D = dims(), A = { x: 140, y: GROUND - D.ankle };
+        const t = Math.max(0, Math.min(1, (s - REF.stsqSquat) / (REF.stsqStoop - REF.stsqSquat)));
+        const lumbar = rad(lerp(REF.lumbarSquat, REF.lumbarStoop, t));      // [13]＋[17]：兩種技巧之間線性內插
+        const grip = { x: A.x + px(Hcm / 100), y: GROUND - D.boxH / 2 };    // 握點：NIOSH H（踝中點到手的水平距離）、箱高一半
+        const hipStand = A.y - D.shank - D.thigh, shStand = hipStand - D.trunk;
+        const reachAt = (k, p) => { const { Hp } = legs(k, D, A); const { S } = upperBody(Hp, rad(p), lumbar, D); return { Hp, S, err: Math.hypot(S.x - grip.x, S.y - grip.y) - (D.ua + D.faGrip) }; };
+        const fitPelvis = (k) => {
+          let prev = reachAt(k, -10).err;
+          if (prev <= 0) return null;
+          for (let p = -9; p <= 178; p += 1) {
+            const e = reachAt(k, p).err;
+            if (e <= 0) { let lo = p - 1, hi = p; for (let it = 0; it < 18; it++) { const m = (lo + hi) / 2; if (reachAt(k, m).err > 0) lo = m; else hi = m; } return hi; }
+            prev = e;
+          }
+          return null;
         };
-        let extraTrunk = 0, extraKnee = 0;
-        for (let i = 0; i < 40; i++) {
-          const { H } = legsAt(shank + extraKnee, thigh - extraKnee * 1.6);
-          const { S } = upperBody(H, rad(trunk + extraTrunk), rad(lumbar + extraTrunk * 0.25));
-          if (Math.hypot(grip.x - S.x, grip.y - S.y) <= L.arm * 0.99) break;
-          // 屈膝類的姿勢優先多蹲一點、保持背部；彎腰類的姿勢優先多彎腰
-          if (p >= 0.5) { if (extraKnee < 18) extraKnee += 1.5; else extraTrunk += 2; }
-          else { if (extraTrunk < 30) extraTrunk += 2; else extraKnee += 1.5; }
+        const ratio = (k) => { const p = fitPelvis(k); if (p === null) return null; const r = reachAt(k, p); return { k, p, r: (r.Hp.y - hipStand) / Math.max(1e-6, r.S.y - shStand) }; };
+        const target = 1 - s / 100;
+        let sol = ratio(0), best = sol;
+        if (sol && sol.r < target) {
+          for (let k = 1; k <= 140; k += 1) {
+            const c = ratio(k);
+            if (!c) break;
+            if (!best || Math.abs(c.r - target) < Math.abs(best.r - target)) best = c;
+            if (c.r >= target) {
+              let lo = k - 1, hi = k;
+              for (let it = 0; it < 16; it++) { const m = (lo + hi) / 2; const cm = ratio(m); if (cm && cm.r < target) lo = m; else hi = m; }
+              best = ratio(hi) || c; break;
+            }
+          }
         }
-        shank += extraKnee; thigh -= extraKnee * 1.6; trunk += extraTrunk; lumbar += extraTrunk * 0.25;
-        // 搬起的過程：所有角度往站直的姿勢內插
-        const { K, H } = legsAt(lerp(shank, 3, e), lerp(thigh, -3, e));
-        const trunkLean = rad(lerp(trunk, 8, e));     // 站直時略前傾
-        const lumbarFlex = rad(lerp(lumbar, 5, e));
-        const { segs, top, S } = upperBody(H, trunkLean, lumbarFlex);
-        const headC = { x: S.x + Math.sin(trunkLean) * (L.headR + 10) + 4, y: S.y - Math.cos(trunkLean) * (L.headR + 10) };
-        // 手的位置：起點是地上物品兩側（距離滑桿決定離身體多遠）；終點一律貼近身體、抱在腰前
-        //   和實體教具一樣，物品在搬起的過程中自然往身體靠攏：水平方向比垂直方向先靠近，一離地就開始往身體收
-        const endHand = { x: H.x + 26 + bh / 2, y: H.y - 14 };      // 箱子前緣貼著身體，不穿過軀幹
-        const eIn = easeLift(Math.min(1, l * 1.6));                   // 水平靠攏較快：搬到約 60% 時已貼近身體
-        const hand = { x: lerp(grip.x, endHand.x, eIn), y: lerp(grip.y, endHand.y, e) };
-        const dx = hand.x - S.x, dy = hand.y - S.y, dl = Math.hypot(dx, dy);
-        if (dl > L.arm) { hand.x = S.x + dx / dl * L.arm; hand.y = S.y + dy / dl * L.arm; }   // 搬起途中搆不到時手臂伸直
-        const box = { x: hand.x, y: Math.min(hand.y + bh / 2, 320) };                           // 物品底部；起點一定落在地面
-        // 手肘：兩個可能的位置中取「比較低、比較靠身體」的那一個，抱在腰前時手肘自然下垂
-        const mid = { x: (S.x + hand.x) / 2, y: (S.y + hand.y) / 2 };
+        const out = { k: best ? best.k : 0, p: best ? best.p : 90, lumbar, grip, A, D, stsq: best ? 100 * (1 - best.r) : s };
+        startCache.set(key, out);
+        return out;
+      }
+      // 終點：站直，上臂自然下垂、前臂水平（肘高＝肩高 − 上臂長，[1]），雙手在身前握著箱子
+      function endGrip(D, A) {
+        const hipY = A.y - D.shank - D.thigh, shY = hipY - D.trunk;
+        return { x: A.x + D.faGrip, y: shY + D.ua };
+      }
+      // l：搬起的過程，0 = 雙手握住地上的箱子；1 = 站直、箱子在身前
+      function pose(s, Hcm, l = 0) {
+        const st = solveStart(s, Hcm), D = st.D, A = st.A;
+        const e = easeLift(Math.max(0, Math.min(1, l)));
+        const k = lerp(st.k, 0, e), pelvis = rad(lerp(st.p, 0, e)), lumbar = lerp(st.lumbar, 0, e);
+        const { K, Hp } = legs(k, D, A);
+        const { segs, top, S, L5 } = upperBody(Hp, pelvis, lumbar, D);
+        const trunkLean = pelvis + lumbar;
+        const headC = { x: S.x + Math.sin(trunkLean) * (D.neck + D.headR), y: S.y - Math.cos(trunkLean) * (D.neck + D.headR) };
+        // 手的路徑（動畫）：箱子先往身體靠攏再往上，和實體教具一樣
+        const gE = endGrip(D, A);
+        const eIn = easeLift(Math.min(1, l * 1.6));
+        let hand = { x: lerp(st.grip.x, gE.x, eIn), y: lerp(st.grip.y, gE.y, e) };
+        const L1 = D.ua, L2 = D.faGrip, dx = hand.x - S.x, dy = hand.y - S.y, dl = Math.hypot(dx, dy);
+        if (dl > L1 + L2) hand = { x: S.x + dx / dl * (L1 + L2), y: S.y + dy / dl * (L1 + L2) };
         const reach = Math.hypot(hand.x - S.x, hand.y - S.y);
-        const bend = Math.sqrt(Math.max(0, (L.arm / 2) ** 2 - (reach / 2) ** 2));
-        const nx = -(hand.y - S.y) / (reach || 1), ny = (hand.x - S.x) / (reach || 1);
-        const c1 = { x: mid.x + nx * bend, y: mid.y + ny * bend }, c2 = { x: mid.x - nx * bend, y: mid.y - ny * bend };
-        const score = (c) => c.y - c.x * 0.5;            // 越低、越靠後越自然
+        const cosA = Math.max(-1, Math.min(1, (L1 * L1 + reach * reach - L2 * L2) / (2 * L1 * reach || 1)));
+        const base = Math.atan2(hand.y - S.y, hand.x - S.x), off = Math.acos(cosA);
+        const c1 = { x: S.x + Math.cos(base + off) * L1, y: S.y + Math.sin(base + off) * L1 };
+        const c2 = { x: S.x + Math.cos(base - off) * L1, y: S.y + Math.sin(base - off) * L1 };
+        const score = (c) => c.y - c.x * 0.5;            // 兩個解中取手肘較低、較靠身體的一個
         const elbow = score(c1) >= score(c2) ? c1 : c2;
-        return { A, K, H, S, headC, segs, top, box, hand, elbow, trunkLean, lumbarFlex };
+        const fl = Math.hypot(hand.x - elbow.x, hand.y - elbow.y) || 1;
+        const wrist = { x: elbow.x + (hand.x - elbow.x) / fl * D.fa, y: elbow.y + (hand.y - elbow.y) / fl * D.fa };
+        const box = { x: hand.x, y: Math.min(hand.y + D.boxH / 2, GROUND) };   // 箱子底部；起點落在地面
+        return { A, K, H: Hp, L5, S, headC, segs, top, box, hand, elbow, wrist, trunkLean, lumbarFlex: lumbar, pelvis, D, st };
       }
+      // 各節段重心位置（國人資料 [1]）：軀幹重心自肩關節（近端）沿肩→髖量起；頭頸重心自肩沿軀幹方向往上量起；手臂自近端關節量起
+      function segCOMs(P) {
+        const S = segOf(), at = (a, b, f) => ({ x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f });
+        const trunk = at(P.S, P.H, S.trunkM.com);
+        const hnLen = P.D.headNeck * S.hn.com;
+        const hn = { x: P.S.x + Math.sin(P.trunkLean) * hnLen, y: P.S.y - Math.cos(P.trunkLean) * hnLen };
+        return { S, trunk, hn, ua: at(P.S, P.elbow, S.ua.com), fa: at(P.elbow, P.wrist, S.fa.com), hd: at(P.wrist, P.hand, S.hd.com * 2) };
+      }
+      // 髖關節力矩（伸展方向）：Σ 質量 × g × 重心到髖的水平距離
       function moment(w, P) {
-        const dLoad = Math.max(0.05, (P.box.x - P.H.x) / PX_PER_M);
-        const dTrunk = Math.max(0.02, (P.S.x - P.H.x) / PX_PER_M) * 0.55;
-        return 9.81 * (35 * dTrunk + w * dLoad);
+        const g = 9.81, m = body.m, hx = P.H.x, toM = (pxv) => pxv / PX_PER_M;
+        const c = segCOMs(P), S = c.S;
+        let sum = S.trunkM.m * m * toM(c.trunk.x - hx) + S.hn.m * m * toM(c.hn.x - hx);
+        sum += 2 * (S.ua.m * m * toM(c.ua.x - hx) + S.fa.m * m * toM(c.fa.x - hx) + S.hd.m * m * toM(c.hd.x - hx));
+        sum += w * toM(P.hand.x - hx);
+        return g * sum;
       }
+      // L5/S1 低背模型（Chaffin & Andersson 懸臂式低背模型 [3]）
+      //   M_L5 = g × Σ（L5/S1 以上各節段質量 × 重心到 L5/S1 的水平距離）＋ g × 物品重量 × 握點到 L5/S1 的水平距離
+      //   背肌力 Fm = M_L5 ÷ 0.053 m；壓縮力 = Fm ＋ 上方總重 × cos(脊椎傾角)；剪力 = 上方總重 × sin(脊椎傾角)
+      function lowBack(w, P) {
+        const g = 9.81, m = body.m, lx = P.L5.x, toM = (pxv) => pxv / PX_PER_M, deg = (r) => r * 180 / Math.PI;
+        const c = segCOMs(P), S = c.S;
+        // L5/S1 以上的軀幹質量 = 軀幹 × 71.43% [3]；假設其重心與整段軀幹相同
+        const mTrunkAbove = S.trunkM.m * REF.aboveL5 * m, mHN = S.hn.m * m;
+        const mTrunk = mTrunkAbove + mHN, mArms = 2 * (S.ua.m + S.fa.m + S.hd.m) * m;
+        // 步驟 1：L5/S1 外力矩（上半身與物品重量對 L5/S1 的力矩）
+        let Mo = mTrunkAbove * toM(c.trunk.x - lx) + mHN * toM(c.hn.x - lx);
+        Mo += 2 * (S.ua.m * m * toM(c.ua.x - lx) + S.fa.m * m * toM(c.fa.x - lx) + S.hd.m * m * toM(c.hd.x - lx));
+        Mo += w * toM(P.hand.x - lx);
+        const M = Math.max(0, g * Mo);
+        // 步驟 2：腹內壓（mmHg），θH 為膝－髖－肩的夾角
+        const vK = { x: P.K.x - P.H.x, y: P.K.y - P.H.y }, vS = { x: P.S.x - P.H.x, y: P.S.y - P.H.y };
+        const thetaH = deg(Math.acos(Math.max(-1, Math.min(1, (vK.x * vS.x + vK.y * vS.y) / (Math.hypot(vK.x, vK.y) * Math.hypot(vS.x, vS.y) || 1)))));
+        const PA = Math.max(0, 1e-4 * (43 - 0.36 * (180 - thetaH)) * Math.pow(M, 1.8));
+        // 步驟 3：腹部力 F_A = P_A × 465 cm²
+        const FA = Math.min(REF.faMax, PA * REF.mmHgToNcm2 * REF.diaphragm);      // 腹壓上限 150 mmHg → F_A ≤ 929.8 N [3]
+        // 力矩平衡：M − D·F_A − E·F_m = 0；E = 4.75 cm、D 依髖角變化 [3]
+        const Fm = Math.max(0, (M - abdArm(thetaH) * FA) / REF.esArm);
+        // L5/S1 椎間盤平面角 α（與水平線夾角）[9]：T 為軀幹（髖→肩）與垂直線夾角，K 為膝關節夾角（伸直 180°）
+        const T = deg(Math.atan2(P.S.x - P.H.x, P.H.y - P.S.y));
+        const vA = { x: P.A.x - P.K.x, y: P.A.y - P.K.y }, vH = { x: P.H.x - P.K.x, y: P.H.y - P.K.y };
+        const K = deg(Math.acos(Math.max(-1, Math.min(1, (vA.x * vH.x + vA.y * vH.y) / (Math.hypot(vA.x, vA.y) * Math.hypot(vH.x, vH.y) || 1)))));
+        const beta = -17.5 - 0.12 * T + 0.23 * K + 0.0012 * T * K + 0.005 * T * T - 0.00075 * K * K;
+        const alpha = (40 + beta) * Math.PI / 180;
+        // 壓縮力與剪力：Chaffin & Andersson 式 6.51 F_C = cosα·(mg_HAT + mg_load) − F_A + F_M；式 6.52 F_S = sinα·(mg_HAT + mg_load)
+        const W = g * (mTrunk + mArms + w);
+        return { M, Fm, FA, PA, thetaH, T, K, alpha: 40 + beta, comp: Fm - FA + W * Math.cos(alpha), shear: Math.abs(W * Math.sin(alpha)) };
+      }
+      // NIOSH 修訂版搬抬公式 [4]：起點評估；AM、FM、CM 依說明的條件取 1.0
+      function niosh(w, Hcm, D, A) {
+        const H = Math.max(REF.Hmin, Hcm);
+        const HM = Hcm > REF.Hmax ? 0 : REF.Hmin / H;
+        const V = REF.boxH / 2;
+        const VM = 1 - 0.003 * Math.abs(V - 75);
+        const Vend = (GROUND - endGrip(D, A).y) / PX_PER_M * 100;
+        const Dist = Math.max(25, Vend - V);
+        const DM = 0.82 + 4.5 / Dist;
+        const RWL = REF.LC * HM * VM * DM;
+        const RWLtw = REF.LCtw * HM * VM * DM;          // 以國人重量常數代入 [5]
+        return { RWL, RWLtw, LI: RWL > 0 ? w / RWL : Infinity, HM, VM, DM, V, Dist };
+      }
+      const flexIndex = (lf) => Math.max(0, Math.min(1, lf / rad(SUM_ROM)));   // 腰椎總彎曲 ÷ 各節屈伸活動範圍總和 [15]
       function colorRgb(t) {
         const c = t < 0.5 ? [[132, 200, 69], [245, 158, 11], t / 0.5] : [[245, 158, 11], [239, 68, 68], (t - 0.5) / 0.5];
         return c[0].map((v, i) => Math.round(lerp(v, c[1][i], c[2])));
@@ -1827,29 +2105,42 @@
       function init() {
         if (inited) return;
         inited = true;
-        const posture = document.getElementById('liftPosture'), dist = document.getElementById('liftDist'), weight = document.getElementById('liftWeight');
-        const progress = document.getElementById('liftProgress');
-        const resetLift = () => { playing = 0; state.l = 0; progress.value = 0; updatePlayButton(); };
-        posture.addEventListener('input', () => { state.p = posture.value / 100; resetLift(); });
-        dist.addEventListener('input', () => { state.d = dist.value / 100; resetLift(); });
+        const $ = (id) => document.getElementById(id);
+        const posture = $('liftPosture'), dist = $('liftDist'), weight = $('liftWeight'), hIn = $('liftHeight'), mIn = $('liftMass');
+        const progress = $('liftProgress');
+        const resetLift = () => { playing = 0; state.l = 0; cur.l = 0; progress.value = 0; updatePlayButton(); };
+        posture.addEventListener('input', () => { state.s = +posture.value; resetLift(); });
+        dist.addEventListener('input', () => { state.H = +dist.value; resetLift(); });
         weight.addEventListener('input', () => { state.w = +weight.value; });
-        document.querySelectorAll('.lift-preset').forEach(b => b.addEventListener('click', () => { state.p = +b.dataset.liftPreset; posture.value = state.p * 100; resetLift(); }));
+        const num = (el, lo, hi, dflt) => { const v = parseFloat(el.value); return isNaN(v) ? dflt : Math.max(lo, Math.min(hi, v)); };
+        hIn.addEventListener('input', () => { body.h = num(hIn, 140, 200, DEFAULT_BODY[body.sex].h); startCache.clear(); resetLift(); });
+        mIn.addEventListener('input', () => { body.m = num(mIn, 35, 150, DEFAULT_BODY[body.sex].m); });
+        const sexIn = $('liftSex');
+        sexIn.addEventListener('change', () => {       // 換性別時帶入該性別的預設身高體重
+          body.sex = sexIn.value === 'f' ? 'f' : 'm';
+          hIn.value = DEFAULT_BODY[body.sex].h; mIn.value = DEFAULT_BODY[body.sex].m;
+          body.h = DEFAULT_BODY[body.sex].h; body.m = DEFAULT_BODY[body.sex].m;
+          startCache.clear(); resetLift();
+        });
+        document.querySelectorAll('.lift-preset').forEach(b => b.addEventListener('click', () => { state.s = +b.dataset.liftPreset; posture.value = state.s; resetLift(); }));
         progress.addEventListener('input', () => { playing = 0; state.l = progress.value / 100; cur.l = state.l; updatePlayButton(); });
-        document.getElementById('liftPlay').addEventListener('click', () => {
+        $('liftPlay').addEventListener('click', () => {
           if (playing) { playing = 0; }
           else playing = state.l >= 0.99 ? -1 : 1;    // 已經站直 → 放下；否則 → 搬起
           updatePlayButton();
-          track('island_lift_play', { posture: Math.round(state.p * 100), distance: Math.round(state.d * 100) });
+          track('island_lift_play', { stsq: Math.round(state.s), h_cm: Math.round(state.H) });
         });
-        state.p = posture.value / 100; state.d = dist.value / 100; state.w = +weight.value;
+        state.s = +posture.value; state.H = +dist.value; state.w = +weight.value;
+        body.sex = $('liftSex').value === 'f' ? 'f' : 'm';
+        body.h = num(hIn, 140, 200, DEFAULT_BODY[body.sex].h); body.m = num(mIn, 35, 150, DEFAULT_BODY[body.sex].m);
         if (canRender3D()) {
           try { init3D(); return; } catch (e) { console.warn('[搬抬演示] 3D 初始化失敗，改用 2D：', e); }
         }
         mode = '2d';
-        document.getElementById('liftCanvas').classList.add('hidden');
-        document.getElementById('liftResetView').classList.add('hidden');
-        document.getElementById('liftDragHint').classList.add('hidden');   // 2D 版不能旋轉，不顯示提示
-        document.getElementById('liftSvg').classList.remove('hidden');
+        $('liftCanvas').classList.add('hidden');
+        $('liftResetView').classList.add('hidden');
+        $('liftDragHint').classList.add('hidden');   // 2D 版不能旋轉，不顯示提示
+        $('liftSvg').classList.remove('hidden');
         init2D();
       }
 
@@ -1899,18 +2190,17 @@
         G.upperL = limb(0.045, ghost(SKIN)); G.upperR = limb(0.045, ghost(SKIN));
         G.foreL = limb(0.04, ghost(SKIN)); G.foreR = limb(0.04, ghost(SKIN));
         // 脊椎：骶骨、5 節椎體（含棘突）、5 個楔形椎間盤、胸椎塊
-        G.sacrum = part(new THREE.BoxGeometry(0.07, M(L.sacrum), 0.12), mat(BONE, { roughness: 0.5 }));
         G.verts = []; G.spines = []; G.discs = [];
         for (let i = 0; i < 5; i++) {
-          const v = part(new THREE.BoxGeometry(0.075, M(L.vert), 0.09), mat(BONE, { roughness: 0.5 }));
+          const v = part(new THREE.BoxGeometry(REF.endplate / 1000, REF.vbh / 1000, REF.vbWidth / 1000), mat(BONE, { roughness: 0.5 }));   // [16]
           const sp = part(new THREE.BoxGeometry(0.05, 0.02, 0.025), mat(BONE, { roughness: 0.5 }));
           G.verts.push(v); G.spines.push(sp);
-          const geo = new THREE.CylinderGeometry(0.042, 0.042, 1, 22);
+          const geo = new THREE.CylinderGeometry(REF.endplate / 2000, REF.endplate / 2000, 1, 22);   // 椎間盤直徑＝終板深度 [16]
           geo.userData.base = geo.attributes.position.array.slice();
           const d = part(geo, mat(0x84c845, { roughness: 0.45 }));
           G.discs.push(d);
         }
-        G.thorax = part(new THREE.BoxGeometry(0.09, M(L.thorax) + 0.04, 0.16), mat(BONE, { roughness: 0.55 }));
+        G.thorax = part(new THREE.BoxGeometry(REF.endplate / 1000, 1, REF.vbWidth / 1000), mat(BONE, { roughness: 0.55 }));
         // 物品：紙箱 + 重量標籤
         G.boxMat = mat(0xd6a66b, { roughness: 0.9 });
         G.box = part(new THREE.BoxGeometry(1, 1, 1), G.boxMat);
@@ -1961,61 +2251,60 @@
         G.labelTex.needsUpdate = true;
       }
       function draw3D(P) {
-        const A = P.A, pt = (q) => ({ x: M(q.x - A.x), y: M(320 - q.y) });
+        const A = P.A, D = P.D, pt = (q) => ({ x: M(q.x - A.x), y: M(GROUND - q.y) });
         const a = pt(P.A), k = pt(P.K), h = pt(P.H), s = pt(P.S), top = pt(P.top), head = pt(P.headC), el = pt(P.elbow), hand = pt(P.hand), box = pt(P.box);
         placeLimb(G.shankL, a, k, 0.1); placeLimb(G.shankR, a, k, -0.1);
         placeLimb(G.thighL, k, h, 0.1); placeLimb(G.thighR, k, h, -0.1);
         G.footL.position.set(a.x + 0.06, 0.035, 0.1); G.footR.position.set(a.x + 0.06, 0.035, -0.1);
-        placeSeg(G.pelvis, h.x, h.y + 0.02, P.trunkLean - P.lumbarFlex);
+        const l5 = pt(P.L5); placeSeg(G.pelvis, (h.x + l5.x) / 2, (h.y + l5.y) / 2, P.pelvis);
         // 軀幹：髖→肩的半透明塊
         _v.a.set(h.x, h.y, 0); _v.b.set(s.x, s.y, 0);
         G.trunk.position.copy(_v.a).add(_v.b).multiplyScalar(0.5);
         G.trunk.scale.set(1, _v.a.distanceTo(_v.b) * 0.92, 1);
-        G.trunk.rotation.set(0, 0, -(P.trunkLean + (P.trunkLean - P.lumbarFlex)) / 2);
+        G.trunk.rotation.set(0, 0, -(P.trunkLean + P.pelvis) / 2);
         G.head.position.set(head.x, head.y, 0);
+        G.head.scale.setScalar(M(D.headR) / 0.105);
         placeLimb(G.upperL, s, el, 0.2); placeLimb(G.upperR, s, el, -0.2);
         placeLimb(G.foreL, el, hand, 0.2); placeLimb(G.foreR, el, hand, -0.2);
-        // 脊椎
-        const sAng = P.trunkLean - P.lumbarFlex;
-        placeSeg(G.sacrum, h.x + Math.sin(sAng) * M(L.sacrum) / 2 - Math.cos(sAng) * 0.02, h.y + Math.cos(sAng) * M(L.sacrum) / 2 + Math.sin(sAng) * 0.02 * 0, sAng);
-        const flexNorm = (P.lumbarFlex - rad(12)) / (rad(40) - rad(12));
+        // 脊椎：椎體與椎間盤尺寸依 [16][18]；椎間盤繞中心旋轉，前緣高度 = 中間高度 − (終板深度/2)·tanθ，後緣反之
+        const flexNorm = flexIndex(P.lumbarFlex);
+        const r = REF.endplate / 2000;
         P.segs.forEach((sg, i) => {
           const ax = Math.sin(sg.ang), ay = Math.cos(sg.ang);
           const vb = pt({ x: sg.vx, y: sg.vy });
-          const vc = { x: vb.x + ax * M(L.vert) / 2, y: vb.y + ay * M(L.vert) / 2 };
+          const vc = { x: vb.x + ax * M(D.vh) / 2, y: vb.y + ay * M(D.vh) / 2 };
           placeSeg(G.verts[i], vc.x, vc.y, sg.ang);
-          // 棘突在後方（-x 方向）
-          placeSeg(G.spines[i], vc.x - Math.cos(sg.ang) * 0.06, vc.y + Math.sin(sg.ang) * 0.06, sg.ang);
-          // 椎間盤：楔形（前緣壓扁、後緣張開）
+          placeSeg(G.spines[i], vc.x - Math.cos(sg.ang) * (r + 0.02), vc.y + Math.sin(sg.ang) * (r + 0.02), sg.ang);
           const db = pt({ x: sg.bx, y: sg.by });
-          const dc = { x: db.x + ax * M(L.disc) / 2, y: db.y + ay * M(L.disc) / 2 };
-          const kf = Math.min(1, sg.flex / rad(12));
+          const mx = Math.sin(sg.mid), my = Math.cos(sg.mid);
+          const dc = { x: db.x + mx * M(sg.dm) / 2, y: db.y + my * M(sg.dm) / 2 };
+          const dmM = M(sg.dm), tanT = Math.tan(sg.flex);
           const disc = G.discs[i], pos = disc.geometry.attributes.position, base = disc.geometry.userData.base;
           for (let v = 0; v < pos.count; v++) {
             const x = base[v * 3], y = base[v * 3 + 1];
-            if (y > 0) pos.array[v * 3 + 1] = 0.5 - 0.55 * kf * (x / 0.042) * 0.5;   // 前（+x）低、後（-x）高
-            else pos.array[v * 3 + 1] = y;
+            pos.array[v * 3 + 1] = y > 0 ? Math.max(-0.45, 0.5 - (x * tanT) / dmM) : y;   // 單位圓柱：x 為公尺，y 乘上 dm
           }
           pos.needsUpdate = true;
           disc.geometry.computeVertexNormals();
-          placeSeg(disc, dc.x, dc.y, sg.ang);
-          disc.scale.set(1, M(L.disc), 1);
-          const c = colorRgb(Math.min(1, kf * 0.9));
+          placeSeg(disc, dc.x, dc.y, sg.mid);
+          disc.scale.set(1, dmM, 1);
+          const c = colorRgb(Math.min(1, sg.flex / sg.rom));                 // 顏色：該節彎曲 ÷ 該節活動範圍 [15]
           disc.material.color.setRGB(c[0] / 255, c[1] / 255, c[2] / 255).convertSRGBToLinear();
         });
-        const tc = { x: (top.x + s.x) / 2, y: (top.y + s.y) / 2 };
-        placeSeg(G.thorax, tc.x, tc.y, P.trunkLean);
-        // 物品
-        const size = 0.2 + 0.008 * state.w;
-        G.box.scale.setScalar(size);
-        G.box.position.set(box.x, box.y + size / 2, 0);
-        G.label.position.set(box.x, box.y + size / 2, size / 2 + 0.003);
+        _v.a.set(top.x, top.y, 0); _v.b.set(s.x, s.y, 0);
+        G.thorax.position.copy(_v.a).add(_v.b).multiplyScalar(0.5);
+        G.thorax.scale.set(1, _v.a.distanceTo(_v.b), 1);
+        G.thorax.rotation.set(0, 0, -P.trunkLean);
+        // 箱子：NIOSH 最佳容器尺寸 40 × 30 cm [4]
+        const bl = REF.boxLen / 100, bh = REF.boxH / 100;
+        G.box.scale.set(bl, bh, 0.4);
+        G.box.position.set(box.x, box.y + bh / 2, 0);
+        G.label.position.set(box.x, box.y + bh / 2, 0.2 + 0.003);
         drawLabel(state.w);
-        // 水平距離標示
-        const dx = box.x - h.x;
-        G.distLine.position.set(h.x + dx / 2, 0.01, 0.3); G.distLine.scale.set(Math.max(0.01, dx), 1, 1);
-        G.distA.position.set(h.x, 0.04, 0.3); G.distB.position.set(box.x, 0.04, 0.3);
-        // 鏡頭跟著人站起來：使用者沒有自己轉動視角時，注視點隨頭部高度上移，站直時頭部不會被切掉
+        // NIOSH H：踝中點到手的水平距離
+        const dx = hand.x - a.x;
+        G.distLine.position.set(a.x + dx / 2, 0.01, 0.3); G.distLine.scale.set(Math.max(0.01, dx), 1, 1);
+        G.distA.position.set(a.x, 0.04, 0.3); G.distB.position.set(hand.x, 0.04, 0.3);
         if (!G.userMoved) {
           const ty = Math.max(0.55, head.y * 0.5 + 0.08);
           G.ctl.target.y += (ty - G.ctl.target.y) * 0.12;
@@ -2041,73 +2330,94 @@
         mk('rect', { x: -22, y: -40, width: 44, height: 40, rx: 4, fill: '#d6a66b', stroke: '#8a6236', 'stroke-width': 2 }, els.box);
         els.boxLabel = mk('text', { x: 0, y: -14, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700, fill: '#3f2a14' }, els.box);
         els.arm = mk('path', { fill: 'none', stroke: '#94a3b8', 'stroke-width': 9, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
-        els.head = mk('circle', { r: L.headR, fill: '#e2e8f0' });
+        els.head = mk('circle', { r: 16, fill: '#e2e8f0' });
         els.discs = []; els.verts = [];
         for (let i = 0; i < 5; i++) els.discs.push(mk('polygon', { fill: '#84c845', stroke: '#0b1220', 'stroke-width': 1 }));
-        els.sacrum = mk('polygon', { fill: '#f1f5f9', stroke: '#334155', 'stroke-width': 1.2 });
-        for (let i = 0; i < 5; i++) els.verts.push(mk('rect', { width: 18, height: L.vert, rx: 3, fill: '#f8fafc', stroke: '#334155', 'stroke-width': 1.2 }));
+        for (let i = 0; i < 5; i++) els.verts.push(mk('rect', { width: 6, height: 5, rx: 1, fill: '#f8fafc', stroke: '#334155', 'stroke-width': 0.6 }));
         els.loadArrow = mk('path', { fill: 'none', stroke: '#fbbf24', 'stroke-width': 2, 'stroke-dasharray': '4 3' });
         els.loadText = mk('text', { 'font-size': 11, fill: '#fbbf24', 'font-weight': 700 });
       }
       function draw2D(P) {
+        const D = P.D;
         els.leg.setAttribute('d', `M${fmt(P.A.x, P.A.y)} L${fmt(P.K.x, P.K.y)} L${fmt(P.H.x, P.H.y)}`);
         els.legBack.setAttribute('d', `M${fmt(P.A.x - 8, P.A.y)} L${fmt(P.K.x - 8, P.K.y)} L${fmt(P.H.x - 6, P.H.y)}`);
-        els.torso.setAttribute('d', `M${fmt(P.H.x, P.H.y)} L${fmt(P.top.x, P.top.y)} L${fmt(P.S.x, P.S.y)}`);
-        els.head.setAttribute('cx', P.headC.x); els.head.setAttribute('cy', P.headC.y);
+        els.torso.setAttribute('d', `M${fmt(P.H.x, P.H.y)} L${fmt(P.L5.x, P.L5.y)} L${fmt(P.top.x, P.top.y)} L${fmt(P.S.x, P.S.y)}`);
+        els.head.setAttribute('cx', P.headC.x); els.head.setAttribute('cy', P.headC.y); els.head.setAttribute('r', D.headR);
         const armPath = `M${fmt(P.S.x, P.S.y)} L${fmt(P.elbow.x, P.elbow.y)} L${fmt(P.hand.x, P.hand.y)}`;
         els.arm.setAttribute('d', armPath); els.armBack.setAttribute('d', armPath);
-        els.box.setAttribute('transform', `translate(${P.box.x.toFixed(1)} ${P.box.y.toFixed(1)}) scale(${(boxHpx() / 40).toFixed(3)})`);  // 2D 箱子與 3D 同尺寸
+        els.box.setAttribute('transform', `translate(${P.box.x.toFixed(1)} ${P.box.y.toFixed(1)}) scale(${(D.boxL / 44).toFixed(3)} ${(D.boxH / 40).toFixed(3)})`);
         els.boxLabel.textContent = `${state.w} kg`;
-        const s0 = P.segs[0], sAng = P.trunkLean - P.lumbarFlex, fx = Math.cos(sAng), fy = Math.sin(sAng);
-        els.sacrum.setAttribute('points', [fmt(P.H.x + fx * 7, P.H.y + fy * 7), fmt(P.H.x - fx * 9, P.H.y - fy * 9), fmt(s0.bx - fx * 7, s0.by - fy * 7), fmt(s0.bx + fx * 5, s0.by + fy * 5)].join(' '));
+        const half = D.depth / 2;
         P.segs.forEach((sg, i) => {
-          const ax = Math.sin(sg.ang), ay = -Math.cos(sg.ang), px = Math.cos(sg.ang), py = Math.sin(sg.ang);
+          const ax = Math.sin(sg.ang), ay = -Math.cos(sg.ang);
           const r = els.verts[i];
-          r.setAttribute('x', -9); r.setAttribute('y', -L.vert);
-          r.setAttribute('transform', `translate(${(sg.vx + ax * L.vert).toFixed(1)} ${(sg.vy + ay * L.vert).toFixed(1)}) rotate(${(sg.ang * 180 / Math.PI).toFixed(1)})`);
-          const k = Math.min(1, sg.flex / rad(12));
-          const frontH = 1 - 0.55 * k, backH = 1 + 0.55 * k;
-          const bl = { x: sg.bx - px * 9, y: sg.by - py * 9 }, br = { x: sg.bx + px * 9, y: sg.by + py * 9 };
-          const tl = { x: bl.x + ax * L.disc * backH, y: bl.y + ay * L.disc * backH }, tr = { x: br.x + ax * L.disc * frontH, y: br.y + ay * L.disc * frontH };
+          r.setAttribute('x', -half); r.setAttribute('y', -D.vh); r.setAttribute('width', D.depth); r.setAttribute('height', D.vh);
+          r.setAttribute('transform', `translate(${(sg.vx + ax * D.vh).toFixed(1)} ${(sg.vy + ay * D.vh).toFixed(1)}) rotate(${(sg.ang * 180 / Math.PI).toFixed(1)})`);
+          const pa = sg.mid - sg.flex / 2, pxv = Math.cos(pa), pyv = Math.sin(pa), qx = Math.cos(sg.ang), qy = Math.sin(sg.ang);
+          const bl = { x: sg.bx - pxv * half, y: sg.by - pyv * half }, br = { x: sg.bx + pxv * half, y: sg.by + pyv * half };
+          const tl = { x: sg.vx - qx * half, y: sg.vy - qy * half }, tr = { x: sg.vx + qx * half, y: sg.vy + qy * half };
           els.discs[i].setAttribute('points', [fmt(bl.x, bl.y), fmt(br.x, br.y), fmt(tr.x, tr.y), fmt(tl.x, tl.y)].join(' '));
-          els.discs[i].setAttribute('fill', color(Math.min(1, k * 0.9)));
+          els.discs[i].setAttribute('fill', color(Math.min(1, sg.flex / sg.rom)));
         });
-        els.loadArrow.setAttribute('d', `M${fmt(P.H.x, 332)} L${fmt(P.box.x, 332)} M${fmt(P.H.x, 326)} L${fmt(P.H.x, 338)} M${fmt(P.box.x, 326)} L${fmt(P.box.x, 338)}`);
-        els.loadText.setAttribute('x', (P.H.x + P.box.x) / 2 - 24); els.loadText.setAttribute('y', 312);
-        els.loadText.textContent = `水平距離 ${((P.box.x - P.H.x) / PX_PER_M * 100).toFixed(0)} cm`;
-        return (P.lumbarFlex - rad(12)) / (rad(40) - rad(12));
+        els.loadArrow.setAttribute('d', `M${fmt(P.A.x, 332)} L${fmt(P.hand.x, 332)} M${fmt(P.A.x, 326)} L${fmt(P.A.x, 338)} M${fmt(P.hand.x, 326)} L${fmt(P.hand.x, 338)}`);
+        els.loadText.setAttribute('x', P.hand.x + D.boxL / 2 + 6); els.loadText.setAttribute('y', 316);   // 標在箱子右側，不被箱子擋住
+        els.loadText.textContent = `NIOSH H ${((P.hand.x - P.A.x) / PX_PER_M * 100).toFixed(0)} cm`;
+        return flexIndex(P.lumbarFlex);
       }
-
       // ---- 讀數（兩種模式共用）----
       function draw() {
-        const P = pose(cur.p, cur.d, cur.l);
+        const P = pose(state.s, state.H, cur.l);
         const flexNorm = mode === '3d' ? draw3D(P) : draw2D(P);
         const Mnow = moment(state.w, P);
-        const Mmax = moment(25, pose(0, 1));
-        const Mbest = moment(state.w, pose(1, 0));
-        // 這一次搬抬過程中的最大力矩（取樣整個過程）
+        const P0 = pose(state.s, state.H, 0);
+        const M0 = moment(state.w, P0);
+        const Mfull = moment(25, pose(100, REF.Hmax, 0));
         let Mpeak = 0;
-        for (let t = 0; t <= 1.0001; t += 0.1) Mpeak = Math.max(Mpeak, moment(state.w, pose(cur.p, cur.d, t)));
-        const peakEl = document.getElementById('liftPeakText');
-        if (peakEl) peakEl.textContent = `這次搬抬最吃力的瞬間：${Math.round(Mpeak / Mmax * 100)}%`;
-        const ratio = Mnow / Mmax, vsBest = Mnow / Mbest;
-        const bar = document.getElementById('liftMomentBar');
-        bar.style.width = `${Math.round(ratio * 100)}%`; bar.style.background = color(ratio);
-        document.getElementById('liftMomentText').textContent = `${Math.round(ratio * 100)}%（約 ${Math.round(Mnow)} N·m）`;
-        const fbar = document.getElementById('liftFlexBar');
-        fbar.style.width = `${Math.round(flexNorm * 100)}%`; fbar.style.background = color(flexNorm);
-        document.getElementById('liftFlexText').textContent = flexNorm > 0.66 ? '高：前緣明顯受壓' : flexNorm > 0.33 ? '中' : '低：排列整齊';
-        document.getElementById('liftPostureText').textContent = cur.p < 0.25 ? '彎腰' : cur.p < 0.75 ? '半蹲' : '屈膝直背';
-        document.getElementById('liftDistText').textContent = `${((P.box.x - P.H.x) / PX_PER_M * 100).toFixed(0)} cm`;
-        document.getElementById('liftWeightText').textContent = `${state.w} 公斤`;
+        for (let t = 0; t <= 1.0001; t += 0.1) Mpeak = Math.max(Mpeak, moment(state.w, pose(state.s, state.H, t)));
+        const $ = (id) => document.getElementById(id);
+        $('liftPeakText').textContent = `${Math.round(Mpeak)} N·m`;
+        const ratio = Math.max(0, Mnow / Mfull);
+        $('liftMomentBar').style.width = `${Math.min(100, Math.round(ratio * 100))}%`; $('liftMomentBar').style.background = color(Math.min(1, ratio));
+        $('liftMomentText').textContent = `${Math.round(Mnow)} N·m（${(Mnow / body.m).toFixed(2)} N·m/kg）`;
+        const deg = P.lumbarFlex * 180 / Math.PI;
+        $('liftFlexBar').style.width = `${Math.round(flexNorm * 100)}%`; $('liftFlexBar').style.background = color(flexNorm * 2);
+        $('liftFlexText').textContent = `${deg.toFixed(1)}°（活動範圍的 ${Math.round(flexNorm * 100)}%）`;
+        const lb = lowBack(state.w, P);
+        $('liftCompText').textContent = `${Math.round(lb.comp).toLocaleString()} N`;
+        $('liftShearText').textContent = `${Math.round(lb.shear)} N`;
+        $('liftCompBar').style.width = `${Math.min(100, Math.round(lb.comp / REF.compMax * 100))}%`;
+        $('liftCompBar').style.background = lb.comp > REF.compMax ? '#ef4444' : lb.comp >= Math.min(REF.compAction, (REF.guideComp[body.sex] || REF.guideComp.m)) ? '#f59e0b' : '#84c845';   // 達到指引參考值或 NIOSH 3400 N 即轉橘
+        const gThr = REF.guideComp[body.sex] || REF.guideComp.m;
+        $('liftCompGuide').style.left = `${(gThr / REF.compMax * 100).toFixed(1)}%`;
+        const chip = (el, txt, tone) => { el.textContent = txt; el.className = el.className.replace(/bg-\S+ text-\S+$/, '') + (tone === 'r' ? 'bg-red-500/20 text-red-200' : tone === 'a' ? 'bg-amber-500/20 text-amber-200' : 'bg-emerald-500/15 text-emerald-200'); };
+        chip($('liftCompChip'), lb.comp > REF.compMax ? '超過 6400 N' : lb.comp >= gThr || lb.comp > REF.compAction ? '達參考值' : '低於參考值', lb.comp > REF.compMax ? 'r' : lb.comp >= gThr || lb.comp > REF.compAction ? 'a' : 'g');
+        $('liftCompNote').textContent = `黃線：認定參考指引 ${(gThr / 1000).toFixed(1)} kN（${body.sex === 'f' ? '女' : '男'}）｜白線：NIOSH 3400 N`;
+        $('liftCompMdd').textContent = `${(REF.mddBase + REF.mddPerKg * state.w).toLocaleString()} N`;
+        $('liftHText').textContent = `${Math.round(state.H)} cm（踝中點到手）`;
+        const n = niosh(state.w, state.H, P.D, P.A);
+        const li = n.LI;
+        $('liftNioshText').textContent = `LI ${isFinite(li) ? li.toFixed(2) : '—'}`;
+        $('liftNioshBar').style.width = `${Math.min(100, Math.round((isFinite(li) ? li : 3) / 3 * 100))}%`;
+        $('liftNioshBar').style.background = !isFinite(li) || li > 3 ? '#ef4444' : li > 1 ? '#f59e0b' : '#84c845';
+        chip($('liftNioshChip'), !isFinite(li) || li > 3 ? '多數勞工風險增加' : li > 1 ? '部分勞工風險增加' : '多數可接受', !isFinite(li) || li > 3 ? 'r' : li > 1 ? 'a' : 'g');
+        $('liftNioshNote').textContent = isFinite(li) ? `建議重量限值 RWL ${n.RWL.toFixed(1)} kg（目前 ${state.w} kg，起點評估）` : `H 超過 63 cm，NIOSH 建議重量限值為 0`;
+        $('liftRwlTw').textContent = `${n.RWLtw.toFixed(1)} kg（常數 17 kg）`;
+        $('liftPostureText').textContent = `${state.s >= REF.stsqStoop ? '彎腰' : state.s <= REF.stsqSquat ? '屈膝' : '介於兩者之間'}（蹲彎指數 ${Math.round(state.s)}）`;
+        $('liftDistText').textContent = `${Math.round(state.H)} cm`;
+        document.querySelectorAll('.lift-preset').forEach(btn => { const on = Math.abs(+btn.dataset.liftPreset - state.s) < 0.5; btn.classList.toggle('bg-amber-500/25', on); btn.classList.toggle('text-amber-100', on); btn.classList.toggle('border-amber-400/40', on); btn.classList.toggle('bg-slate-800', !on); btn.classList.toggle('text-slate-300', !on); btn.classList.toggle('border-white/10', !on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+        $('liftWeightText').textContent = `${state.w} 公斤`;
+        const Msquat = moment(state.w, pose(REF.stsqSquat, state.H, 0)), Mstoop = moment(state.w, pose(REF.stsqStoop, state.H, 0));
+        const Mnear = moment(state.w, pose(state.s, REF.Hmin, 0));
         let insight;
-        if (cur.l > 0.95) insight = `站直後物品抱在身前，力矩降到 ${Math.round(Mnow / Mmax * 100)}%。整個搬抬過程中最吃力的是剛離地的那一刻（${Math.round(Mpeak / Mmax * 100)}%），所以「先把物品拉近再抬起」最重要。`;
-        else if (cur.l > 0.05) insight = `搬起的過程中，身體越直、物品越靠近，腰部的力矩就越小。拖動「搬抬過程」可以停在任何一刻觀察。`;
-        else if (cur.d > 0.6) insight = `物品離身體遠，力矩是「同樣姿勢、物品貼近」的約 ${(Mnow / moment(state.w, pose(cur.p, 0))).toFixed(1)} 倍。先把物品拉近，比換姿勢更有效。`;
-        else if (cur.p < 0.3) insight = `彎腰搬抬：腰椎彎曲大，椎間盤前緣受壓；力矩約為「屈膝、貼近」的 ${vsBest.toFixed(1)} 倍。物品已經靠近身體，是減輕負荷最重要的一步。`;
-        else if (cur.p > 0.7) insight = `屈膝直背：腰椎排列整齊、剪力較低，但壓縮力不一定比彎腰低，膝蓋與大腿的負擔較大。物品貼近身體、放在雙腳之間，才是這個姿勢真正的優勢。`;
-        else insight = `半蹲是多數人自然會採用的方式：腰椎有些彎曲，腿也分擔一部分。研究顯示沒有哪一種姿勢對所有人都最好；物品靠近身體、減少重量與次數，比堅持某一種姿勢更重要。`;
-        document.getElementById('liftInsight').textContent = insight;
+        if (cur.l > 0.95) insight = `站直後箱子在身前，髖部伸展力矩 ${Math.round(Mnow)} N·m，是剛離地時（${Math.round(M0)} N·m）的 ${Math.round(Mnow / M0 * 100)}%。整個過程最吃力的，是箱子剛離地、離身體最遠的那一刻。`;
+        else if (cur.l > 0.05) insight = `搬起的過程中，身體越直、箱子越靠近，髖部力矩就越小。拖動「搬抬過程」可以停在任何一刻觀察。`;
+        else if (state.H > 50) insight = `箱子離踝部 ${Math.round(state.H)} cm：力矩 ${Math.round(M0)} N·m，是同樣姿勢但 H 縮到 25 cm 時的 ${(M0 / Mnear).toFixed(1)} 倍；NIOSH 建議重量限值 RWL 也只剩 ${n.RWL.toFixed(1)} kg。先把箱子拉近，比換姿勢更有效。`;
+        else {
+          const Cstoop = lowBack(state.w, pose(REF.stsqStoop, state.H, 0)).comp, Csquat = lowBack(state.w, pose(REF.stsqSquat, state.H, 0)).comp;
+          const Cnear = lowBack(state.w, pose(REF.stsqSquat, REF.Hmin, 0)).comp;
+          insight = `同樣 H ${Math.round(state.H)} cm、${state.w} 公斤：彎腰約 ${Math.round(Cstoop)} N、屈膝約 ${Math.round(Csquat)} N；如果屈膝並把箱子拉近到 25 cm，降到約 ${Math.round(Cnear)} N。蹲下、背打直的好處，是讓箱子能貼近身體；只蹲下卻沒有拉近，負荷不會下降，甚至可能更高。`;
+        }
+        $('liftInsight').textContent = insight;
       }
       function updatePlayButton() {
         const txt = document.getElementById('liftPlayText');
@@ -2125,14 +2435,12 @@
           if (state.l === 1 || state.l === 0) { playing = 0; updatePlayButton(); }
           const prog = document.getElementById('liftProgress'); if (prog) prog.value = Math.round(state.l * 100);
         }
-        const k = REDUCED_MOTION ? 1 : 0.14;
-        cur.p += (state.p - cur.p) * k; cur.d += (state.d - cur.d) * k;
         cur.l = playing || REDUCED_MOTION ? state.l : cur.l + (state.l - cur.l) * 0.3;
         draw();
         if (!liftModal.classList.contains('hidden')) raf = requestAnimationFrame(loop);
       }
       function start() { cancelAnimationFrame(raf); lastT = 0; if (mode === '3d') onResize(); updatePlayButton(); loop(); }
-      return { init, start, debug: () => G };   // debug：供自動測試讀取 3D 物件位置
+      return { init, start, debug: () => G, pose, lowBack, body };   // debug／pose：供自動測試讀取
     })();
 
     // =============================================================
