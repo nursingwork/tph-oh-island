@@ -472,6 +472,7 @@
     <symbol id="i-calculator" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2" /> <line x1="8" x2="16" y1="6" y2="6" /> <line x1="16" x2="16" y1="14" y2="18" /> <path d="M16 10h.01" /> <path d="M12 10h.01" /> <path d="M8 10h.01" /> <path d="M12 14h.01" /> <path d="M8 14h.01" /> <path d="M12 18h.01" /> <path d="M8 18h.01" /></symbol>
     <symbol id="i-map" viewBox="0 0 24 24"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" /> <path d="M15 5.764v15" /> <path d="M9 3.236v15" /></symbol>
     <symbol id="i-locate-fixed" viewBox="0 0 24 24"><line x1="2" x2="5" y1="12" y2="12" /> <line x1="19" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="5" /> <line x1="12" x2="12" y1="19" y2="22" /> <circle cx="12" cy="12" r="7" /> <circle cx="12" cy="12" r="3" /></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" /><path d="M20 3v4" /><path d="M22 5h-4" /><path d="M4 17v2" /><path d="M5 18H3" /></symbol>
     <symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="3" width="5" height="18" rx="1" /> <rect x="5" y="3" width="5" height="18" rx="1" /></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></symbol>
     <symbol id="i-circle-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /> <path d="M12 17h.01" /></symbol>
@@ -722,6 +723,7 @@
       <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-locate-fixed"></use></svg>
     </button>
     <button id="btnFreeze" type="button" aria-pressed="false" aria-label="暫停動畫" title="暫停動畫" class="shrink-0 pointer-events-auto glass-morphism w-9 h-9 md:w-10 md:h-10 rounded-2xl text-slate-300 hover:text-white hover:border-white/30 transition flex items-center justify-center"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-pause"></use></svg></button>
+    <button id="btnFx" type="button" aria-pressed="true" aria-label="畫面特效：柔光、景深與調色" title="畫面特效（柔光、景深、調色）" class="hidden shrink-0 pointer-events-auto glass-morphism w-9 h-9 md:w-10 md:h-10 rounded-2xl text-slate-300 hover:text-white hover:border-white/30 transition flex items-center justify-center"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-sparkles"></use></svg></button>
     <button id="btnHelp" type="button" aria-label="操作說明" title="操作說明" class="shrink-0 pointer-events-auto glass-morphism w-9 h-9 md:w-10 md:h-10 rounded-2xl text-slate-300 hover:text-white hover:border-white/30 transition flex items-center justify-center"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-circle-help"></use></svg></button>
   </footer>
 
@@ -1349,10 +1351,10 @@
               <div class="flex justify-between text-slate-300 font-bold"><span>姿勢</span><span id="liftPostureText" class="text-slate-400 font-normal"></span></div>
               <div class="grid grid-cols-3 gap-1.5 mt-1.5">
                 <button type="button" data-lift-preset="90" class="lift-preset py-1.5 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">彎腰</button>
-                <button type="button" data-lift-preset="50" class="lift-preset py-1.5 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">介於兩者之間</button>
+                <button type="button" data-lift-preset="60" class="lift-preset py-1.5 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">介於兩者之間</button>
                 <button type="button" data-lift-preset="30" class="lift-preset py-1.5 rounded-lg text-[11px] font-bold border border-white/10 bg-slate-800 text-slate-300 hover:text-white">屈膝</button>
               </div>
-              <input id="liftPosture" type="range" min="0" max="100" step="1" value="90" class="w-full mt-2 accent-amber-400" aria-label="姿勢微調：蹲彎指數，0 為完全屈膝、100 為完全彎腰">
+              <input id="liftPosture" type="range" min="30" max="90" step="1" value="90" class="w-full mt-2 accent-amber-400" aria-label="姿勢微調：由屈膝到彎腰">
             </div>
             <label class="block">
               <span class="flex justify-between text-slate-300 font-bold"><span>物品離身體多遠</span><span id="liftDistText" class="text-slate-400 font-normal"></span></span>
@@ -1397,6 +1399,7 @@
                 <div class="flex justify-between gap-2"><span class="text-slate-400">德國 MDD 簡易估算</span><span id="liftCompMdd" class="text-slate-200 tabular-nums"></span></div>
                 <div class="flex justify-between gap-2"><span class="text-slate-400">以國人重量常數算的 RWL</span><span id="liftRwlTw" class="text-slate-200 tabular-nums"></span></div>
                 <div class="flex justify-between gap-2"><span class="text-slate-400">物品水平距離 H</span><span id="liftHText" class="text-slate-200 tabular-nums"></span></div>
+                <div class="flex justify-between gap-2"><span class="text-slate-400">物品到 L5/S1 水平距離 HD</span><span id="liftHDText" class="text-slate-200 tabular-nums"></span></div>
               </div>
             </details>
           </div>
@@ -1490,11 +1493,12 @@
                   <li>預設身高、體重採勞安所 3D 人體計測調查累計 841 人的平均值：男 171.9 cm、74.3 kg；女 158.9 cm、58.8 kg，可自行輸入 <sup>[2]</sup>。由節段比例推算的肩高，與最新累計 1,116 人的實測值相差 1% 以內。</li>
                   <li>L5/S1 位於髖到肩連線的 19.2%；L5/S1 以上的軀幹占軀幹質量 71.43% <sup>[3]</sup>。</li>
                 </ul>
-                <p class="font-bold text-slate-100">二、剛離地時的姿勢</p>
+                <p class="font-bold text-slate-100">二、搬起過程的姿勢（每一幀）</p>
                 <ul class="list-disc pl-5 space-y-1">
-                  <li>姿勢滑桿為蹲彎指數 StSq，屈膝多低於 30、彎腰多高於 90 <sup>[12]</sup>；本模型以肩關節代替 C7。</li>
-                  <li>腰椎總彎曲：彎腰 35.9°、屈膝 25.1° <sup>[13]</sup>，依各節屈伸活動範圍分配 <sup>[15]</sup>；膝踝角度比例 <sup>[14]</sup>。</li>
-                  <li>程式求出同時滿足「伸直的手臂握到地上的箱子」與 StSq 定義的膝角與骨盆角。</li>
+                  <li>踝與膝的角度，每一幀都採 Hwang 等人以動作捕捉量測 26 名年輕男性屈膝與彎腰搬起箱子的平均曲線（自原文圖 1 讀取，誤差約 ±2°），節點之間以單調三次曲線補點；介於兩者之間的姿勢依比例混合兩條曲線 <sup>[13]</sup>。</li>
+                  <li>軀幹總前傾：剛離地時依「伸直的手臂剛好搆到箱子握點」求解，之後依同一研究實測的軀幹進程回到站直 <sup>[13]</sup>。以 H 45 cm 求得的軀幹前傾（彎腰約 109°、屈膝約 56°），與該研究實測值（約 111°、60°）相差 5° 以內。</li>
+                  <li>腰椎彎曲：剛離地時彎腰 35.9°、屈膝 25.1° <sup>[12]</sup>，之後依實測的腰部進程減少，並依各節屈伸活動範圍分配 <sup>[14]</sup>；其餘前傾由骨盆提供。</li>
+                  <li>假設：原文髖角為大腿相對於骨盆，以站直時骨盆回正推算骨盆角度；手與箱子的路徑為設計值（原文未提供上肢資料），箱子在搬起途中不會被推離身體。</li>
                 </ul>
                 <p class="font-bold text-slate-100">三、髖部伸展力矩</p>
                 <p class="font-mono text-[11px] text-slate-200 bg-slate-800/70 rounded-lg px-3 py-2">M = g × Σ（節段質量 × 重心到髖的水平距離）＋ g × 物重 × 握點到髖的水平距離</p>
@@ -1507,8 +1511,9 @@
                 <p class="font-bold text-slate-100">五、NIOSH 搬抬指數 <sup>[10]</sup></p>
                 <p class="font-mono text-[11px] text-slate-200 bg-slate-800/70 rounded-lg px-3 py-2">RWL = 23 × (25 / H) × (1 − 0.003 × |V − 75|) × (0.82 + 4.5 / D) × AM × FM × CM；LI = 物重 ÷ RWL</p>
                 <ul class="list-disc pl-5 space-y-1">
-                  <li>NIOSH 抬舉公式是職安署《人因性危害預防計畫指引》列舉的評估方法之一 <sup>[21]</sup>。H 預設 45 cm（地面搬抬 H ≈ 25 ＋ 箱寬 ÷ 2）；箱子採最佳容器 40 × 30 cm；AM、FM、CM 取 1.0（對稱、偶爾搬、有把手）。</li>
+                  <li>NIOSH 抬舉公式是職安署《人因性危害預防計畫指引》列舉的評估方法之一 <sup>[20]</sup>。H 預設 45 cm（地面搬抬 H ≈ 25 ＋ 箱寬 ÷ 2）；箱子採最佳容器 40 × 30 cm；AM、FM、CM 取 1.0（對稱、偶爾搬、有把手）。</li>
                   <li>LI 1 以下多數健康勞工可接受；1～3 部分勞工風險增加；大於 3 多數勞工風險增加。</li>
+                  <li>距離有兩種定義：NIOSH 的 H 從兩踝中點量到手，滑桿調整的是 H；IOSH87-H334 檢核表的 HD 從 L5/S1 量到物品 <sup>[3]</sup>。「更多數據」兩者並列。</li>
                   <li>「更多數據」另列以國人重量常數 17 kg 代入的 RWL <sup>[5]</sup>。該研究以心物法資料推算，年輕男性（99%）為 24 kg、女性（75%）為 17 kg，同時考慮男女時取 17 kg，低於 NIOSH 的 23 kg；實驗條件（指節至肩高、箱寬 36 cm）與 NIOSH 不同，僅供參考。</li>
                 </ul>
                 <p class="font-bold text-slate-100">六、判讀與對照</p>
@@ -1518,7 +1523,7 @@
                 </ul>
                 <p class="font-bold text-slate-100">七、腰椎的畫法</p>
                 <ul class="list-disc pl-5 space-y-1">
-                  <li>椎體與椎間盤尺寸 <sup>[17][18]</sup>、頭部大小 <sup>[16]</sup>，只影響畫面；椎間盤繞中心旋轉，顏色為該節彎曲 ÷ 該節活動範圍 <sup>[15]</sup>。</li>
+                  <li>椎體與椎間盤尺寸 <sup>[16][17]</sup>、頭部大小 <sup>[15]</sup>，只影響畫面；椎間盤繞中心旋轉，顏色為該節彎曲 ÷ 該節活動範圍 <sup>[14]</sup>。</li>
                 </ul>
                 <p class="font-bold text-slate-100">模型限制</p>
                 <ul class="list-disc pl-5 space-y-1">
@@ -1545,21 +1550,20 @@
                     <li>Waters TR, et al. Revised NIOSH equation for the design and evaluation of manual lifting tasks. <em>Ergonomics</em>. 1993;36(7):749–776.</li>
                     <li>NIOSH. <em>Work Practices Guide for Manual Lifting</em>. 1981.</li>
                   </ol></div>
-                  <div><p class="text-slate-300">國際文獻：剛離地姿勢的推算</p>
+                  <div><p class="text-slate-300">國際文獻：搬起過程的姿勢</p>
                   <ol class="list-decimal pl-5 space-y-0.5" start="12">
-                    <li>Schmid S. The Stoop-Squat-Index. 2021. arXiv:2108.05795.</li>
                     <li>von Arx M, et al. <em>Front Bioeng Biotechnol</em>. 2021. doi:10.3389/fbioe.2021.769117.</li>
                     <li>Hwang S, et al. <em>BMC Musculoskelet Disord</em>. 2009;10:15.</li>
                     <li>White AA, Panjabi MM. <em>Clinical Biomechanics of the Spine</em>, 2nd ed. 1990.</li>
                   </ol></div>
                   <div><p class="text-slate-300">國際文獻：脊椎與頭部的畫法（不影響數值）</p>
-                  <ol class="list-decimal pl-5 space-y-0.5" start="16">
+                  <ol class="list-decimal pl-5 space-y-0.5" start="15">
                     <li>Winter DA. <em>Biomechanics and Motor Control of Human Movement</em>, 4th ed. 2009.（Drillis &amp; Contini 資料）</li>
                     <li>腰椎形態統合分析。<em>Surg Radiol Anat</em>. 2024. doi:10.1007/s00276-024-03509-4.</li>
                     <li>Mansur DI, et al. <em>J Lumbini Med Coll</em>. 2020;8(1).</li>
                   </ol></div>
                   <div><p class="text-slate-300">國內背景資料與指引（不參與計算）</p>
-                  <ol class="list-decimal pl-5 space-y-0.5" start="19">
+                  <ol class="list-decimal pl-5 space-y-0.5" start="18">
                     <li>勞動部勞動及職業安全衛生研究所。2022 年勞動環境安全衛生認知調查（ILOSH111-A302）。</li>
                     <li>勞動部勞工保險局。申請勞工職業災害保險職業病給付認定率：按給付種類、職業病成因及性別分。114 年 7～12 月、115 年 1～6 月。</li>
                     <li>勞動部職業安全衛生署。人因性危害預防計畫指引（初版）。103 年 8 月。</li>
@@ -1850,59 +1854,57 @@
       const NS = 'http://www.w3.org/2000/svg';
       const PX_PER_M = 190;                     // 繪圖比例：1 公尺 = 190 px（只影響畫面，不影響計算）
       // =====================================================================
-      // 文獻參數：每個數字都標出處，編號與「演示的數值怎麼來的」參考文獻相同
-      // [1]  勞安所人體計測資料庫（IOSH84-H121、IOSH85-H121）：節段長度、質量；表 1 手肘至握拳中心距離
-      // [2]  勞安所 我國勞工人體計測調查研究系列（ILOSH110-H301～ILOSH114-H3106）：預設身高、體重
-      // [16]  Winter (2009)，引用 Drillis & Contini：下巴高 0.870H（只用於畫出頭部）
-      // [12]  Schmid (2021)：Stoop-Squat Index（屈膝 < 30、彎腰 > 90）
-      // [13]  von Arx 等 (2021)：搬抬時腰椎前凸活動範圍
-      // [14]  Hwang 等 (2009)：屈膝搬抬 10 kg 的踝、膝角度
-      // [15]  White & Panjabi (1990)：腰椎各節屈伸活動範圍
-      // [17]  腰椎形態統合分析（Surg Radiol Anat, 2024）：L1 椎體高度、終板深度與寬度
-      // [18]  Mansur 等 (2020)：腰椎椎間隙中間高度
-      // [3] 勞安所 IOSH87-H334 以生物力學法評估勞工下背傷害之研究：國人版 Chaffin 二維模式
+      // 文獻參數：每個數字都標出處（以作者或報告標籤表示，對應「演示的數值怎麼來的」參考文獻）
+      // [勞安所人體計測]  勞安所人體計測資料庫（IOSH84-H121、IOSH85-H121）：節段長度、質量；表 1 手肘至握拳中心距離
+      // [ILOSH人體計測]  勞安所 我國勞工人體計測調查研究系列（ILOSH110-H301～ILOSH114-H3106）：預設身高、體重
+      // [Winter]  Winter (2009)，引用 Drillis & Contini：下巴高 0.870H（只用於畫出頭部）
+      // [vonArx]  von Arx 等 (2021)：搬抬時腰椎前凸活動範圍
+      // [Hwang]  Hwang 等 (2009)：屈膝與彎腰搬抬的實測關節角度曲線
+      // [WhitePanjabi]  White & Panjabi (1990)：腰椎各節屈伸活動範圍
+      // [腰椎統合分析]  腰椎形態統合分析（Surg Radiol Anat, 2024）：L1 椎體高度、終板深度與寬度
+      // [Mansur]  Mansur 等 (2020)：腰椎椎間隙中間高度
+      // [IOSH87-H334] 勞安所 IOSH87-H334 以生物力學法評估勞工下背傷害之研究：國人版 Chaffin 二維模式
       //      （節段重心、背肌力臂 4.75 cm、腹部力力臂 D、L5/S1 位於髖→肩 19.2%、L5/S1 以上軀幹 71.43%、腹壓上限 150 mmHg）
-      // [8] Chaffin & Andersson，Occupational Biomechanics 第 6 章 6.5.1 節：懸臂式低背模型（式 6.51、6.52）
-      // [9] Anderson, Chaffin & Herrin (1986)：L5/S1 椎間盤平面角 α
-      // [4] 職業性腰椎椎間盤突出認定參考指引：單次腰部應力男 3.2 kN、女 2.5 kN；德國 MDD 估算
-      // [10] Waters 等 (1993)：NIOSH 修訂版搬抬公式    [11] NIOSH (1981)：3400 N、6400 N
-      // [5]  陳志勇、李永輝 (1998)：國人人工搬運重量常數；同時考慮男女時為 17 kg（男性 99% 為 24 kg、女性 75% 為 17 kg）
+      // [Chaffin] Chaffin & Andersson，Occupational Biomechanics 第 6 章 6.5.1 節：懸臂式低背模型（式 6.51、6.52）
+      // [Anderson] Anderson, Chaffin & Herrin (1986)：L5/S1 椎間盤平面角 α
+      // [認定參考指引] 職業性腰椎椎間盤突出認定參考指引：單次腰部應力男 3.2 kN、女 2.5 kN；德國 MDD 估算
+      // [Waters] Waters 等 (1993)：NIOSH 修訂版搬抬公式    [NIOSH1981] NIOSH (1981)：3400 N、6400 N
+      // [陳李1998]  陳志勇、李永輝 (1998)：國人人工搬運重量常數；同時考慮男女時為 17 kg（男性 99% 為 24 kg、女性 75% 為 17 kg）
       // =====================================================================
-      // 國人節段參數 [1][3]：長度占身高、m 占體重、com 為重心距近端（靠近心臟的關節）占節段長
+      // 國人節段參數 [勞安所人體計測][IOSH87-H334]：長度占身高、m 占體重、com 為重心距近端（靠近心臟的關節）占節段長
       const SEG = {
         m: { ankleH: 0.040, shank: 0.208, thigh: 0.257, trunk: 0.315, upperArm: 0.193, forearm: 0.145, hand: 0.108,
              hn: { m: 0.0739, com: 0.496 }, trunkM: { m: 0.4496, com: 0.602 },
              ua: { m: 0.0376, com: 0.427 }, fa: { m: 0.0138, com: 0.466 }, hd: { m: 0.0060, com: 0.420 },
-             elbowGrip: 306.00 / 1687.73 },                    // 男性；手肘至握拳中心 306.00 mm ÷ 身高 1687.73 mm [1]
+             elbowGrip: 306.00 / 1687.73 },                    // 男性；手肘至握拳中心 306.00 mm ÷ 身高 1687.73 mm [勞安所人體計測]
         f: { ankleH: 0.038, shank: 0.206, thigh: 0.265, trunk: 0.309, upperArm: 0.180, forearm: 0.138, hand: 0.108,
              hn: { m: 0.0684, com: 0.433 }, trunkM: { m: 0.4531, com: 0.527 },
              ua: { m: 0.0322, com: 0.462 }, fa: { m: 0.0089, com: 0.409 }, hd: { m: 0.0038, com: 0.537 },
-             elbowGrip: 271.27 / 1563.05 }                     // 女性；271.27 mm ÷ 1563.05 mm [1]
+             elbowGrip: 271.27 / 1563.05 }                     // 女性；271.27 mm ÷ 1563.05 mm [勞安所人體計測]
       };
       const segOf = () => SEG[body.sex] || SEG.m;
       const REF = {
-        chinH: 0.870,                                                                               // [16]
-        l5Frac: 0.192, aboveL5: 0.7143,                                                             // [3] L5/S1 位於髖→肩 19.2%；L5/S1 以上軀幹占 71.43%
-        vbh: (24.54 + 26.57) / 2, endplate: (31.04 + 32.27) / 2, vbWidth: (41.09 + 43.97) / 2,      // [17] mm
-        discM: [11.10, 11.96, 11.36, 10.32, 8.87],                                                  // [18] mm，L5-S1 → L1-L2
-        rom: [17, 16, 15, 14, 12],                                                                  // [15] 度，L5-S1 → L1-L2
-        lumbarStoop: 35.9, lumbarSquat: 25.1,                                                       // [13] 度
-        stsqSquat: 30, stsqStoop: 90,                                                               // [12]
-        ankleKnee: 7.32 / 18.65,                                                                    // [14]
-        LC: 23, LCtw: 17 /* 國人重量常數，不分性別 */, Hmin: 25, Hmax: 63, boxLen: 40, boxH: 30,                   // [10][5] kg、cm
-        esArm: 0.0475, faMax: 929.8, diaphragm: 465, mmHgToNcm2: 0.0133,                            // [3][8] m、N、cm²、N/cm²
-        compAction: 3400, compMax: 6400, shearLimit: 1000,                                          // [11] N
-        guideComp: { m: 3200, f: 2500 }, mddBase: 1800, mddPerKg: 75                                // [4] N、N、N/kg
+        chinH: 0.870,                                                                               // [Winter]
+        l5Frac: 0.192, aboveL5: 0.7143,                                                             // [IOSH87-H334] L5/S1 位於髖→肩 19.2%；L5/S1 以上軀幹占 71.43%
+        vbh: (24.54 + 26.57) / 2, endplate: (31.04 + 32.27) / 2, vbWidth: (41.09 + 43.97) / 2,      // [腰椎統合分析] mm
+        discM: [11.10, 11.96, 11.36, 10.32, 8.87],                                                  // [Mansur] mm，L5-S1 → L1-L2
+        rom: [17, 16, 15, 14, 12],                                                                  // [WhitePanjabi] 度，L5-S1 → L1-L2
+        lumbarStoop: 35.9, lumbarSquat: 25.1,                                                       // [vonArx] 度
+        stsqSquat: 30, stsqStoop: 90,                                                               // 姿勢滑桿刻度：30 = 屈膝實測曲線、90 = 彎腰實測曲線
+        LC: 23, LCtw: 17 /* 國人重量常數，不分性別 */, Hmin: 25, Hmax: 63, boxLen: 40, boxH: 30,                   // [Waters][陳李1998] kg、cm
+        esArm: 0.0475, faMax: 929.8, diaphragm: 465, mmHgToNcm2: 0.0133,                            // [IOSH87-H334][Chaffin] m、N、cm²、N/cm²
+        compAction: 3400, compMax: 6400, shearLimit: 1000,                                          // [NIOSH1981] N
+        guideComp: { m: 3200, f: 2500 }, mddBase: 1800, mddPerKg: 75                                // [認定參考指引] N、N、N/kg
       };
-      const abdArm = (thetaH) => 0.067 + 0.082 * Math.sin((180 - thetaH) * Math.PI / 180);          // [3] 腹部力力臂 D（m）
+      const abdArm = (thetaH) => 0.067 + 0.082 * Math.sin((180 - thetaH) * Math.PI / 180);          // [IOSH87-H334] 腹部力力臂 D（m）
 
       const SUM_ROM = REF.rom.reduce((a, b) => a + b, 0);
-      // 預設身高、體重：勞安所 ILOSH112-H311 累計 841 人的平均值（男 171.9 cm、74.3 kg；女 158.9 cm、58.8 kg）[2]
+      // 預設身高、體重：勞安所 ILOSH112-H311 累計 841 人的平均值（男 171.9 cm、74.3 kg；女 158.9 cm、58.8 kg）[ILOSH人體計測]
       //   ILOSH114-H3106 累計 1,116 人的平均身高（男 171.5、女 158.8 cm）幾乎相同，但報告未列出平均體重
       const DEFAULT_BODY = { m: { h: 171.9, m: 74.3 }, f: { h: 158.9, m: 58.8 } };
       const body = { sex: 'm', h: 171.9, m: 74.3 };
       const GROUND = 320;
-      const state = { s: REF.stsqStoop, H: REF.Hmin + REF.boxLen / 2, w: 15, l: 0 };   // H 預設 45 cm：[4] 地面搬抬 H ≈ 25 + W/2；重量 15 kg：[12][16][13] 的研究用箱重
+      const state = { s: REF.stsqStoop, H: REF.Hmin + REF.boxLen / 2, w: 15, l: 0 };   // H 預設 45 cm：[Waters] 地面搬抬 H ≈ 25 + W/2；重量 15 kg：Hwang 等研究的最大箱重
       const cur = { l: 0 };
       let playing = 0;                                // 1 = 正在搬起，-1 = 正在放下，0 = 停止
       const LIFT_SECONDS = 2.2;
@@ -1922,27 +1924,58 @@
         const shoulderH = S.ankleH + S.shank + S.thigh + S.trunk;          // 肩高 = 踝高 + 小腿 + 大腿 + 軀幹
         return {
           ankle: px(S.ankleH * Hm), shank: px(S.shank * Hm), thigh: px(S.thigh * Hm),
-          trunk: px(S.trunk * Hm), pelvis: px(REF.l5Frac * S.trunk * Hm),       // [3] 髖→L5/S1 為軀幹長的 19.2%
+          trunk: px(S.trunk * Hm), pelvis: px(REF.l5Frac * S.trunk * Hm),       // [IOSH87-H334] 髖→L5/S1 為軀幹長的 19.2%
           thorax: px(S.trunk * Hm * (1 - REF.l5Frac) - lumbarM),
           headNeck: px((1 - shoulderH) * Hm),                               // 頭頸段：肩到頭頂
           vh: px(REF.vbh / 1000), dm: REF.discM.map(v => px(v / 1000)), depth: px(REF.endplate / 1000),
           ua: px(S.upperArm * Hm), fa: px(S.forearm * Hm), hand: px(S.hand * Hm),
-          faGrip: px(S.elbowGrip * Hm),                                     // 手肘到握拳中心：勞安所實測值占身高 [1]
+          faGrip: px(S.elbowGrip * Hm),                                     // 手肘到握拳中心：勞安所實測值占身高 [勞安所人體計測]
           neck: px(Math.max(0.02, REF.chinH - shoulderH) * Hm), headR: px((1 - REF.chinH) / 2 * Hm),
           boxL: px(REF.boxLen / 100), boxH: px(REF.boxH / 100)
         };
       }
-      // 腿：膝屈曲 k（度），踝背屈 = k × [13] 的踝膝比
-      function legs(k, D, A) {
-        const a = rad(REF.ankleKnee * k), th = rad(REF.ankleKnee * k - k);
+      // Hwang 等 (2009) 圖 1：26 名年輕男性以屈膝、彎腰搬起箱子時的矢狀面關節角度（平均），由原圖讀取（誤差約 ±2°）[Hwang]
+      //   時間點 0、10、…、100%（剛離地 → 站直）；踝為背屈、膝與髖為屈曲、腰為胸廓相對骨盆的屈曲；CC BY 2.0
+      const HWANG = {
+        t: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+        squat: { ankle: [38, 37, 36, 30, 25, 19, 13, 8, 6, 4, 4], knee: [125, 122, 112, 93, 74, 54, 33, 18, 8, 4, 3],
+                 hip: [84, 83, 79, 70, 56, 38, 19, 6, -2, -6, -8], waist: [55, 53, 49, 46, 41, 36, 28, 20, 14, 8, 6] },
+        stoop: { ankle: [-9, -9, -9, -9, -7, -3, 0, 2, 2, 2, 2], knee: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 hip: [43, 42, 36, 27, 15, 4, -3, -7, -9, -10, -10], waist: [69, 67, 63, 56, 46, 35, 23, 13, 6, 2, 1] }
+      };
+      const PELVIS_OFFSET = 7.5;   // 換算假設：原文髖角為大腿相對骨盆；以兩種技巧站直時骨盆回正推算（°）
+      // 單調三次插值（Fritsch–Carlson），節點之間平滑且不會超出相鄰節點的範圍
+      function pchip(xs, ys, x) {
+        const n = xs.length; if (x <= xs[0]) return ys[0]; if (x >= xs[n - 1]) return ys[n - 1];
+        const h = [], d = [];
+        for (let i = 0; i < n - 1; i++) { h.push(xs[i + 1] - xs[i]); d.push((ys[i + 1] - ys[i]) / h[i]); }
+        const m = new Array(n).fill(0); m[0] = d[0]; m[n - 1] = d[n - 2];
+        for (let i = 1; i < n - 1; i++) {
+          if (d[i - 1] * d[i] <= 0) m[i] = 0;
+          else { const w1 = 2 * h[i] + h[i - 1], w2 = h[i] + 2 * h[i - 1]; m[i] = (w1 + w2) / (w1 / d[i - 1] + w2 / d[i]); }
+        }
+        let k = 0; while (x > xs[k + 1]) k++;
+        const t = (x - xs[k]) / h[k], t2 = t * t, t3 = t2 * t;
+        return (2 * t3 - 3 * t2 + 1) * ys[k] + (t3 - 2 * t2 + t) * h[k] * m[k] + (-2 * t3 + 3 * t2) * ys[k + 1] + (t3 - t2) * h[k] * m[k + 1];
+      }
+      // 姿勢滑桿 → 彎腰成分 w（0 = 屈膝曲線、1 = 彎腰曲線）；介於兩者之間時依比例混合兩條實測曲線
+      const stoopWeight = (s) => Math.max(0, Math.min(1, (s - REF.stsqSquat) / (REF.stsqStoop - REF.stsqSquat)));
+      function jointsAt(s, t) {
+        const w = stoopWeight(s), out = {};
+        for (const j of ['ankle', 'knee', 'hip', 'waist']) out[j] = (1 - w) * pchip(HWANG.t, HWANG.squat[j], t) + w * pchip(HWANG.t, HWANG.stoop[j], t);
+        return out;
+      }
+      // 腿：由踝背屈角與膝屈曲角（°）組出膝與髖的位置
+      function legs(ankleDeg, kneeDeg, D, A) {
+        const a = rad(ankleDeg), th = rad(ankleDeg - kneeDeg);
         const K = { x: A.x + Math.sin(a) * D.shank, y: A.y - Math.cos(a) * D.shank };
         const Hp = { x: K.x + Math.sin(th) * D.thigh, y: K.y - Math.cos(th) * D.thigh };
-        return { K, Hp };
+        return { K, Hp, thighAng: ankleDeg - kneeDeg };
       }
-      // 由骨盆傾角往上組出腰椎（L5→L1）、胸段與肩；腰椎總彎曲依 [14] 的活動範圍比例分配到各節
-      function upperBody(Hp, pelvis, lumbar, D) {
+      // 由骨盆傾角往上組出腰椎（L5→L1）、胸段與肩；腰椎彎曲依 [WhitePanjabi] 的活動範圍比例分配到各節；thor 為胸段額外的彎曲
+      function upperBody(Hp, pelvis, lumbar, D, thor = 0) {
         let ang = pelvis;
-        const L5 = { x: Hp.x + Math.sin(pelvis) * D.pelvis, y: Hp.y - Math.cos(pelvis) * D.pelvis };   // [18] L5/S1 位置
+        const L5 = { x: Hp.x + Math.sin(pelvis) * D.pelvis, y: Hp.y - Math.cos(pelvis) * D.pelvis };
         let x = L5.x, y = L5.y;
         const segs = [];
         for (let i = 0; i < 5; i++) {
@@ -1956,68 +1989,70 @@
           segs.push({ bx, by, vx, vy, ang, mid, flex, dm: D.dm[i], rom: rad(REF.rom[i]) });
         }
         const top = { x, y };
+        ang += thor;
         const S = { x: x + Math.sin(ang) * D.thorax, y: y - Math.cos(ang) * D.thorax };
         return { segs, top, S, L5 };
       }
-      // 起點姿勢求解：同時滿足 (1) 伸直的手臂剛好握到地上箱子的握點；(2) 髖下降 ÷ 肩下降 = 1 − StSq/100（[16] 的定義）
-      const startCache = new Map();
-      function solveStart(s, Hcm) {
-        const key = `${body.sex}|${body.h}|${s.toFixed(1)}|${Hcm.toFixed(1)}`;
-        if (startCache.has(key)) return startCache.get(key);
-        const D = dims(), A = { x: 140, y: GROUND - D.ankle };
-        const t = Math.max(0, Math.min(1, (s - REF.stsqSquat) / (REF.stsqStoop - REF.stsqSquat)));
-        const lumbar = rad(lerp(REF.lumbarSquat, REF.lumbarStoop, t));      // [12]＋[16]：兩種技巧之間線性內插
-        const grip = { x: A.x + px(Hcm / 100), y: GROUND - D.boxH / 2 };    // 握點：NIOSH H（踝中點到手的水平距離）、箱高一半
-        const hipStand = A.y - D.shank - D.thigh, shStand = hipStand - D.trunk;
-        const reachAt = (k, p) => { const { Hp } = legs(k, D, A); const { S } = upperBody(Hp, rad(p), lumbar, D); return { Hp, S, err: Math.hypot(S.x - grip.x, S.y - grip.y) - (D.ua + D.faGrip) }; };
-        const fitPelvis = (k) => {
-          let prev = reachAt(k, -10).err;
-          if (prev <= 0) return null;
-          for (let p = -9; p <= 178; p += 1) {
-            const e = reachAt(k, p).err;
-            if (e <= 0) { let lo = p - 1, hi = p; for (let it = 0; it < 18; it++) { const m = (lo + hi) / 2; if (reachAt(k, m).err > 0) lo = m; else hi = m; } return hi; }
-            prev = e;
-          }
-          return null;
-        };
-        const ratio = (k) => { const p = fitPelvis(k); if (p === null) return null; const r = reachAt(k, p); return { k, p, r: (r.Hp.y - hipStand) / Math.max(1e-6, r.S.y - shStand) }; };
-        const target = 1 - s / 100;
-        let sol = ratio(0), best = sol;
-        if (sol && sol.r < target) {
-          for (let k = 1; k <= 140; k += 1) {
-            const c = ratio(k);
-            if (!c) break;
-            if (!best || Math.abs(c.r - target) < Math.abs(best.r - target)) best = c;
-            if (c.r >= target) {
-              let lo = k - 1, hi = k;
-              for (let it = 0; it < 16; it++) { const m = (lo + hi) / 2; const cm = ratio(m); if (cm && cm.r < target) lo = m; else hi = m; }
-              best = ratio(hi) || c; break;
-            }
-          }
+      // 身體各關節在時間 t 的位置：
+      //   下肢（踝、膝）每一幀採 Hwang 實測角度 [Hwang]；
+      //   軀幹總前傾 F（骨盆＋腰椎）剛離地時依「伸直的手臂搆到箱子握點」求解，之後依 Hwang 實測的軀幹（骨盆＋腰）進程回到站直；
+      //   腰椎彎曲剛離地時取 von Arx [vonArx] 的值，之後依 Hwang「腰」的實測進程減少，其餘前傾由骨盆提供
+      const trunkCache = new Map();
+      function hwangTrunk(s, t) { const J = jointsAt(s, t); return (J.ankle - J.knee) + J.hip + PELVIS_OFFSET + J.waist; }
+      const shapeOf = (f, s, t) => { const a = f(s, 0), b = f(s, 1); return Math.abs(a - b) < 1e-6 ? 0 : (f(s, t) - b) / (a - b); };
+      function solveTrunk(s, Hcm, D, A) {
+        const key = `${body.sex}|${body.h}|${s.toFixed(2)}|${Hcm.toFixed(1)}`;
+        if (trunkCache.has(key)) return trunkCache.get(key);
+        const J0 = jointsAt(s, 0), w = stoopWeight(s), lumbar0 = lerp(REF.lumbarSquat, REF.lumbarStoop, w);
+        const { Hp } = legs(J0.ankle, J0.knee, D, A);
+        const grip = { x: A.x + px(Hcm / 100), y: GROUND - D.boxH / 2 }, arm = D.ua + D.faGrip;
+        const gap = (F) => { const { S } = upperBody(Hp, rad(F - lumbar0), rad(lumbar0), D); return Math.hypot(S.x - grip.x, S.y - grip.y) - arm; };
+        let F = null, best = { F: 0, g: Infinity };
+        for (let f = 0; f <= 175; f += 1) {
+          const g = gap(f); if (g < best.g) best = { F: f, g };
+          if (g <= 0) { let lo = f - 1, hi = f; for (let it = 0; it < 18; it++) { const m = (lo + hi) / 2; if (gap(m) > 0) lo = m; else hi = m; } F = hi; break; }
         }
-        const out = { k: best ? best.k : 0, p: best ? best.p : 90, lumbar, grip, A, D, stsq: best ? 100 * (1 - best.r) : s };
-        startCache.set(key, out);
-        return out;
+        const out = { F0: F === null ? best.F : F, lumbar0, reachable: F !== null, Fh0: hwangTrunk(s, 0) };
+        trunkCache.set(key, out); return out;
       }
-      // 終點：站直，上臂自然下垂、前臂水平（肘高＝肩高 − 上臂長，[1]），雙手在身前握著箱子
-      function endGrip(D, A) {
-        const hipY = A.y - D.shank - D.thigh, shY = hipY - D.trunk;
-        return { x: A.x + D.faGrip, y: shY + D.ua };
+      function bodyAt(s, t, D, A, Hcm) {
+        const J = jointsAt(s, t);
+        const { K, Hp } = legs(J.ankle, J.knee, D, A);
+        const T = solveTrunk(s, Hcm, D, A);
+        const Fend = hwangTrunk(s, 1);
+        const F = Fend + (T.F0 - Fend) * shapeOf(hwangTrunk, s, t);
+        const lumbarDeg = T.lumbar0 * shapeOf((ss, tt) => jointsAt(ss, tt).waist, s, t);
+        const pelvisDeg = F - lumbarDeg;
+        const ub = upperBody(Hp, rad(pelvisDeg), rad(lumbarDeg), D, 0);
+        return { J, K, Hp, pelvis: rad(pelvisDeg), lumbar: rad(lumbarDeg), thor: 0, trunk: T, ...ub };
+      }
+      // 終點握點：站直時上臂自然下垂、前臂水平（肘高＝肩高 − 上臂長，[勞安所人體計測]），雙手在身前握著箱子
+      function endGrip(D, A, Send) {
+        if (!Send) { const hipY = A.y - D.shank - D.thigh; Send = { x: A.x, y: hipY - D.trunk }; }   // NIOSH 終點高度：直立時的肘高
+        return { x: Math.max(A.x + D.faGrip, Send.x + D.faGrip), y: Send.y + D.ua };
       }
       // l：搬起的過程，0 = 雙手握住地上的箱子；1 = 站直、箱子在身前
       function pose(s, Hcm, l = 0) {
-        const st = solveStart(s, Hcm), D = st.D, A = st.A;
-        const e = easeLift(Math.max(0, Math.min(1, l)));
-        const k = lerp(st.k, 0, e), pelvis = rad(lerp(st.p, 0, e)), lumbar = lerp(st.lumbar, 0, e);
-        const { K, Hp } = legs(k, D, A);
-        const { segs, top, S, L5 } = upperBody(Hp, pelvis, lumbar, D);
-        const trunkLean = pelvis + lumbar;
+        const D = dims(), A = { x: 140, y: GROUND - D.ankle };
+        const t = Math.max(0, Math.min(1, l));
+        const B = bodyAt(s, t, D, A, Hcm), K = B.K, Hp = B.Hp, S = B.S, L5 = B.L5, segs = B.segs, top = B.top;
+        const pelvis = B.pelvis, lumbar = B.lumbar, trunkLean = B.pelvis + B.lumbar + B.thor;
         const headC = { x: S.x + Math.sin(trunkLean) * (D.neck + D.headR), y: S.y - Math.cos(trunkLean) * (D.neck + D.headR) };
-        // 手的路徑（動畫）：箱子先往身體靠攏再往上，和實體教具一樣
-        const gE = endGrip(D, A);
-        const eIn = easeLift(Math.min(1, l * 1.6));
-        let hand = { x: lerp(st.grip.x, gE.x, eIn), y: lerp(st.grip.y, gE.y, e) };
+        const st = { grip: { x: A.x + px(Hcm / 100), y: GROUND - D.boxH / 2 } };    // 握點：NIOSH H（踝中點到手）、箱高一半
+        // 手的路徑：以「肩到手」的向量在起點與終點之間轉動（極座標內插），進度跟隨軀幹的實測進程，手臂長度不會超過可及範圍
+        //   原文未提供上肢資料，此路徑為假設
+        const S0 = bodyAt(s, 0, D, A, Hcm).S, S1 = bodyAt(s, 1, D, A, Hcm).S;
+        const gE = endGrip(D, A, S1);
+        const v0 = { x: st.grip.x - S0.x, y: st.grip.y - S0.y }, v1 = { x: gE.x - S1.x, y: gE.y - S1.y };
+        const u = 1 - shapeOf(hwangTrunk, s, t);
+        const r0 = Math.hypot(v0.x, v0.y), r1 = Math.hypot(v1.x, v1.y);
+        let a0 = Math.atan2(v0.y, v0.x), a1 = Math.atan2(v1.y, v1.x);
+        if (a1 - a0 > Math.PI) a1 -= 2 * Math.PI; if (a0 - a1 > Math.PI) a1 += 2 * Math.PI;
+        const ang = lerp(a0, a1, u), rr = lerp(r0, r1, u);
+        let hand = { x: S.x + Math.cos(ang) * rr, y: Math.min(S.y + Math.sin(ang) * rr, st.grip.y) };
+        hand.x = Math.min(hand.x, lerp(st.grip.x, gE.x, u));   // 箱子不會在搬起途中被推離身體：水平位置不超過起點到終點的直線
         const L1 = D.ua, L2 = D.faGrip, dx = hand.x - S.x, dy = hand.y - S.y, dl = Math.hypot(dx, dy);
+        const reachShort = dl > L1 + L2 ? (dl - (L1 + L2)) : 0;
         if (dl > L1 + L2) hand = { x: S.x + dx / dl * (L1 + L2), y: S.y + dy / dl * (L1 + L2) };
         const reach = Math.hypot(hand.x - S.x, hand.y - S.y);
         const cosA = Math.max(-1, Math.min(1, (L1 * L1 + reach * reach - L2 * L2) / (2 * L1 * reach || 1)));
@@ -2029,9 +2064,11 @@
         const fl = Math.hypot(hand.x - elbow.x, hand.y - elbow.y) || 1;
         const wrist = { x: elbow.x + (hand.x - elbow.x) / fl * D.fa, y: elbow.y + (hand.y - elbow.y) / fl * D.fa };
         const box = { x: hand.x, y: Math.min(hand.y + D.boxH / 2, GROUND) };   // 箱子底部；起點落在地面
-        return { A, K, H: Hp, L5, S, headC, segs, top, box, hand, elbow, wrist, trunkLean, lumbarFlex: lumbar, pelvis, D, st };
+        // 計算用的 L5/S1：依 IOSH87-H334 取髖→肩連線的 19.2% 處（繪圖用的 L5 沿骨盆線，兩者位置相近）[IOSH87-H334]
+        const L5c = { x: Hp.x + (S.x - Hp.x) * REF.l5Frac, y: Hp.y + (S.y - Hp.y) * REF.l5Frac };
+        return { A, K, H: Hp, L5, L5c, S, headC, segs, top, box, hand, elbow, wrist, trunkLean, lumbarFlex: lumbar, pelvis, D, st, reachShort, J: B.J, trunk: B.trunk };
       }
-      // 各節段重心位置（國人資料 [1]）：軀幹重心自肩關節（近端）沿肩→髖量起；頭頸重心自肩沿軀幹方向往上量起；手臂自近端關節量起
+      // 各節段重心位置（國人資料 [勞安所人體計測]）：軀幹重心自肩關節（近端）沿肩→髖量起；頭頸重心自肩沿軀幹方向往上量起；手臂自近端關節量起
       function segCOMs(P) {
         const S = segOf(), at = (a, b, f) => ({ x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f });
         const trunk = at(P.S, P.H, S.trunkM.com);
@@ -2048,13 +2085,13 @@
         sum += w * toM(P.hand.x - hx);
         return g * sum;
       }
-      // L5/S1 低背模型（Chaffin & Andersson 懸臂式低背模型 [3]）
+      // L5/S1 低背模型（Chaffin & Andersson 懸臂式低背模型 [Chaffin][IOSH87-H334]）
       //   M_L5 = g × Σ（L5/S1 以上各節段質量 × 重心到 L5/S1 的水平距離）＋ g × 物品重量 × 握點到 L5/S1 的水平距離
-      //   背肌力 Fm = M_L5 ÷ 0.053 m；壓縮力 = Fm ＋ 上方總重 × cos(脊椎傾角)；剪力 = 上方總重 × sin(脊椎傾角)
+      //   背肌力 Fm =（M_L5 − D × F_A）÷ 0.0475 m；壓縮力 = cosα ×（上方總重 ＋ 物重）− F_A ＋ Fm；剪力 = sinα ×（上方總重 ＋ 物重）
       function lowBack(w, P) {
-        const g = 9.81, m = body.m, lx = P.L5.x, toM = (pxv) => pxv / PX_PER_M, deg = (r) => r * 180 / Math.PI;
+        const g = 9.81, m = body.m, lx = (P.L5c || P.L5).x, toM = (pxv) => pxv / PX_PER_M, deg = (r) => r * 180 / Math.PI;
         const c = segCOMs(P), S = c.S;
-        // L5/S1 以上的軀幹質量 = 軀幹 × 71.43% [3]；假設其重心與整段軀幹相同
+        // L5/S1 以上的軀幹質量 = 軀幹 × 71.43% [IOSH87-H334]；假設其重心與整段軀幹相同
         const mTrunkAbove = S.trunkM.m * REF.aboveL5 * m, mHN = S.hn.m * m;
         const mTrunk = mTrunkAbove + mHN, mArms = 2 * (S.ua.m + S.fa.m + S.hd.m) * m;
         // 步驟 1：L5/S1 外力矩（上半身與物品重量對 L5/S1 的力矩）
@@ -2067,10 +2104,10 @@
         const thetaH = deg(Math.acos(Math.max(-1, Math.min(1, (vK.x * vS.x + vK.y * vS.y) / (Math.hypot(vK.x, vK.y) * Math.hypot(vS.x, vS.y) || 1)))));
         const PA = Math.max(0, 1e-4 * (43 - 0.36 * (180 - thetaH)) * Math.pow(M, 1.8));
         // 步驟 3：腹部力 F_A = P_A × 465 cm²
-        const FA = Math.min(REF.faMax, PA * REF.mmHgToNcm2 * REF.diaphragm);      // 腹壓上限 150 mmHg → F_A ≤ 929.8 N [3]
-        // 力矩平衡：M − D·F_A − E·F_m = 0；E = 4.75 cm、D 依髖角變化 [3]
+        const FA = Math.min(REF.faMax, PA * REF.mmHgToNcm2 * REF.diaphragm);      // 腹壓上限 150 mmHg → F_A ≤ 929.8 N [IOSH87-H334]
+        // 力矩平衡：M − D·F_A − E·F_m = 0；E = 4.75 cm、D 依髖角變化 [IOSH87-H334]
         const Fm = Math.max(0, (M - abdArm(thetaH) * FA) / REF.esArm);
-        // L5/S1 椎間盤平面角 α（與水平線夾角）[8]：T 為軀幹（髖→肩）與垂直線夾角，K 為膝關節夾角（伸直 180°）
+        // L5/S1 椎間盤平面角 α（與水平線夾角）[Anderson]：T 為軀幹（髖→肩）與垂直線夾角，K 為膝關節夾角（伸直 180°）
         const T = deg(Math.atan2(P.S.x - P.H.x, P.H.y - P.S.y));
         const vA = { x: P.A.x - P.K.x, y: P.A.y - P.K.y }, vH = { x: P.H.x - P.K.x, y: P.H.y - P.K.y };
         const K = deg(Math.acos(Math.max(-1, Math.min(1, (vA.x * vH.x + vA.y * vH.y) / (Math.hypot(vA.x, vA.y) * Math.hypot(vH.x, vH.y) || 1)))));
@@ -2080,7 +2117,7 @@
         const W = g * (mTrunk + mArms + w);
         return { M, Fm, FA, PA, thetaH, T, K, alpha: 40 + beta, comp: Fm - FA + W * Math.cos(alpha), shear: Math.abs(W * Math.sin(alpha)) };
       }
-      // NIOSH 修訂版搬抬公式 [4]：起點評估；AM、FM、CM 依說明的條件取 1.0
+      // NIOSH 修訂版搬抬公式 [Waters]：起點評估；AM、FM、CM 依說明的條件取 1.0
       function niosh(w, Hcm, D, A) {
         const H = Math.max(REF.Hmin, Hcm);
         const HM = Hcm > REF.Hmax ? 0 : REF.Hmin / H;
@@ -2090,10 +2127,10 @@
         const Dist = Math.max(25, Vend - V);
         const DM = 0.82 + 4.5 / Dist;
         const RWL = REF.LC * HM * VM * DM;
-        const RWLtw = REF.LCtw * HM * VM * DM;          // 以國人重量常數代入 [5]
+        const RWLtw = REF.LCtw * HM * VM * DM;          // 以國人重量常數代入 [陳李1998]
         return { RWL, RWLtw, LI: RWL > 0 ? w / RWL : Infinity, HM, VM, DM, V, Dist };
       }
-      const flexIndex = (lf) => Math.max(0, Math.min(1, lf / rad(SUM_ROM)));   // 腰椎總彎曲 ÷ 各節屈伸活動範圍總和 [14]
+      const flexIndex = (lf) => Math.max(0, Math.min(1, lf / rad(SUM_ROM)));   // 腰椎總彎曲 ÷ 各節屈伸活動範圍總和 [WhitePanjabi]
       function colorRgb(t) {
         const c = t < 0.5 ? [[132, 200, 69], [245, 158, 11], t / 0.5] : [[245, 158, 11], [239, 68, 68], (t - 0.5) / 0.5];
         return c[0].map((v, i) => Math.round(lerp(v, c[1][i], c[2])));
@@ -2112,14 +2149,13 @@
         dist.addEventListener('input', () => { state.H = +dist.value; resetLift(); });
         weight.addEventListener('input', () => { state.w = +weight.value; });
         const num = (el, lo, hi, dflt) => { const v = parseFloat(el.value); return isNaN(v) ? dflt : Math.max(lo, Math.min(hi, v)); };
-        hIn.addEventListener('input', () => { body.h = num(hIn, 140, 200, DEFAULT_BODY[body.sex].h); startCache.clear(); resetLift(); });
+        hIn.addEventListener('input', () => { body.h = num(hIn, 140, 200, DEFAULT_BODY[body.sex].h); resetLift(); });
         mIn.addEventListener('input', () => { body.m = num(mIn, 35, 150, DEFAULT_BODY[body.sex].m); });
         const sexIn = $('liftSex');
         sexIn.addEventListener('change', () => {       // 換性別時帶入該性別的預設身高體重
           body.sex = sexIn.value === 'f' ? 'f' : 'm';
           hIn.value = DEFAULT_BODY[body.sex].h; mIn.value = DEFAULT_BODY[body.sex].m;
-          body.h = DEFAULT_BODY[body.sex].h; body.m = DEFAULT_BODY[body.sex].m;
-          startCache.clear(); resetLift();
+          body.h = DEFAULT_BODY[body.sex].h; body.m = DEFAULT_BODY[body.sex].m; resetLift();
         });
         document.querySelectorAll('.lift-preset').forEach(b => b.addEventListener('click', () => { state.s = +b.dataset.liftPreset; posture.value = state.s; resetLift(); }));
         progress.addEventListener('input', () => { playing = 0; state.l = progress.value / 100; cur.l = state.l; updatePlayButton(); });
@@ -2191,10 +2227,10 @@
         // 脊椎：骶骨、5 節椎體（含棘突）、5 個楔形椎間盤、胸椎塊
         G.verts = []; G.spines = []; G.discs = [];
         for (let i = 0; i < 5; i++) {
-          const v = part(new THREE.BoxGeometry(REF.endplate / 1000, REF.vbh / 1000, REF.vbWidth / 1000), mat(BONE, { roughness: 0.5 }));   // [15]
+          const v = part(new THREE.BoxGeometry(REF.endplate / 1000, REF.vbh / 1000, REF.vbWidth / 1000), mat(BONE, { roughness: 0.5 }));   // [腰椎統合分析]
           const sp = part(new THREE.BoxGeometry(0.05, 0.02, 0.025), mat(BONE, { roughness: 0.5 }));
           G.verts.push(v); G.spines.push(sp);
-          const geo = new THREE.CylinderGeometry(REF.endplate / 2000, REF.endplate / 2000, 1, 22);   // 椎間盤直徑＝終板深度 [15]
+          const geo = new THREE.CylinderGeometry(REF.endplate / 2000, REF.endplate / 2000, 1, 22);   // 椎間盤直徑＝終板深度 [腰椎統合分析]
           geo.userData.base = geo.attributes.position.array.slice();
           const d = part(geo, mat(0x84c845, { roughness: 0.45 }));
           G.discs.push(d);
@@ -2265,7 +2301,7 @@
         G.head.scale.setScalar(M(D.headR) / 0.105);
         placeLimb(G.upperL, s, el, 0.2); placeLimb(G.upperR, s, el, -0.2);
         placeLimb(G.foreL, el, hand, 0.2); placeLimb(G.foreR, el, hand, -0.2);
-        // 脊椎：椎體與椎間盤尺寸依 [15][17]；椎間盤繞中心旋轉，前緣高度 = 中間高度 − (終板深度/2)·tanθ，後緣反之
+        // 脊椎：椎體與椎間盤尺寸依 [腰椎統合分析][Mansur]；椎間盤繞中心旋轉，前緣高度 = 中間高度 − (終板深度/2)·tanθ，後緣反之
         const flexNorm = flexIndex(P.lumbarFlex);
         const r = REF.endplate / 2000;
         P.segs.forEach((sg, i) => {
@@ -2287,14 +2323,14 @@
           disc.geometry.computeVertexNormals();
           placeSeg(disc, dc.x, dc.y, sg.mid);
           disc.scale.set(1, dmM, 1);
-          const c = colorRgb(Math.min(1, sg.flex / sg.rom));                 // 顏色：該節彎曲 ÷ 該節活動範圍 [14]
+          const c = colorRgb(Math.min(1, sg.flex / sg.rom));                 // 顏色：該節彎曲 ÷ 該節活動範圍 [WhitePanjabi]
           disc.material.color.setRGB(c[0] / 255, c[1] / 255, c[2] / 255).convertSRGBToLinear();
         });
         _v.a.set(top.x, top.y, 0); _v.b.set(s.x, s.y, 0);
         G.thorax.position.copy(_v.a).add(_v.b).multiplyScalar(0.5);
         G.thorax.scale.set(1, _v.a.distanceTo(_v.b), 1);
         G.thorax.rotation.set(0, 0, -P.trunkLean);
-        // 箱子：NIOSH 最佳容器尺寸 40 × 30 cm [4]
+        // 箱子：NIOSH 最佳容器尺寸 40 × 30 cm [Waters]
         const bl = REF.boxLen / 100, bh = REF.boxH / 100;
         G.box.scale.set(bl, bh, 0.4);
         G.box.position.set(box.x, box.y + bh / 2, 0);
@@ -2392,7 +2428,8 @@
         chip($('liftCompChip'), lb.comp > REF.compMax ? '超過 6400 N' : lb.comp >= gThr || lb.comp > REF.compAction ? '達參考值' : '低於參考值', lb.comp > REF.compMax ? 'r' : lb.comp >= gThr || lb.comp > REF.compAction ? 'a' : 'g');
         $('liftCompNote').textContent = `黃線：認定參考指引 ${(gThr / 1000).toFixed(1)} kN（${body.sex === 'f' ? '女' : '男'}）｜白線：NIOSH 3400 N`;
         $('liftCompMdd').textContent = `${(REF.mddBase + REF.mddPerKg * state.w).toLocaleString()} N`;
-        $('liftHText').textContent = `${Math.round(state.H)} cm（踝中點到手）`;
+        $('liftHText').textContent = `${Math.round(state.H)} cm（踝中點到手，NIOSH）`;
+        $('liftHDText').textContent = `${Math.round(((P.hand.x - (P.L5c || P.L5).x) / PX_PER_M) * 100)} cm（這一刻，IOSH87-H334）`;
         const n = niosh(state.w, state.H, P.D, P.A);
         const li = n.LI;
         $('liftNioshText').textContent = `LI ${isFinite(li) ? li.toFixed(2) : '—'}`;
@@ -2401,20 +2438,26 @@
         chip($('liftNioshChip'), !isFinite(li) || li > 3 ? '多數勞工風險增加' : li > 1 ? '部分勞工風險增加' : '多數可接受', !isFinite(li) || li > 3 ? 'r' : li > 1 ? 'a' : 'g');
         $('liftNioshNote').textContent = isFinite(li) ? `建議重量限值 RWL ${n.RWL.toFixed(1)} kg（目前 ${state.w} kg，起點評估）` : `H 超過 63 cm，NIOSH 建議重量限值為 0`;
         $('liftRwlTw').textContent = `${n.RWLtw.toFixed(1)} kg（常數 17 kg）`;
-        $('liftPostureText').textContent = `${state.s >= REF.stsqStoop ? '彎腰' : state.s <= REF.stsqSquat ? '屈膝' : '介於兩者之間'}（蹲彎指數 ${Math.round(state.s)}）`;
+        $('liftPostureText').textContent = state.s >= REF.stsqStoop ? '彎腰（實測曲線）' : state.s <= REF.stsqSquat ? '屈膝（實測曲線）' : `介於兩者之間（彎腰成分 ${Math.round(stoopWeight(state.s) * 100)}%）`;
         $('liftDistText').textContent = `${Math.round(state.H)} cm`;
         document.querySelectorAll('.lift-preset').forEach(btn => { const on = Math.abs(+btn.dataset.liftPreset - state.s) < 0.5; btn.classList.toggle('bg-amber-500/25', on); btn.classList.toggle('text-amber-100', on); btn.classList.toggle('border-amber-400/40', on); btn.classList.toggle('bg-slate-800', !on); btn.classList.toggle('text-slate-300', !on); btn.classList.toggle('border-white/10', !on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); });
         $('liftWeightText').textContent = `${state.w} 公斤`;
-        const Msquat = moment(state.w, pose(REF.stsqSquat, state.H, 0)), Mstoop = moment(state.w, pose(REF.stsqStoop, state.H, 0));
-        const Mnear = moment(state.w, pose(state.s, REF.Hmin, 0));
         let insight;
-        if (cur.l > 0.95) insight = `站直後箱子在身前，髖部伸展力矩 ${Math.round(Mnow)} N·m，是剛離地時（${Math.round(M0)} N·m）的 ${Math.round(Mnow / M0 * 100)}%。整個過程最吃力的，是箱子剛離地、離身體最遠的那一刻。`;
-        else if (cur.l > 0.05) insight = `搬起的過程中，身體越直、箱子越靠近，髖部力矩就越小。拖動「搬抬過程」可以停在任何一刻觀察。`;
-        else if (state.H > 50) insight = `箱子離踝部 ${Math.round(state.H)} cm：力矩 ${Math.round(M0)} N·m，是同樣姿勢但 H 縮到 25 cm 時的 ${(M0 / Mnear).toFixed(1)} 倍；NIOSH 建議重量限值 RWL 也只剩 ${n.RWL.toFixed(1)} kg。先把箱子拉近，比換姿勢更有效。`;
+        const C0 = lowBack(state.w, P0).comp, Cnow = lb.comp;
+        let Cpeak = 0, tPeak = 0;
+        for (let t = 0; t <= 1.0001; t += 0.05) { const c = lowBack(state.w, pose(state.s, state.H, t)).comp; if (c > Cpeak) { Cpeak = c; tPeak = t; } }
+        const N = (v) => Math.round(v).toLocaleString();
+        if (cur.l > 0.95) insight = `站直後箱子在身前，壓縮力約 ${N(Cnow)} N，是剛離地時（${N(C0)} N）的 ${Math.round(Cnow / C0 * 100)}%。整個過程最高約 ${N(Cpeak)} N，出現在${tPeak < 0.1 ? '箱子剛離地、離身體最遠的那一刻' : `搬起到約 ${Math.round(tPeak * 100)}% 的時候`}。`;
+        else if (cur.l > 0.05) insight = `這一刻的壓縮力約 ${N(Cnow)} N（剛離地時 ${N(C0)} N）。身體越直、箱子越靠近，負荷就越小；拖動「搬抬過程」可以停在任何一刻觀察。`;
         else {
           const Cstoop = lowBack(state.w, pose(REF.stsqStoop, state.H, 0)).comp, Csquat = lowBack(state.w, pose(REF.stsqSquat, state.H, 0)).comp;
-          const Cnear = lowBack(state.w, pose(REF.stsqSquat, REF.Hmin, 0)).comp;
-          insight = `同樣 H ${Math.round(state.H)} cm、${state.w} 公斤：彎腰約 ${Math.round(Cstoop)} N、屈膝約 ${Math.round(Csquat)} N；如果屈膝並把箱子拉近到 25 cm，降到約 ${Math.round(Cnear)} N。蹲下、背打直的好處，是讓箱子能貼近身體；只蹲下卻沒有拉近，負荷不會下降，甚至可能更高。`;
+          if (state.H <= REF.Hmin + 1) {
+            insight = `箱子已經貼近身體（H ${Math.round(state.H)} cm）、${state.w} 公斤：彎腰約 ${N(Cstoop)} N、屈膝約 ${N(Csquat)} N。距離是影響負荷最大的因素，保持貼近、減輕重量，比選哪一種姿勢更重要。`;
+          } else {
+            const Cnear = lowBack(state.w, pose(REF.stsqSquat, REF.Hmin, 0)).comp;
+            const rwlNear = niosh(state.w, REF.Hmin, P.D, P.A).RWL;
+            insight = `同樣 H ${Math.round(state.H)} cm、${state.w} 公斤：彎腰約 ${N(Cstoop)} N、屈膝約 ${N(Csquat)} N；屈膝並把箱子拉近到 ${REF.Hmin} cm，降到約 ${N(Cnear)} N，NIOSH 建議重量限值也從 ${n.RWL.toFixed(1)} kg 增加到 ${rwlNear.toFixed(1)} kg。蹲下、背打直的好處，是讓箱子能貼近身體。`;
+          }
         }
         $('liftInsight').textContent = insight;
       }
@@ -3126,6 +3169,7 @@
       renderer.toneMappingExposure = 0.95;
       maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
       initResolutionGovernor(renderer.getPixelRatio());
+      initFX();
 
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
@@ -3147,6 +3191,9 @@
       setupEnvironmentAndLighting();
       buildSolitaryArchipelagoWorld();
       buildAtmosphereParticles();
+      buildBirds();
+      buildBoats();
+      buildWeather();
       setupIslandPins();
       setupTipCloud();
       buildRegionalVectors();
@@ -3191,8 +3238,13 @@
     const nightLinked = []; // 夜晚才出現的效果：{ apply(n) }
 
     function buildSky() {
+      // [畫質] 天空：天頂到地平線的漸層，加上朝向太陽的暖色散射、太陽／月亮圓盤與光暈，夜晚有閃爍的星空
       skyMat = new THREE.ShaderMaterial({
-        uniforms: { uTop: { value: new THREE.Color() }, uHorizon: { value: new THREE.Color() } },
+        uniforms: {
+          uTop: { value: new THREE.Color() }, uHorizon: { value: new THREE.Color() },
+          uSunDir: { value: new THREE.Vector3(0, 1, 0) }, uSunColor: { value: new THREE.Color(1, 1, 1) },
+          uNight: { value: 0 }, uDisc: { value: 1 }, uTime: { value: 0 }
+        },
         vertexShader: [
           'varying vec3 vDir;',
           'void main() {',
@@ -3203,11 +3255,33 @@
         fragmentShader: [
           'uniform vec3 uTop;',
           'uniform vec3 uHorizon;',
+          'uniform vec3 uSunDir;',
+          'uniform vec3 uSunColor;',
+          'uniform float uNight;',
+          'uniform float uDisc;',
+          'uniform float uTime;',
           'varying vec3 vDir;',
+          'float sHash(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }',
           'void main() {',
-          '  float h = normalize(vDir).y;',
+          '  vec3 d = normalize(vDir);',
+          '  float h = d.y;',
           '  float t = pow(smoothstep(-0.03, 0.55, h), 0.75);',
-          '  gl_FragColor = vec4(mix(uHorizon, uTop, t), 1.0);',
+          '  vec3 col = mix(uHorizon, uTop, t);',
+          '  float sd = max(dot(d, uSunDir), 0.0);',
+          '  float low = 1.0 - smoothstep(0.0, 0.45, h);',
+          // 朝向太陽的天空較亮、較暖（近地平線最明顯）
+          '  col += uSunColor * (pow(sd, 5.0) * 0.22 * low + pow(sd, 40.0) * 0.2) * (1.0 - uNight * 0.55);',
+          // 太陽／月亮圓盤與光暈（產生環境反射貼圖時關閉，避免反射出現亮點雜訊）
+          '  float disc = smoothstep(0.99955, 0.99975, sd);',
+          '  col += uSunColor * (disc * 2.2 + pow(sd, 700.0) * 0.8) * uDisc;',
+          '  if (uNight > 0.05) {',
+          '    vec3 p = d * 140.0;',
+          '    vec3 f = fract(p) - 0.5;',
+          '    float r = sHash(floor(p));',
+          '    float star = step(0.9965, r) * smoothstep(0.22, 0.0, length(f)) * (0.55 + 0.45 * sin(uTime * (1.5 + r * 3.0) + r * 60.0));',
+          '    col += vec3(0.85, 0.9, 1.0) * star * uNight * uNight * smoothstep(0.02, 0.25, h) * uDisc * 1.4;',
+          '  }',
+          '  gl_FragColor = vec4(col, 1.0);',
           '  #include <tonemapping_fragment>',
           '  #include <encodings_fragment>',
           '}'
@@ -3231,7 +3305,9 @@
         envScene = new THREE.Scene();
         envScene.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), skyMat));
       }
+      skyMat.uniforms.uDisc.value = 0;                 // 環境反射只取天空漸層與散射，不含太陽圓盤與星點
       const rt = pmrem.fromScene(envScene, 0.04);
+      skyMat.uniforms.uDisc.value = 1;
       if (envRT) envRT.dispose();
       envRT = rt;
       scene.environment = rt.texture;
@@ -3262,6 +3338,9 @@
       envState = st;
       skyMat.uniforms.uTop.value.copy(st.top);
       skyMat.uniforms.uHorizon.value.copy(st.horizon);
+      skyMat.uniforms.uSunDir.value.copy(st.sunPos).normalize();
+      skyMat.uniforms.uSunColor.value.copy(st.sun);
+      skyMat.uniforms.uNight.value = st.night;
       scene.fog.color.copy(st.horizon);
       scene.fog.density = st.fogD;
       scene.background.copy(st.horizon).convertLinearToSRGB();
@@ -3277,6 +3356,7 @@
         const u = oceanMesh.material.userData.uniforms;
         if (u) {
           u.uNight.value = st.night;
+          u.uSunDir.value.copy(st.sunPos).normalize();
           u.uSparkle.value.copy(st.sun).multiplyScalar(0.4 * (1 - st.night * 0.85));
         }
       }
@@ -3561,8 +3641,7 @@
     // 5.1 水域與山體
     // =============================================================
     function buildSolitaryArchipelagoWorld() {
-      const oceanGeo = new THREE.PlaneGeometry(3800, 3800, 1, 1);
-      oceanGeo.rotateX(-Math.PI / 2);
+      const oceanGeo = makeOceanGeometry(IS_COARSE_POINTER ? 120 : 220);   // [畫質] 中央密、外圍疏的網格，讓浪在島群附近有足夠的頂點
       oceanMesh = new THREE.Mesh(oceanGeo, createOceanMaterial());
       oceanMesh.receiveShadow = true;
       scene.add(oceanMesh);
@@ -3640,6 +3719,7 @@
         leafMat: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, flatShading: true }),
         greens: [0x5f9a55, 0x6faa5f, 0x4e8a4f, 0x7fb56a, 0x568f63, 0x8fbf6f].map(lin)
       };
+      addWindSway(VEG.leafMat, 0.034);   // [畫質] 樹冠與灌木隨風輕輕搖曳
       VEG.leafMat.userData.linear = true;  // 顏色由實例色提供
       return VEG;
     }
@@ -3924,6 +4004,24 @@
       }
       cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0, emissive: 0xffffff, emissiveIntensity: 0.18 });
       cloudMat.userData.linear = true; // 顏色由時段控制，已是線性值
+      // [畫質] 雲的立體感：朝下的面較暗、輪廓邊緣被日光照亮
+      cloudMat.onBeforeCompile = (shader) => {
+        shader.vertexShader = 'varying float vCloudUp;\n' + shader.vertexShader.replace('#include <beginnormal_vertex>', [
+          '#include <beginnormal_vertex>',
+          '#ifdef USE_INSTANCING',
+          '  vCloudUp = normalize((modelMatrix * instanceMatrix * vec4(objectNormal, 0.0)).xyz).y;',
+          '#else',
+          '  vCloudUp = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz).y;',
+          '#endif'
+        ].join('\n'));
+        shader.fragmentShader = 'varying float vCloudUp;\n' + shader.fragmentShader
+          .replace('#include <color_fragment>', '#include <color_fragment>\n  diffuseColor.rgb *= mix(0.7, 1.05, smoothstep(-0.75, 0.55, vCloudUp));')
+          .replace('#include <emissivemap_fragment>', [
+            '#include <emissivemap_fragment>',
+            '  float cRim = pow(1.0 - abs(dot(normalize(normal), normalize(vViewPosition))), 2.5);',
+            '  totalEmissiveRadiance += emissive * cRim * 1.3;'
+          ].join('\n'));
+      };
       cloudMesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), cloudMat, total);
       cloudMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
       cloudMesh.frustumCulled = false;
@@ -4012,6 +4110,34 @@
       }
     }
     setInterval(updateTipCloud, 300);
+
+    // [畫質] 海面網格：座標以冪次分布，中央（島群）密、外圍疏
+    const OCEAN_WAVE_AMP = 0.42;
+    function makeOceanGeometry(seg) {
+      const n = seg + 1, pos = new Float32Array(n * n * 3), nor = new Float32Array(n * n * 3), uv = new Float32Array(n * n * 2), idx = [];
+      const map = (k) => { const u = k / seg * 2 - 1; return Math.sign(u) * Math.pow(Math.abs(u), 1.7) * 1900; };
+      for (let j = 0; j < n; j++) for (let i2 = 0; i2 < n; i2++) {
+        const o = j * n + i2, x = map(i2), z = map(j);
+        pos[o * 3] = x; pos[o * 3 + 1] = 0; pos[o * 3 + 2] = z;
+        nor[o * 3 + 1] = 1;
+        uv[o * 2] = x / 3800 + 0.5; uv[o * 2 + 1] = 0.5 - z / 3800;
+      }
+      for (let j = 0; j < seg; j++) for (let i2 = 0; i2 < seg; i2++) {
+        const a = j * n + i2, b = a + 1, c = a + n, d = c + 1;
+        idx.push(a, c, b, b, c, d);
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+      g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      g.setIndex(idx);
+      return g;
+    }
+    // 與著色器相同的浪高公式（開闊水域），讓帆船跟著浪起伏
+    function oceanHeightAt(x, z, t) {
+      const w = 0.54 * Math.sin((x * 0.8 + z * 0.6) * 0.0661 + t * 0.75) + 0.31 * Math.sin((x * -0.5 + z * 0.866) * 0.1142 + t * 1.05 + 1.3) + 0.15 * Math.sin((x * 0.2 + z * -0.98) * 0.2027 + t * 1.5 + 4.1);
+      return (w - 1) * OCEAN_WAVE_AMP;
+    }
 
     function animateOcean(time) {
       if (!oceanMesh) return;
@@ -4106,15 +4232,36 @@
         uShallow: { value: lin(0x7fe0d6) },
         uFoam: { value: lin(0xf4fbfb) },
         uSparkle: { value: new THREE.Color(1, 1, 1) },
+        uSunDir: { value: new THREE.Vector3(0, 1, 0) },
         uNight: { value: 0 }
       };
       mat.userData.uniforms = uniforms;
       mat.onBeforeCompile = (shader) => {
         Object.assign(shader.uniforms, uniforms);
-        shader.vertexShader = 'varying vec3 vOceanPos;\n' + shader.vertexShader.replace(
-          '#include <begin_vertex>',
-          '#include <begin_vertex>\n  vOceanPos = (modelMatrix * vec4(transformed, 1.0)).xyz;'
-        );
+        // [畫質] 浪：三道不同方向與波長的湧浪疊加，只往下凹（水面最高維持在 0），所以不會淹過航線、潟湖光暈與船的尾流；靠近岸邊時逐漸平靜
+        const WAVE_GLSL = [
+          'uniform float uTime;',
+          'uniform sampler2D uShore;',
+          'uniform vec3 uShoreRect;',
+          'varying vec3 vOceanPos;',
+          'float oWave(vec2 p, float t) {',
+          '  return 0.54 * sin(dot(p, vec2(0.8, 0.6)) * 0.0661 + t * 0.75) + 0.31 * sin(dot(p, vec2(-0.5, 0.866)) * 0.1142 + t * 1.05 + 1.3) + 0.15 * sin(dot(p, vec2(0.2, -0.98)) * 0.2027 + t * 1.5 + 4.1);',
+          '}',
+          'float oCalm(vec2 p) {',
+          '  vec2 suv = (p - uShoreRect.xy) / uShoreRect.z;',
+          '  if (suv.x < 0.0 || suv.x > 1.0 || suv.y < 0.0 || suv.y > 1.0) return 1.0;',
+          '  return smoothstep(0.12, 0.8, texture2D(uShore, suv).r);',
+          '}',
+          'float oHeight(vec2 p, float t) { return (oWave(p, t) - 1.0) * ' + OCEAN_WAVE_AMP.toFixed(2) + ' * oCalm(p); }'
+        ].join('\n');
+        shader.vertexShader = WAVE_GLSL + '\n' + shader.vertexShader
+          .replace('#include <beginnormal_vertex>', [
+            '  float oH0 = oHeight(position.xz, uTime);',
+            '  float oHx = oHeight(position.xz + vec2(1.5, 0.0), uTime);',
+            '  float oHz = oHeight(position.xz + vec2(0.0, 1.5), uTime);',
+            '  vec3 objectNormal = normalize(vec3((oH0 - oHx) / 1.5, 1.0, (oH0 - oHz) / 1.5));'
+          ].join('\n'))
+          .replace('#include <begin_vertex>', '#include <begin_vertex>\n  transformed.y += oH0;\n  vOceanPos = (modelMatrix * vec4(transformed, 1.0)).xyz;');
         shader.fragmentShader = [
           'varying vec3 vOceanPos;',
           'uniform float uTime;',
@@ -4123,6 +4270,7 @@
           'uniform vec3 uShallow;',
           'uniform vec3 uFoam;',
           'uniform vec3 uSparkle;',
+          'uniform vec3 uSunDir;',
           'uniform float uNight;',
           'float oHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }',
           'float oNoise(vec2 p) {',
@@ -4154,7 +4302,12 @@
             'float s1 = oNoise(vOceanPos.xz * 0.45 + vec2(uTime * 0.6, uTime * 0.35));',
             'float s2 = oNoise(vOceanPos.xz * 0.62 - vec2(uTime * 0.45, -uTime * 0.5));',
             'float sparkle = smoothstep(0.6, 0.82, s1 * s2) * smoothstep(0.05, 0.4, sd) * (1.0 - smoothstep(180.0, 520.0, length(vViewPosition)));',
-            'totalEmissiveRadiance += uSparkle * sparkle;'
+            'totalEmissiveRadiance += uSparkle * sparkle;',
+            // [畫質] 波光：以雜訊擾動的水面法線反射日光，形成一條朝向太陽（或月亮）的閃爍光帶
+            'vec3 oV = normalize(cameraPosition - vOceanPos);',
+            'vec3 oN = normalize(vec3((s1 - 0.5) * 0.55, 1.0, (s2 - 0.5) * 0.55));',
+            'float glit = pow(max(dot(reflect(-uSunDir, oN), oV), 0.0), 120.0);',
+            'totalEmissiveRadiance += uSparkle * glit * 2.4 * smoothstep(0.02, 0.2, sd);'
           ].join('\n'));
       };
       return mat;
@@ -4498,7 +4651,48 @@
     }
 
     // 各島的主題小物件（座標以島中心為原點，避開中央建築與步道）
+    // [畫質] 島面細節：沿著島緣撒上隨風擺動的草叢與花叢（每座島的位置固定，不會每次載入都不同）
+    const flowerPlacements = [];
     function decorateIsland(mod, radius, height) {
+      decorateIslandCore(mod, radius, height);
+      mod._hexR = radius; mod._hexH = height;
+      const rand = seededRandom(900 + mod.id * 17);
+      const topY = height + 2.5, isRegion = mod.type === 'region';
+      const inner = radius >= 36 ? 30 : (isRegion ? 9 : 19.5), outer = radius * 0.8;
+      const count = isRegion ? 16 : (radius >= 36 ? 46 : 30);
+      for (let k = 0; k < count; k++) {
+        const a = rand() * Math.PI * 2, r = inner + rand() * Math.max(1, outer - inner);
+        const fx = mod.gridPos.x + Math.cos(a) * r, fz = mod.gridPos.z + Math.sin(a) * r;
+        if (DOCTORS.some(dc => Math.hypot(dc.pos.x - fx, dc.pos.z - fz) < 4.4)) continue;   // 不長在醫師公仔的底座上
+        flowerPlacements.push({ x: mod.gridPos.x + Math.cos(a) * r, y: topY, z: mod.gridPos.z + Math.sin(a) * r, s: 0.75 + rand() * 0.7, rot: rand() * 6.28, flower: rand() < 0.62, ci: Math.floor(rand() * 5) });
+      }
+    }
+    function flushFlowers() {
+      if (!flowerPlacements.length) return;
+      const tuftGeo = new THREE.ConeGeometry(0.34, 1.05, 5); tuftGeo.translate(0, 0.52, 0);
+      const petalGeo = new THREE.IcosahedronGeometry(0.36, 0); petalGeo.translate(0, 1.18, 0);
+      const tuftMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, flatShading: true });
+      const petalMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7, flatShading: true });
+      addWindSway(tuftMat, 0.22, 0.15); addWindSway(petalMat, 0.22, 0.15);
+      const greens = [0x74b860, 0x8cc86e, 0x5fa458].map(lin), cols = [0xf472b6, 0xfde047, 0xf8fafc, 0xfb923c, 0xc084fc].map(lin);
+      const flowers = flowerPlacements.filter(f => f.flower);
+      const m = new THREE.Matrix4(), q = new THREE.Quaternion(), p = new THREE.Vector3(), sc = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+      const make = (geo, mat, list, colorOf) => {
+        const mesh = new THREE.InstancedMesh(geo, mat, list.length);
+        list.forEach((f, k) => {
+          mesh.setMatrixAt(k, m.compose(p.set(f.x, f.y, f.z), q.setFromAxisAngle(up, f.rot), sc.setScalar(f.s)));
+          mesh.setColorAt(k, colorOf(f, k));
+        });
+        mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+        mesh.receiveShadow = true; mesh.frustumCulled = false; mesh.raycast = () => {};
+        mat.userData.linear = true;
+        scene.add(mesh);
+      };
+      make(tuftGeo, tuftMat, flowerPlacements, (f, k) => greens[k % 3]);
+      make(petalGeo, petalMat, flowers, (f) => cols[f.ci]);
+    }
+
+    function decorateIslandCore(mod, radius, height) {
       const cx = mod.gridPos.x, cz = mod.gridPos.z, topY = height + 2.5;
       const C = islandCtx(cx, cz, topY);
       const isRegion = mod.type === 'region';
@@ -4510,18 +4704,18 @@
 
       // 建築入口：門、門墊與通往步道的岔路（服務路徑的小人會從這裡進出）
       if (!isRegion && ENTRANCES[mod.id]) {
-        const dz = ENTRANCES[mod.id].doorZ;
-        C.hbox(0, 0, dz + 0.1, 2.4, 3.2, 0.18, '#1f2937');            // 門
-        C.hbox(0, 2.9, dz + 0.12, 2.8, 0.3, 0.1, '#e2e8f0');           // 門楣
-        C.glowbox(0, 3.3, dz + 0.14, 1.0, 0.22, 0.06, '#fde68a');      // 門上的小燈
-        C.box(0, 0, dz + 1.2, 3.2, 0.12, 1.6, '#e7d7c1');              // 門墊
-        C.hbox(0, 0.05, (dz + 1.8 + pathR + 0.6) / 2, 2.6, 0.08, pathR + 0.6 - dz - 1.8, '#f1ebe1'); // 岔路步道
+        const dz = ENTRANCES[mod.id].doorZ, ex = ENTRANCES[mod.id].doorX || 0;
+        C.hbox(ex, 0, dz + 0.1, 2.4, 3.2, 0.18, '#1f2937');            // 門
+        C.hbox(ex, 2.9, dz + 0.12, 2.8, 0.3, 0.1, '#e2e8f0');           // 門楣
+        C.glowbox(ex, 3.3, dz + 0.14, 1.0, 0.22, 0.06, '#fde68a');      // 門上的小燈
+        C.box(ex, 0, dz + 1.2, 3.2, 0.12, 1.6, '#e7d7c1');              // 門墊
+        C.hbox(ex, 0.05, (dz + 1.8 + pathR + 0.6) / 2, 2.6, 0.08, pathR + 0.6 - dz - 1.8, '#f1ebe1'); // 岔路步道
       }
       switch (mod.id) {
         case 0: // 部立臺北醫院：救護車、候診長椅、旗桿、花台
-          put(0, 0, (c) => Props.ambulance(c.at(-9, 17)));
+          put(0, 0, (c) => Props.ambulance(c.at(-7, 21)));
           put(0, 0, (c) => { Props.bench(c.at(5, -16)); Props.bench(c.at(-5, -16)); });
-          [-15, -12.5, -10].forEach((x, i) => put(0, 0, (c) => Props.flag(c.at(x, 18), ['#0ea5e9', '#14b8a6', '#f8fafc'][i])));
+          [[20.5, 20], [22.6, 18.4], [24.6, 16.6]].forEach(([x, z], i) => put(0, 0, (c) => Props.flag(c.at(x, z), ['#0ea5e9', '#14b8a6', '#f8fafc'][i])));
           [[17, -16], [-17, -16], [-20, 12.5]].forEach(([x, z]) => put(0, 0, (c) => Props.planter(c.at(x, z))));
           lampsAt([60, 120, 240, 300]);
           break;
@@ -4718,10 +4912,45 @@
       pinElements.forEach(p => { if (p.module) p.el.classList.toggle('hovered', p.module.id === id); });
       dirty = true;
     }
+    // [畫質] 點選島嶼時：水面擴散一圈漣漪、島面閃過一圈光
+    const pulses = [];
+    function spawnPulse(x, y, z, r0, r1, dur, color) {
+      if (!scene) return;
+      let p = pulses.find(q => !q.on);
+      if (!p) {
+        if (pulses.length >= 6) return;
+        const geo = new THREE.RingGeometry(0.93, 1.0, 64); geo.rotateX(-Math.PI / 2);
+        const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+        mesh.material.userData.linear = true; mesh.raycast = () => {}; mesh.renderOrder = 3; mesh.visible = false;
+        scene.add(mesh);
+        p = { mesh, on: false }; pulses.push(p);
+      }
+      Object.assign(p, { on: true, t: 0, r0, r1, dur });
+      p.mesh.material.color.copy(lin(color));
+      p.mesh.position.set(x, y, z); p.mesh.visible = true;
+    }
+    function pulseModule(mod) {
+      if (REDUCED_MOTION || !mod || !mod._hexR) return;
+      const col = mod.type === 'region' ? 0x7dd3fc : 0xbef264;
+      spawnPulse(mod.gridPos.x, 0.35, mod.gridPos.z, mod._hexR * 1.02, mod._hexR * 2.1, 1.1, col);
+      spawnPulse(mod.gridPos.x, mod._hexH + 3.0, mod.gridPos.z, mod._hexR * 0.2, mod._hexR * 0.92, 0.6, 0xffffff);
+    }
+    function updatePulses(dt) {
+      for (const p of pulses) {
+        if (!p.on) continue;
+        p.t += dt;
+        const k = Math.min(1, p.t / p.dur), e = 1 - Math.pow(1 - k, 3);
+        p.mesh.scale.setScalar(p.r0 + (p.r1 - p.r0) * e);
+        p.mesh.material.opacity = 0.75 * (1 - k) * (1 - k);
+        if (k >= 1) { p.on = false; p.mesh.visible = false; }
+        dirty = true;
+      }
+    }
     function updateHoverRings(dt) {
       let moving = false;
       for (const h of hoverRings) {
         const m = h.ring.material;
+        if (h.target > 0 && !frozen) { const b = 1 + 0.022 * Math.sin(performance.now() * 0.005); h.ring.scale.set(b, 1, b); moving = true; }   // 滑過時光環微微呼吸
         if (Math.abs(m.opacity - h.target) < 0.01) { m.opacity = h.target; h.ring.visible = h.target > 0; continue; }
         m.opacity += (h.target - m.opacity) * Math.min(1, dt * 10);
         h.ring.visible = true;
@@ -4778,6 +5007,7 @@
       });
 
       flushVegetation();
+      flushFlowers();
       flushKit();
       buildPedestrians();
 
@@ -4795,53 +5025,176 @@
     // =============================================================
     // 7. 建築模組（幾何內容不變）
     // =============================================================
+    // 臺北醫院院徽（去背後內嵌，大樓招牌使用）
+    const TPH_LOGO_DATA = 'data:image/png;base64,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';
     function buildBuildingForModule(mod, islandHeight) {
       const bGroup = new THREE.Group();
       const baseTop = islandHeight + 2.5;
 
       if (mod.id === 0) {
-        // 部立臺北醫院主塔
-        const mainMat = new THREE.MeshStandardMaterial({
-          map: cachedTexture('glass', () => TextureGen.glassFacade()), roughness: 0.18, metalness: 0.35,
-          emissive: 0xffffff, emissiveMap: cachedTexture('glass', () => TextureGen.glassFacade()), emissiveIntensity: 0
+        // 衛生福利部臺北醫院（依實景風格化）。正面朝 +Z，門在 (0, 10)
+        //   量體：左右兩端各有一棟較高的塔樓（左：屋頂一圈欄杆；右：頂部出挑的平板、直式院名），中段較低並內縮，是成排橫向窗的主立面
+        //   門廊：在建築正中央，四根方柱撐起兩層樓高的橫樑與金色院名，大門在門廊正中間
+        const stoneTex = cachedTexture('tph-stone', () => {
+          const cvs = document.createElement('canvas'); cvs.width = cvs.height = 256;
+          const ctx = cvs.getContext('2d'); ctx.fillStyle = '#d2d1cb'; ctx.fillRect(0, 0, 256, 256);
+          const rnd = seededRandom(31);
+          for (let k = 0; k < 5200; k++) {
+            const v = rnd();
+            ctx.fillStyle = v < 0.5 ? `rgba(120,118,112,${0.18 + rnd() * 0.3})` : (v < 0.8 ? `rgba(255,255,255,${0.25 + rnd() * 0.4})` : `rgba(70,68,64,${0.15 + rnd() * 0.25})`);
+            ctx.fillRect(rnd() * 256, rnd() * 256, 1 + rnd() * 1.6, 1 + rnd() * 1.6);
+          }
+          const tex = new THREE.CanvasTexture(cvs); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(3, 3);
+          return tex;
         });
-        const mainMesh = new THREE.Mesh(rbox(26, 36, 20, 1.1), mainMat);
-        mainMesh.position.y = baseTop + 18;
-        nightLinked.push({ apply: (n) => { mainMat.emissiveIntensity = 0.85 * n; } });
-        mainMesh.castShadow = true;
-        mainMesh.receiveShadow = true;
-        bGroup.add(mainMesh);
+        const stone = new THREE.MeshStandardMaterial({ map: stoneTex, color: 0xc9c8c2, roughness: 0.93 });
+        const stoneShade = new THREE.MeshStandardMaterial({ map: stoneTex, color: 0xa9a8a2, roughness: 0.95 });
+        const tan = new THREE.MeshStandardMaterial({ color: 0xb59476, roughness: 0.85 });
+        const dark = new THREE.MeshStandardMaterial({ color: 0x3a4048, roughness: 0.6 });
+        const metal = new THREE.MeshStandardMaterial({ color: 0x9aa3ad, roughness: 0.45, metalness: 0.6 });
+        const greenRoof = new THREE.MeshStandardMaterial({ color: 0x2f6b5a, roughness: 0.7 });
+        const winLit = new THREE.MeshStandardMaterial({ color: 0x2a3a4c, roughness: 0.22, metalness: 0.45, emissive: 0xffd9a0, emissiveIntensity: 0 });
+        const winDim = new THREE.MeshStandardMaterial({ color: 0x2a3a4c, roughness: 0.22, metalness: 0.45, emissive: 0x8fb6e6, emissiveIntensity: 0 });
+        const spandrel = new THREE.MeshStandardMaterial({ color: 0x77726a, roughness: 0.8 });
+        const lobby = new THREE.MeshStandardMaterial({ color: 0x1b2632, roughness: 0.15, metalness: 0.5, emissive: 0xffe2b0, emissiveIntensity: 0 });
+        const cypress = new THREE.MeshStandardMaterial({ color: 0x2f5d3a, roughness: 0.9, flatShading: true });
+        const hedge = new THREE.MeshStandardMaterial({ color: 0x86a83c, roughness: 0.95 });
 
-        const wingMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.55 });
-        const wingGeo = rbox(10, 20, 16, 0.9);
-        [-16, 16].forEach(x => {
-          const w = new THREE.Mesh(wingGeo, wingMat);
-          w.position.set(x, baseTop + 10, 0);
-          w.castShadow = true;
-          bGroup.add(w);
+        const add = (geo, mat, x, y, z, cast = true) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, baseTop + y, z); m.castShadow = cast; m.receiveShadow = true; bGroup.add(m); return m; };
+        const box = (w, h, d, mat, x, y, z, r = 0.16) => add(rbox(w, h, d, r), mat, x, y + h / 2, z);
+        const H = 29, TL = 36, TR = 35;              // 中段、左塔、右塔的高度
+
+        // ---- 量體：左塔（x −21…−10）、中段（x −10…9，內縮 1）、右塔（x 9…21）----
+        box(11, TL, 20, stone, -15.5, 0, 1);
+        box(19, H, 18, stone, -0.5, 0, 1);
+        box(12, TR, 20, stone, 15, 0, 1);
+        box(12.3, 3.0, 20.3, tan, 15, 0, 1, 0.1);     // 右塔基座的褐色面磚
+        box(11.3, 3.0, 20.3, tan, -15.5, 0, 1, 0.1);  // 左塔基座
+        box(14.6, 1.1, 22.6, stone, 15, TR, 1, 0.12); // 右塔頂出挑的平板
+        box(11.4, 0.5, 19.4, stoneShade, 15, TR - 0.5, 1, 0.05);
+        box(5.2, 3.4, 8, greenRoof, 6.2, H, -3.2, 0.1); // 右塔旁的綠色機房
+        for (let f = 1; f <= 6; f++) box(19.06, 0.14, 18.06, stoneShade, -0.5, 2.6 + f * 4.0, 1, 0.02);   // 中段樓層線
+
+        // ---- 窗（實例化；約四成的窗在夜裡亮暖色燈）----
+        const wins = [], spans = [];
+        const rndW = seededRandom(88);
+        const win = (x, y, z, w, h, ry) => wins.push({ x, y, z, w, h, ry, lit: rndW() < 0.42 });
+        const rows = [6.0, 10.0, 14.0, 18.0, 22.0, 26.0];
+        // 中段正面：六欄橫向窗，窗下有深色窗台帶
+        [-7.6, -4.8, -2.0, 0.8, 3.6, 6.4].forEach(x => rows.forEach(y => { if (y < 10.8) return; /* 一、二樓被門廊與大廳玻璃取代 */ win(x, y, 10.04, 2.2, 1.5, 0); spans.push({ x, y: y - 1.2, z: 10.03, w: 2.2, h: 0.7, ry: 0 }); }));
+        // 左塔正面：一欄方窗＋一欄橫向小窗
+        rows.concat([30.0]).forEach(y => { win(-17.6, y, 11.04, 1.7, 1.5, 0); win(-13.6, y + 0.45, 11.04, 1.7, 0.6, 0); });
+        // 右塔正面左緣：一欄小方窗
+        rows.concat([30.0]).forEach(y => win(10.5, y, 11.04, 1.1, 1.2, 0));
+        // 背面與兩側
+        for (let c = 0; c < 6; c++) rows.forEach(y => win(-7.6 + c * 2.8, y, -8.04, 2.2, 1.5, Math.PI));
+        [-5.5, -1.5, 2.5, 6.5].forEach(z => rows.concat([30.0]).forEach(y => { win(-21.04, y, z, 2.6, 1.5, -Math.PI / 2); spans.push({ x: -21.03, y: y - 1.2, z, w: 2.6, h: 0.7, ry: -Math.PI / 2 }); }));
+        [-6, -2.5, 1, 4.5, 8].forEach(z => [8, 12.5, 17, 21.5, 26, 30.2].forEach(y => win(21.04, y, z, 1.3, 2.6, Math.PI / 2)));
+        [-17.6, -13.6, 12, 18].forEach(x => rows.concat([30.0]).forEach(y => win(x, y, -9.04, 1.7, 1.5, Math.PI)));
+        const winGeo = new THREE.BoxGeometry(1, 1, 0.14);
+        const mkInst = (list, mat) => {
+          if (!list.length) return;
+          const im = new THREE.InstancedMesh(winGeo, mat, list.length);
+          const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), p = new THREE.Vector3(), sc = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+          list.forEach((w, k) => im.setMatrixAt(k, m4.compose(p.set(w.x, baseTop + w.y, w.z), q.setFromAxisAngle(up, w.ry), sc.set(w.w, w.h, 1))));
+          im.instanceMatrix.needsUpdate = true; im.frustumCulled = false; im.receiveShadow = true;
+          bGroup.add(im);
+        };
+        mkInst(wins.filter(w => w.lit), winLit); mkInst(wins.filter(w => !w.lit), winDim); mkInst(spans, spandrel);
+
+        // ---- 右塔正面：直式院名（正式院徽）與右側一列內凹的石板 ----
+        const signRedraws = [];
+        const signCanvas = (w, h, draw) => {
+          const cvs = document.createElement('canvas'); cvs.width = w; cvs.height = h;
+          const tex = new THREE.CanvasTexture(cvs);
+          const paint = () => { const ctx = cvs.getContext('2d'); ctx.clearRect(0, 0, w, h); draw(ctx, w, h); tex.needsUpdate = true; };
+          paint(); signRedraws.push(paint);
+          return tex;
+        };
+        const FONT = '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif';
+        const logoImg = new Image();
+        const drawLogo = (ctx, cx, cy, size, tint) => {   // tint 給顏色時把院徽染成單色（門廊的金色字體用）
+          if (!logoImg.complete || !logoImg.naturalWidth) return;
+          if (!tint) { ctx.drawImage(logoImg, cx - size / 2, cy - size / 2, size, size); return; }
+          const t = document.createElement('canvas'); t.width = t.height = 192;
+          const tc = t.getContext('2d'); tc.drawImage(logoImg, 0, 0, 192, 192); tc.globalCompositeOperation = 'source-in'; tc.fillStyle = tint; tc.fillRect(0, 0, 192, 192);
+          ctx.drawImage(t, cx - size / 2, cy - size / 2, size, size);
+        };
+        const towerSignTex = cachedTexture('tph-tower-sign', () => signCanvas(256, 1024, (ctx, w, h) => {
+          drawLogo(ctx, w / 2, 96, 150, null);
+          ctx.fillStyle = '#4a4f55'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.font = `600 50px ${FONT}`; ['衛', '生'].forEach((ch, k) => ctx.fillText(ch, w / 2 + 32, 232 + k * 56)); ['福', '利', '部'].forEach((ch, k) => ctx.fillText(ch, w / 2 - 32, 232 + k * 56));
+          ctx.font = `800 150px ${FONT}`; ['臺', '北', '醫', '院'].forEach((ch, k) => ctx.fillText(ch, w / 2, 480 + k * 152));
+        }));
+        const towerSignMat = new THREE.MeshStandardMaterial({ map: towerSignTex, transparent: true, roughness: 0.6, emissive: 0xffffff, emissiveMap: towerSignTex, emissiveIntensity: 0 });
+        add(new THREE.PlaneGeometry(4.6, 18.4), towerSignMat, 14.6, 21.6, 11.03, false);
+        [9.6, 13.8, 18.0, 22.2, 26.4, 30.4].forEach(y => box(2.3, 3.2, 0.12, stoneShade, 18.9, y - 1.6, 11.0, 0.03));
+
+        // ---- 門廊：在建築正中央（x −9…9），四根方柱在 x = ±8.1、±2.9，大門在 x = 0 ----
+        box(18, 3.4, 7.6, stone, 0, 7.2, 13.8, 0.14);
+        box(18.3, 0.35, 7.9, stoneShade, 0, 10.6, 13.8, 0.06);
+        [-8.1, -2.9, 2.9, 8.1].forEach(x => { box(1.4, 7.2, 1.4, stone, x, 0, 16.7, 0.1); box(1.7, 0.7, 1.7, tan, x, 0, 16.7, 0.06); });
+        box(18.4, 0.14, 8.4, new THREE.MeshStandardMaterial({ color: 0xe6e1d7, roughness: 0.9 }), 0, 0, 14.0, 0.04);
+        box(17.4, 6.9, 0.3, lobby, -0.3, 0.2, 10.12, 0.02);            // 門廊後方的大廳玻璃
+        [-7.4, -4.6, -1.7, 1.7, 4.6, 7.4].forEach(x => box(0.18, 6.9, 0.36, dark, x, 0.2, 10.16, 0.02));
+        box(17.4, 0.2, 0.4, dark, -0.3, 3.6, 10.16, 0.02);
+        const lintelTex = cachedTexture('tph-lintel-sign', () => signCanvas(1024, 192, (ctx, w, h) => {
+          drawLogo(ctx, 100, 98, 150, '#e2b23c');
+          ctx.fillStyle = '#e2b23c'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+          ctx.font = `600 34px ${FONT}`; ctx.fillText('Taipei', 186, 80); ctx.fillText('Hospital', 186, 122);
+          ctx.font = `700 50px ${FONT}`; ctx.fillText('衛 生', 360, 70); ctx.fillText('福利部', 352, 130);
+          ctx.font = `800 118px ${FONT}`; ctx.fillText('臺 北 醫 院', 512, 100);
+        }));
+        const lintelMat = new THREE.MeshStandardMaterial({ map: lintelTex, transparent: true, roughness: 0.35, metalness: 0.4, emissive: 0xffe2a0, emissiveMap: lintelTex, emissiveIntensity: 0.15 });
+        add(new THREE.PlaneGeometry(14.6, 2.74), lintelMat, 0.2, 8.9, 17.62, false);
+        const downMat = new THREE.MeshBasicMaterial({ color: 0xfff1cf });
+        [-5.4, 0, 5.4].forEach(x => add(new THREE.CylinderGeometry(0.28, 0.28, 0.08, 10), downMat, x, 7.16, 13.8, false));
+
+        // ---- 屋頂 ----
+        // 左塔：屋頂一圈欄杆
+        const railY = TL, rx0 = -20.6, rx1 = -10.4, rz0 = -8.6, rz1 = 10.6;
+        [[rx0, rz0], [rx1, rz0], [rx0, rz1], [rx1, rz1], [(rx0 + rx1) / 2, rz0], [(rx0 + rx1) / 2, rz1], [rx0, 1], [rx1, 1], [rx0, -3.8], [rx1, -3.8], [rx0, 5.8], [rx1, 5.8]]
+          .forEach(([x, z]) => box(0.14, 2.0, 0.14, dark, x, railY, z, 0.01));
+        [0.9, 1.95].forEach(yy => {
+          [rz0, rz1].forEach(z => box(rx1 - rx0, 0.09, 0.09, dark, (rx0 + rx1) / 2, railY + yy, z, 0.01));
+          [rx0, rx1].forEach(x => box(0.09, 0.09, rz1 - rz0, dark, x, railY + yy, 1, 0.01));
         });
+        box(4.2, 2.4, 4.2, stone, -16.4, TL, -4.6, 0.08);   // 左塔上的梯間
+        // 中段：女兒牆、水塔、空調、旗桿
+        [[-0.5, 9.8], [-0.5, -7.8]].forEach(([x, z]) => box(19, 0.9, 0.36, stone, x, H, z, 0.04));
+        [-6.6, -3.4].forEach(x => { box(3.0, 0.5, 3.0, metal, x, H, -4.2, 0.04); add(new THREE.CylinderGeometry(1.25, 1.25, 2.6, 14), new THREE.MeshStandardMaterial({ color: 0xe9e8e2, roughness: 0.6 }), x, H + 1.8, -4.2); });
+        [[-0.4, -5.2], [-0.4, -2.4], [2.2, 4.6]].forEach(([x, z]) => { box(2.2, 1.3, 1.6, metal, x, H, z, 0.08); add(new THREE.CylinderGeometry(0.5, 0.5, 0.08, 12), dark, x, H + 1.34, z, false); });
+        add(new THREE.CylinderGeometry(0.11, 0.14, 8, 6), metal, 4.6, H + 4, 7.4);
+        box(2.9, 1.9, 0.08, new THREE.MeshStandardMaterial({ color: 0xd8232a, roughness: 0.8, side: THREE.DoubleSide }), 6.15, H + 6, 7.4, 0.01);
+        box(1.45, 0.95, 0.1, new THREE.MeshStandardMaterial({ color: 0x1f3a93, roughness: 0.8 }), 5.42, H + 6.95, 7.4, 0.01);
+        add(new THREE.SphereGeometry(0.26, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }), 5.42, H + 7.42, 7.47, false);
+        // 左塔側面上方的黃色院名看板
+        const sideTex = cachedTexture('tph-side-sign', () => signCanvas(512, 192, (ctx, w, h) => {
+          ctx.fillStyle = '#e8c33a'; ctx.fillRect(0, 0, w, h);
+          ctx.fillStyle = '#3b3320'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `800 120px ${FONT}`; ctx.fillText('臺北醫院', w / 2, h / 2 + 6);
+        }));
+        const sideSign = add(new THREE.PlaneGeometry(8, 3), new THREE.MeshStandardMaterial({ map: sideTex, roughness: 0.7, emissive: 0xffffff, emissiveMap: sideTex, emissiveIntensity: 0 }), -21.08, 33.2, -4.5, false);
+        sideSign.rotation.y = -Math.PI / 2;
 
-        const heliGeo = new THREE.PlaneGeometry(16, 16);
-        heliGeo.rotateX(-Math.PI / 2);
-        const heliMesh = new THREE.Mesh(heliGeo, new THREE.MeshBasicMaterial({ map: cachedTexture('heli', () => TextureGen.helipad()), side: THREE.DoubleSide }));
-        heliMesh.position.y = baseTop + 36.1;
-        bGroup.add(heliMesh);
+        // ---- 門口：門廊兩側、左右塔前的龍柏與矮籬 ----
+        const cyGeo = new THREE.ConeGeometry(1.25, 5.6, 7);
+        [[-10.8, 12.3], [-17.0, 12.4], [10.8, 12.3], [13.2, 12.4], [18.4, 12.4], [20.4, 12.4]].forEach(([x, z], k) => { const t = add(cyGeo, cypress, x, 2.8 + (k % 2) * 0.25, z); t.scale.setScalar(0.9 + (k % 3) * 0.08); });
+        box(3.2, 1.1, 1.3, hedge, 19.4, 0, 14.6, 0.3);
 
-        const crystal = new THREE.Mesh(
-          new THREE.OctahedronGeometry(3.6, 0),
-          new THREE.MeshStandardMaterial({ color: 0x2dd4bf, emissive: 0x0d9488, emissiveIntensity: 0.9, roughness: 0.1, metalness: 0.8 })
-        );
-        crystal.position.set(0, baseTop + 45, 0);
+        // 右塔頂的天線與旋轉水晶（島的識別標記）
+        const crystal = new THREE.Mesh(new THREE.OctahedronGeometry(3.0, 0), new THREE.MeshStandardMaterial({ color: 0x2dd4bf, emissive: 0x0d9488, emissiveIntensity: 0.9, roughness: 0.1, metalness: 0.8 }));
+        crystal.position.set(15, baseTop + TR + 7.2, 1);
         bGroup.add(crystal);
         rotatingElements.push({ mesh: crystal, axis: 'y', speed: 0.025 });
+        add(new THREE.CylinderGeometry(0.2, 0.36, 9, 6), metal, 19.6, TR + 1.1 + 4.5, -6);
 
-        const ant = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.25, 0.45, 12, 6),
-          new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8 })
-        );
-        ant.position.set(10, baseTop + 42, -7);
-        ant.castShadow = true;
-        bGroup.add(ant);
+        logoImg.onload = () => { signRedraws.forEach(fn => fn()); dirty = true; };
+        logoImg.src = TPH_LOGO_DATA;
+
+        nightLinked.push({ apply: (n) => {
+          winLit.emissiveIntensity = 1.25 * n; winDim.emissiveIntensity = 0.1 * n; lobby.emissiveIntensity = 0.95 * n;
+          towerSignMat.emissiveIntensity = 0.75 * n; lintelMat.emissiveIntensity = 0.15 + 1.0 * n; sideSign.material.emissiveIntensity = 0.7 * n;
+        } });
 
       } else if (mod.id === 1) {
         // 環境探勘哨所
@@ -5098,6 +5451,36 @@
         rotatingElements.push({ mesh: beaconRing, axis: 'z', speed: 0.02 });
       }
 
+      // [畫質] 接地陰影：依建築貼地部分的範圍，在島面鋪一片邊緣柔化的暗影
+      {
+        const fp = new THREE.Box3(), tmp = new THREE.Box3();
+        bGroup.updateMatrixWorld(true);
+        bGroup.traverse(o => {
+          if (!o.isMesh || o.isInstancedMesh || !o.geometry) return;
+          tmp.setFromObject(o);
+          if (tmp.min.y <= baseTop + 1.2 && tmp.max.y - tmp.min.y > 1.5) fp.union(tmp);
+        });
+        if (!fp.isEmpty()) {
+          const w = fp.max.x - fp.min.x + 7, d = fp.max.z - fp.min.z + 7;
+          const tex = cachedTexture('contact-shadow', () => {
+            const cvs = document.createElement('canvas'); cvs.width = cvs.height = 128;
+            const ctx = cvs.getContext('2d');
+            const img = ctx.createImageData(128, 128);
+            for (let y = 0; y < 128; y++) for (let x = 0; x < 128; x++) {
+              const ex = Math.max(0, Math.abs(x - 63.5) - 38) / 25.5, ey = Math.max(0, Math.abs(y - 63.5) - 38) / 25.5;
+              const a = Math.max(0, 1 - Math.hypot(ex, ey));
+              const o4 = (y * 128 + x) * 4; img.data[o4] = img.data[o4 + 1] = img.data[o4 + 2] = 0; img.data[o4 + 3] = Math.round(255 * a * a * (3 - 2 * a));
+            }
+            ctx.putImageData(img, 0, 0);
+            return new THREE.CanvasTexture(cvs);
+          });
+          const geo = new THREE.PlaneGeometry(w, d); geo.rotateX(-Math.PI / 2);
+          const sh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, color: 0x1a2030, transparent: true, opacity: 0.34, depthWrite: false }));
+          sh.position.set((fp.min.x + fp.max.x) / 2, baseTop + 0.07, (fp.min.z + fp.max.z) / 2);
+          sh.renderOrder = 2; sh.raycast = () => {};
+          bGroup.add(sh);
+        }
+      }
       return bGroup;
     }
 
@@ -5120,15 +5503,16 @@
       const SHOE = M(0x0f172a, { roughness: 0.5 }), HAIR = M(doc.id === 'tsai' ? 0x1c1917 : 0x292524, { roughness: 0.9 });
 
       // 底座：深色圓台＋識別色光環＋頂面淡淡的發光圓盤
-      const pedestal = add(new THREE.CylinderGeometry(3.4, 3.9, 0.8, 32), M(0x1e293b, { metalness: 0.6, roughness: 0.3 }), 0, 0.4, 0);
+      const pedestal = add(new THREE.CylinderGeometry(2.7, 3.0, 0.6, 40), M(0x1e293b, { metalness: 0.6, roughness: 0.3 }), 0, 0.3, 0);
       pedestal.castShadow = false; pedestal.receiveShadow = true;
-      const rim = add(new THREE.TorusGeometry(3.5, 0.14, 8, 40), new THREE.MeshBasicMaterial({ color: accent }), 0, 0.82, 0);
+      const rim = add(new THREE.TorusGeometry(2.76, 0.12, 8, 48), new THREE.MeshBasicMaterial({ color: accent }), 0, 0.62, 0);
       rim.rotation.x = Math.PI / 2; rim.castShadow = false;
-      const glow = add(new THREE.CircleGeometry(3.3, 32), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0.18, depthWrite: false }), 0, 0.81, 0);
+      const glow = add(new THREE.CircleGeometry(2.62, 40), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0.18, depthWrite: false }), 0, 0.61, 0);
       glow.rotation.x = -Math.PI / 2; glow.castShadow = false;
 
       // 會呼吸、晃動的身體群組（不含底座）
       const body = new THREE.Group();
+      body.position.y = -0.2;
       docGroup.add(body);
 
       // 鞋子與腿
@@ -5168,19 +5552,37 @@
       head.scale.set(1, 1.08, 1);
       [-1, 1].forEach(side => add(new THREE.SphereGeometry(0.24, 10, 8), SKIN, side * 1.3, -0.05, 0, headGroup));       // 耳朵
       [-1, 1].forEach(side => add(new THREE.SphereGeometry(0.11, 8, 6), M(0x1e293b, { roughness: 0.3 }), side * 0.44, 0.1, 1.22, headGroup).castShadow = false); // 眼睛
+      // [畫質] 五官：眼白與高光、眉毛、鼻子、微笑、腮紅
+      const noShadow = (m) => { m.castShadow = false; return m; };
+      [-1, 1].forEach(side => {
+        noShadow(add(new THREE.SphereGeometry(0.19, 12, 10), M(0xffffff, { roughness: 0.3 }), side * 0.44, 0.1, 1.14, headGroup)).scale.set(1, 1.15, 0.6);
+        noShadow(add(new THREE.SphereGeometry(0.04, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }), side * 0.44 + 0.04, 0.16, 1.33, headGroup));
+        const brow = noShadow(add(rbox(0.4, 0.07, 0.08, 0.03), HAIR, side * 0.45, 0.42, 1.2, headGroup)); brow.rotation.z = side * -0.12;
+        const cheek = noShadow(add(new THREE.CircleGeometry(0.2, 14), new THREE.MeshBasicMaterial({ color: 0xf59a8b, transparent: true, opacity: 0.35, depthWrite: false }), side * 0.78, -0.26, 1.07, headGroup)); cheek.rotation.y = side * 0.55;
+      });
+      noShadow(add(new THREE.SphereGeometry(0.11, 10, 8), SKIN, 0, -0.12, 1.36, headGroup));
+      const smile = noShadow(add(new THREE.TorusGeometry(0.3, 0.035, 6, 16, Math.PI * 0.7), M(0x9a4a3c, { roughness: 0.6 }), 0, -0.36, 1.21, headGroup));
+      smile.rotation.set(0.12, 0, Math.PI + Math.PI * 0.15);
       // 頭髮：頭頂半球＋後腦，略往前蓋住額頭
       const hairCap = add(new THREE.SphereGeometry(1.42, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.52), HAIR, 0, 0.12, -0.04, headGroup);
       hairCap.rotation.x = -0.22; hairCap.scale.set(1, 1.05, 1.04);
       add(new THREE.SphereGeometry(1.36, 16, 12, 0, Math.PI * 2, Math.PI * 0.45, Math.PI * 0.3), HAIR, 0, 0.05, -0.12, headGroup).rotation.x = 0.5;
 
+      // [畫質] 白袍細節：三顆鈕扣、兩側口袋、袖口、鞋底
+      [7.9, 7.0, 6.1].forEach(y => noShadow(add(new THREE.CylinderGeometry(0.1, 0.1, 0.05, 10), M(0xcbd5e1, { roughness: 0.4 }), 0.28, y, 1.1, body)).rotation.x = Math.PI / 2);
+      [-1, 1].forEach(side => { noShadow(add(rbox(0.95, 0.9, 0.06, 0.03), M(0xeef2f6, { roughness: 0.5 }), side * 0.95, 5.5, 1.05, body)); noShadow(add(rbox(0.95, 0.07, 0.07, 0.02), M(0xd5dbe3, { roughness: 0.5 }), side * 0.95, 5.93, 1.07, body)); });
+      [-0.72, 0.72].forEach(x => noShadow(add(rbox(1.1, 0.16, 1.76, 0.06), M(0xe2e8f0, { roughness: 0.7 }), x, 0.84, 0.25, body)));
       // 手臂：右手自然下垂；左手彎曲，在胸前拿著東西
       const SLEEVE = COAT;
       const rUpper = add(rbox(0.88, 2.7, 0.92, 0.32), SLEEVE, 1.88, 9.25, 0, body); rUpper.rotation.z = -0.1;
       add(rbox(0.8, 2.3, 0.86, 0.3), SLEEVE, 2.02, 6.95, 0.05, body);
       add(new THREE.SphereGeometry(0.42, 12, 10), SKIN, 2.06, 5.6, 0.08, body);
+      add(new THREE.SphereGeometry(0.17, 8, 6), SKIN, 1.86, 5.5, 0.4, body);                                   // 右手拇指
+      noShadow(add(new THREE.CylinderGeometry(0.47, 0.47, 0.22, 14), M(0xe9eef4, { roughness: 0.5 }), 2.04, 5.98, 0.06, body)); // 右袖口
       const lUpper = add(rbox(0.88, 2.7, 0.92, 0.32), SLEEVE, -1.88, 9.25, 0, body); lUpper.rotation.z = 0.1;
       const lFore = add(rbox(0.8, 2.2, 0.86, 0.3), SLEEVE, -1.78, 7.95, 0.95, body); lFore.rotation.x = -Math.PI / 2 + 0.15;
       add(new THREE.SphereGeometry(0.42, 12, 10), SKIN, -1.55, 8.15, 2.05, body);
+      add(new THREE.SphereGeometry(0.17, 8, 6), SKIN, -1.3, 8.42, 2.1, body);                                   // 左手拇指
 
       if (doc.id === 'tsai') {
         // 聽診器：掛在頸部的 U 形管、垂下的管線與金屬聽頭；左手拿病歷夾
@@ -5198,6 +5600,10 @@
         const clip = add(new THREE.BoxGeometry(0.6, 0.2, 0.12), M(0xcbd5e1, { metalness: 0.8, roughness: 0.3 }), -1.16, 9.55, 1.6, body);
         clip.rotation.set(-0.32, 0.35, 0); clip.castShadow = false;
       } else {
+        // 眼鏡：兩個細框與鼻樑（和蔡主任區隔）
+        const gMat = M(0x1f2937, { roughness: 0.35, metalness: 0.5 });
+        [-1, 1].forEach(side => noShadow(add(new THREE.TorusGeometry(0.27, 0.03, 6, 20), gMat, side * 0.44, 0.1, 1.3, headGroup)));
+        noShadow(add(rbox(0.36, 0.04, 0.04, 0.01), gMat, 0, 0.14, 1.32, headGroup));
         // 左手拿平板（螢幕微亮），右手邊口袋插著筆
         const tablet = add(rbox(1.9, 1.35, 0.14, 0.08), M(0x0f172a, { roughness: 0.3, metalness: 0.4 }), -0.95, 8.65, 1.95, body);
         tablet.rotation.set(-0.55, 0.3, 0);
@@ -5228,6 +5634,225 @@
     // =============================================================
     // 9. 大氣微粒、3D 標籤、區域引線、協作流線
     // =============================================================
+    // =============================================================
+    // [畫質] 場景的生氣：樹葉隨風搖曳、海鷗盤旋、帆船往來
+    // =============================================================
+    const WIND = { uWindTime: { value: 0 } };
+    function addWindSway(mat, amp, base = 1.0) {
+      mat.customProgramCacheKey = () => 'wind:' + amp + ':' + base;   // 不同強度要各自編譯，不能共用同一份著色器
+      mat.onBeforeCompile = (shader) => {
+        shader.uniforms.uWindTime = WIND.uWindTime;
+        shader.vertexShader = 'uniform float uWindTime;\n' + shader.vertexShader.replace('#include <begin_vertex>', [
+          '#include <begin_vertex>',
+          '#ifdef USE_INSTANCING',
+          '  vec2 wPh = instanceMatrix[3].xz * 0.045;',
+          '#else',
+          '  vec2 wPh = vec2(0.0);',
+          '#endif',
+          '  float wAmt = max(transformed.y - ' + base.toFixed(2) + ', 0.0) * ' + amp.toFixed(3) + ';',
+          '  transformed.x += (sin(uWindTime * 1.25 + wPh.x + wPh.y) + 0.45 * sin(uWindTime * 2.7 + wPh.y * 1.7)) * wAmt;',
+          '  transformed.z += cos(uWindTime * 1.05 + wPh.x * 1.3) * wAmt * 0.7;'
+        ].join('\n'));
+      };
+    }
+
+    // 天氣：水面上飄移的薄霧（清晨最濃）；白天偶爾下一陣太陽雨，雨後在背對太陽的方向出現彩虹
+    let weather = null;
+    function buildWeather() {
+      const rand = seededRandom(1357);
+      const cvs = document.createElement('canvas'); cvs.width = 256; cvs.height = 96;
+      const ctx = cvs.getContext('2d');
+      for (let k = 0; k < 26; k++) {
+        const x = 30 + rand() * 196, y = 30 + rand() * 36, r = 22 + rand() * 30;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, 'rgba(255,255,255,0.20)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g; ctx.fillRect(0, 0, 256, 96);
+      }
+      const mistMat = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cvs), transparent: true, opacity: 0, depthWrite: false });
+      mistMat.userData.linear = true;
+      const mist = [];
+      const NM = IS_COARSE_POINTER ? 5 : 8;
+      for (let k = 0; k < NM; k++) {
+        const sp = new THREE.Sprite(mistMat);
+        const a = rand() * 6.283, r = 150 + rand() * 300;
+        sp.position.set(25 + Math.cos(a) * r, 7 + rand() * 9, 20 + Math.sin(a) * r);
+        sp.scale.set(230 + rand() * 150, 46 + rand() * 26, 1);
+        sp.raycast = () => {};
+        scene.add(sp);
+        mist.push({ sp, v: 2.2 + rand() * 2.4 });
+      }
+      // 雨：在鏡頭注視點周圍落下的細點
+      const NR = IS_COARSE_POINTER ? 500 : 1100;
+      const rp = new Float32Array(NR * 3);
+      for (let k = 0; k < NR; k++) { rp[k * 3] = (rand() - 0.5) * 620; rp[k * 3 + 1] = rand() * 260; rp[k * 3 + 2] = (rand() - 0.5) * 620; }
+      const rainGeo = new THREE.BufferGeometry(); rainGeo.setAttribute('position', new THREE.BufferAttribute(rp, 3));
+      const rainMat = new THREE.PointsMaterial({ color: 0xdcecff, size: 1.5, sizeAttenuation: true, transparent: true, opacity: 0, depthWrite: false });
+      const rain = new THREE.Points(rainGeo, rainMat); rain.frustumCulled = false; rain.visible = false; rain.raycast = () => {};
+      scene.add(rain);
+      // 彩虹：半圓環，顏色由外（紅）到內（紫）
+      const bowGeo = new THREE.RingGeometry(560, 612, 96, 1, 0, Math.PI);
+      const bowMat = new THREE.ShaderMaterial({
+        uniforms: { uOpacity: { value: 0 } },
+        vertexShader: 'varying float vR;\nvoid main() { vR = (length(position.xy) - 560.0) / 52.0; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: [
+          'uniform float uOpacity; varying float vR;',
+          'void main() {',
+          '  vec3 c = mix(vec3(0.55, 0.3, 0.95), vec3(0.2, 0.55, 1.0), smoothstep(0.0, 0.25, vR));',
+          '  c = mix(c, vec3(0.2, 0.9, 0.45), smoothstep(0.25, 0.45, vR));',
+          '  c = mix(c, vec3(1.0, 0.92, 0.25), smoothstep(0.45, 0.65, vR));',
+          '  c = mix(c, vec3(1.0, 0.55, 0.15), smoothstep(0.65, 0.82, vR));',
+          '  c = mix(c, vec3(1.0, 0.25, 0.25), smoothstep(0.82, 1.0, vR));',
+          '  float a = smoothstep(0.0, 0.22, vR) * (1.0 - smoothstep(0.78, 1.0, vR));',
+          '  gl_FragColor = vec4(c * a * uOpacity, 1.0);',
+          '}'].join('\n'),
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, toneMapped: false
+      });
+      const bow = new THREE.Mesh(bowGeo, bowMat); bow.visible = false; bow.frustumCulled = false; bow.raycast = () => {}; bow.renderOrder = -5;
+      scene.add(bow);
+      weather = { mist, mistMat, rain, rainMat, bow, bowMat, phase: 'idle', t: 0, nextAt: 55 + rand() * 60, rand };
+    }
+    function updateWeather(t, dt) {
+      if (!weather) return;
+      const W = weather;
+      // 薄霧：清晨最濃、正午最淡
+      const mistTarget = [0.34, 0.07, 0.17, 0.13][timeMode] || 0.1;
+      W.mistMat.opacity += (mistTarget - W.mistMat.opacity) * Math.min(1, dt * 0.5);
+      W.mistMat.color.copy(scene.fog.color).lerp(_white, 0.72);
+      W.mist.forEach(m => { m.sp.position.x += m.v * dt; if (m.sp.position.x > 560) m.sp.position.x = -520; });
+      // 太陽雨 → 彩虹
+      W.t += dt;
+      if (W.phase === 'idle') {
+        if (t > W.nextAt && nightFactor < 0.3 && !tweening) { W.phase = 'rain'; W.t = 0; W.rain.visible = true; }
+      } else if (W.phase === 'rain') {
+        const k = W.t / 13;
+        W.rainMat.opacity = 0.5 * Math.sin(Math.min(1, k) * Math.PI);
+        const pos = W.rain.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i++) { let y = pos.getY(i) - 210 * dt; if (y < 0) y += 260; pos.setY(i, y); }
+        pos.needsUpdate = true;
+        W.rain.position.set(controls.target.x, 0, controls.target.z);
+        if (k >= 1) {
+          W.phase = 'bow'; W.t = 0; W.rain.visible = false;
+          const sd = skyMat.uniforms.uSunDir.value, len = Math.hypot(sd.x, sd.z) || 1;
+          W.bow.position.set(25 - sd.x / len * 900, -70, 20 - sd.z / len * 900);
+          W.bow.lookAt(25, -70, 20);
+          W.bow.visible = true;
+        }
+      } else if (W.phase === 'bow') {
+        const k = W.t;
+        W.bowMat.uniforms.uOpacity.value = 0.6 * THREE.MathUtils.smoothstep(k, 0, 5) * (1 - THREE.MathUtils.smoothstep(k, 40, 48)) * (1 - nightFactor);
+        if (k >= 48) { W.phase = 'idle'; W.bow.visible = false; W.nextAt = t + 150 + W.rand() * 150; }
+      }
+    }
+    const _white = new THREE.Color(1, 1, 1);
+
+    // 海鷗：每隻由左右兩片翅膀組成，沿各自的橢圓路徑盤旋並拍動；入夜後淡出
+    let birds = null;
+    function buildBirds() {
+      const N = IS_COARSE_POINTER ? 7 : 12;
+      const wing = new THREE.BufferGeometry();
+      wing.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0.9, 0, 0, -0.7, 3.4, 0, -0.25]), 3));
+      wing.computeVertexNormals();
+      const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.95 });
+      const mesh = new THREE.InstancedMesh(wing, mat, N * 2);
+      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      mesh.frustumCulled = false;
+      const rand = seededRandom(771);
+      const list = [];
+      for (let k = 0; k < N; k++) {
+        list.push({ cx: 25 + (rand() - 0.5) * 300, cz: 20 + (rand() - 0.5) * 300, r: 60 + rand() * 150, y: 52 + rand() * 62,
+                    sp: (0.09 + rand() * 0.08) * (rand() < 0.5 ? -1 : 1), ph: rand() * 6.283, flap: 5 + rand() * 3, sz: 0.9 + rand() * 0.55 });
+      }
+      birds = { mesh, mat, list };
+      scene.add(mesh);
+      nightLinked.push({ apply: (n) => { mat.opacity = 0.95 * (1 - THREE.MathUtils.smoothstep(n, 0.45, 0.9)); mesh.visible = n < 0.88; } });
+      updateBirds(0);
+    }
+    const _bird = { m: new THREE.Matrix4(), q: new THREE.Quaternion(), qy: new THREE.Quaternion(), qr: new THREE.Quaternion(), p: new THREE.Vector3(), s: new THREE.Vector3(),
+                    up: new THREE.Vector3(0, 1, 0), fwd: new THREE.Vector3(0, 0, 1) };
+    function updateBirds(t) {
+      if (!birds || !birds.mesh.visible) return;
+      const B = _bird;
+      birds.list.forEach((b, k) => {
+        const a = b.ph + t * b.sp;
+        const x = b.cx + Math.cos(a) * b.r, z = b.cz + Math.sin(a) * b.r * 0.8;
+        const y = b.y + Math.sin(t * 0.3 + b.ph) * 6;
+        const yaw = Math.atan2(-Math.sin(a) * b.sp, Math.cos(a) * 0.8 * b.sp);
+        // 拍幾下、滑翔一段：滑翔時翅膀微微上揚
+        const glide = THREE.MathUtils.smoothstep(Math.sin(t * 0.55 + b.ph * 3.1), 0.2, 0.7);
+        const f = Math.sin(t * b.flap + b.ph) * 0.6 * (1 - glide) + 0.18 * glide;
+        B.p.set(x, y, z);
+        B.qy.setFromAxisAngle(B.up, yaw);
+        B.qr.setFromAxisAngle(B.fwd, f);
+        birds.mesh.setMatrixAt(k * 2, B.m.compose(B.p, B.q.copy(B.qy).multiply(B.qr), B.s.set(b.sz, b.sz, b.sz)));
+        B.qr.setFromAxisAngle(B.fwd, -f);
+        birds.mesh.setMatrixAt(k * 2 + 1, B.m.compose(B.p, B.q.copy(B.qy).multiply(B.qr), B.s.set(-b.sz, b.sz, b.sz)));
+      });
+      birds.mesh.instanceMatrix.needsUpdate = true;
+    }
+
+    // 帆船：在島群外圍的開闊水域繞行（路線會先檢查不經過陸地與島嶼），隨浪起伏，船尾拖著尾流；入夜後桅燈亮起
+    let boats = null;
+    function buildBoats() {
+      const clear = (x, z) => getTerrainElevation(x, z) < -6 && ISLAND_MODULES.every(mod => Math.hypot(x - mod.gridPos.x, z - mod.gridPos.z) > 42);
+      // 找出離島群最近、周圍一圈都是開闊水域的位置，各放一艘繞小圈航行的帆船（彼此至少相隔 150）
+      const R = 54, cands = [];
+      for (let x = -440; x <= 440; x += 20) for (let z = -440; z <= 440; z += 20) {
+        let ok = true;
+        for (let k = 0; k < 24 && ok; k++) { const a = k / 24 * Math.PI * 2; ok = clear(x + Math.cos(a) * R, z + Math.sin(a) * R); }
+        if (ok) cands.push({ x, z, d: Math.hypot(x - 25, z - 20) });
+      }
+      cands.sort((a, b) => a.d - b.d);
+      const rings = [];
+      const maxBoats = IS_COARSE_POINTER ? 2 : 3;
+      for (const c of cands) {
+        if (rings.length >= maxBoats) break;
+        if (rings.every(r => Math.hypot(r.x - c.x, r.z - c.z) >= 150)) rings.push({ x: c.x, z: c.z, r: R - 6, ez: 0.8 });
+      }
+      const want = rings.length;
+      if (!want) return;
+      const hullMat = new THREE.MeshStandardMaterial({ color: 0xf6f1e7, roughness: 0.6 });
+      const deckMat = new THREE.MeshStandardMaterial({ color: 0xb98a5e, roughness: 0.8 });
+      const sailMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, side: THREE.DoubleSide });
+      const lampMat = new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffc46b, emissiveIntensity: 0 });
+      const wakeCvs = document.createElement('canvas'); wakeCvs.width = 128; wakeCvs.height = 32;
+      const wctx = wakeCvs.getContext('2d'); const wg = wctx.createLinearGradient(0, 0, 128, 0);
+      wg.addColorStop(0, 'rgba(255,255,255,0.75)'); wg.addColorStop(0.5, 'rgba(255,255,255,0.25)'); wg.addColorStop(1, 'rgba(255,255,255,0)');
+      wctx.fillStyle = wg; wctx.beginPath(); wctx.moveTo(0, 12); wctx.lineTo(128, 0); wctx.lineTo(128, 32); wctx.lineTo(0, 20); wctx.closePath(); wctx.fill();
+      const wakeMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(wakeCvs), transparent: true, opacity: 0.7, depthWrite: false });
+      const sailShape = new THREE.Shape(); sailShape.moveTo(0, 0); sailShape.lineTo(0, 8.6); sailShape.lineTo(4.6, 0.6); sailShape.closePath();
+      const sailGeo = new THREE.ShapeGeometry(sailShape);
+      const jibShape = new THREE.Shape(); jibShape.moveTo(0, 0.4); jibShape.lineTo(0, 6.4); jibShape.lineTo(-3.2, 0.4); jibShape.closePath();
+      const jibGeo = new THREE.ShapeGeometry(jibShape);
+      const rand = seededRandom(4242);
+      const list = [];
+      rings.forEach((ring, k) => {
+        const g = new THREE.Group();
+        const hull = new THREE.Mesh(rbox(2.6, 1.5, 7.4, 0.7), hullMat); hull.position.y = 0.45;
+        const deck = new THREE.Mesh(rbox(1.9, 0.3, 5.6, 0.14), deckMat); deck.position.y = 1.25;
+        const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 10, 6), deckMat); mast.position.set(0, 6.2, 0.4);
+        const sail = new THREE.Mesh(sailGeo, sailMat); sail.rotation.y = -Math.PI / 2; sail.position.set(0.02, 1.9, 0.25);
+        const jib = new THREE.Mesh(jibGeo, sailMat); jib.rotation.y = -Math.PI / 2; jib.position.set(-0.02, 1.9, 0.55);
+        const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 6), lampMat); lamp.position.set(0, 11.3, 0.4);
+        const wake = new THREE.Mesh(new THREE.PlaneGeometry(15, 4.4), wakeMat); wake.rotation.x = -Math.PI / 2; wake.rotation.z = Math.PI / 2; wake.position.set(0, 0.5, -10.5);
+        g.add(hull, deck, mast, sail, jib, lamp, wake);
+        g.scale.setScalar(1.15);
+        scene.add(g);
+        list.push({ g, cx: ring.x, cz: ring.z, r: ring.r, ez: ring.ez, a0: rand() * 6.283, sp: (4.2 / ring.r) * (k % 2 ? -1 : 1), ph: rand() * 6.283 });
+      });
+      boats = { list };
+      nightLinked.push({ apply: (n) => { lampMat.emissiveIntensity = n * 2.2; wakeMat.opacity = 0.7 * (1 - n * 0.5); } });
+      updateBoats(0);
+    }
+    function updateBoats(t) {
+      if (!boats) return;
+      boats.list.forEach(b => {
+        const a = b.a0 + t * b.sp;
+        const bx = b.cx + Math.cos(a) * b.r, bz = b.cz + Math.sin(a) * b.r * b.ez;
+        b.g.position.set(bx, 0.22 + oceanHeightAt(bx, bz, t), bz);
+        b.g.rotation.set(Math.sin(t * 1.1 + b.ph) * 0.035, Math.atan2(-Math.sin(a) * b.sp, Math.cos(a) * b.ez * b.sp), Math.sin(t * 0.9 + b.ph * 2.0) * 0.06);
+      });
+    }
+
     function buildAtmosphereParticles() {
       const pCount = IS_COARSE_POINTER ? 180 : 320;
       const pPositions = new Float32Array(pCount * 3);
@@ -5446,9 +6071,9 @@
     //   原本的光軌懸在半空、還會穿過建築；改成貼著地面、繞著步道走，並標出每一站的順序
     // =============================================================
     const ROUTE_WALK_R = 26;
-    // 各服務島建築的入口：門在建築面向畫面（+z）的那一側，doorZ 是門離島中心的距離
+    // 各服務島建築的入口：門在建築面向畫面（+z）的那一側，doorZ 是門離島中心的距離；doorX 是門的左右偏移（預設 0）。
     // 服務路徑的小人會從步道轉進門口、走進建築、停留後再走出來
-    const ENTRANCES = { 0: { doorZ: 10 }, 1: { doorZ: 13 }, 2: { doorZ: 14 }, 3: { doorZ: 7.5 }, 4: { doorZ: 8 }, 5: { doorZ: 15 }, 6: { doorZ: 3 }, 7: { doorZ: 5 } };
+    const ENTRANCES = { 0: { doorZ: 10.3 }, 1: { doorZ: 13 }, 2: { doorZ: 14 }, 3: { doorZ: 7.5 }, 4: { doorZ: 8 }, 5: { doorZ: 15 }, 6: { doorZ: 3 }, 7: { doorZ: 5 } };
     const DOOR_DWELL_SECONDS = 2.4; // 小人在建築裡停留的時間
     const modById = (id) => ISLAND_MODULES.find(m => m.id === id);
     const tileTop = (m) => (m.id === 0 ? 22 : (m.type === 'region' ? (m.id === 13 ? 14 : 12) : 16)) + 2.5;
@@ -5512,7 +6137,7 @@
         }
         // 停留站：門在 +z 側。一般路徑的起點只「走出來」、終點只「走進去」；中間站與循環路徑是進去再出來
         const doorAng = Math.PI / 2;
-        const door = new THREE.Vector3(m.gridPos.x, y, m.gridPos.z + entrance.doorZ + 0.8);
+        const door = new THREE.Vector3(m.gridPos.x + (entrance.doorX || 0), y, m.gridPos.z + entrance.doorZ + 0.8);
         const spurIn = [0.35, 0.7, 1].map(f => new THREE.Vector3(m.gridPos.x, y, m.gridPos.z + ROUTE_WALK_R - (ROUTE_WALK_R - door.z + m.gridPos.z) * f));
         const spurOut = spurIn.slice(0, -1).reverse().map(p => p.clone());
         const isStart = !loop && i === 0, isEnd = !loop && i === n - 1;
@@ -5584,7 +6209,7 @@
 
       // 每個停留站：從步道到門口的岔路也塗上路線顏色
       doorPts.forEach(door => {
-        const m = scenario.stops.map(st => modById(st.id)).find(x => ENTRANCES[x.id] && Math.abs(x.gridPos.x - door.x) < 1 && Math.abs(x.gridPos.z + ENTRANCES[x.id].doorZ + 0.8 - door.z) < 0.5);
+        const m = scenario.stops.map(st => modById(st.id)).find(x => ENTRANCES[x.id] && Math.abs(x.gridPos.x + (ENTRANCES[x.id].doorX || 0) - door.x) < 1 && Math.abs(x.gridPos.z + ENTRANCES[x.id].doorZ + 0.8 - door.z) < 0.5);
         if (!m) return;
         const z0 = door.z - 0.4, z1 = m.gridPos.z + ROUTE_WALK_R;
         const strip = new THREE.Mesh(new THREE.PlaneGeometry(2.0, z1 - z0), new THREE.MeshBasicMaterial({
@@ -5803,6 +6428,199 @@
     // 降階後若沒有變快（多半是瀏覽器省電鎖 30fps，而非 GPU 不夠力），就退回並暫停調整一段時間
     const resGov = { max: 1, min: 1, ratio: 1, bootAt: 0, winStart: 0, sum: 0, n: 0, meanBeforeDrop: null, holdUntil: 0 };
 
+    // =============================================================
+    // [畫質] 後製：柔光（bloom）、移軸景深、暗角、調色與細微顆粒
+    //   場景先畫到離屏畫面，再以數道全螢幕著色器合成。level 2 = 完整；1 = 精簡（無景深，手機預設）；0 = 關閉（直接繪製）
+    //   裝置跑不動時會自動降級；使用者可用工具列的按鈕開關，偏好會記住
+    // =============================================================
+    const FX = { ok: false, level: 0, base: 2, rtScene: null, half: [], quarter: [], scene: null, cam: null, mesh: null, m: null, size: new THREE.Vector2(),
+                 sum: 0, n: 0, winStart: 0, bootAt: 0, holdUntil: 0 };
+    const FX_PREF_KEY = 'tph-ohs-fx';
+    const FX_VERT = 'varying vec2 vUv;\nvoid main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+    function fxMat(uniforms, frag) {
+      return new THREE.ShaderMaterial({ uniforms, vertexShader: FX_VERT, fragmentShader: frag, depthTest: false, depthWrite: false, fog: false, toneMapped: false });
+    }
+    function fxRT(w, h) {
+      const rt = new THREE.WebGLRenderTarget(Math.max(1, w), Math.max(1, h), { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, depthBuffer: false, stencilBuffer: false });
+      rt.texture.generateMipmaps = false;
+      return rt;
+    }
+    function initFX() {
+      try {
+        const gl2 = renderer.capabilities.isWebGL2, dpr = window.devicePixelRatio || 1;
+        // WebGL1 的離屏畫面無法做多重取樣抗鋸齒；低解析度螢幕維持原本的直接繪製，避免邊緣鋸齒變明顯
+        if (!gl2 && dpr < 2) return;
+        const sz = renderer.getDrawingBufferSize(FX.size);
+        const msaa = gl2 && dpr < 2 && !!THREE.WebGLMultisampleRenderTarget;
+        const opts = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, depthBuffer: true, stencilBuffer: false };
+        FX.rtScene = msaa ? new THREE.WebGLMultisampleRenderTarget(sz.x, sz.y, opts) : new THREE.WebGLRenderTarget(sz.x, sz.y, opts);
+        if (msaa) FX.rtScene.samples = 4;
+        FX.rtScene.texture.encoding = THREE.sRGBEncoding;    // 離屏畫面直接存放「已調色、已轉 sRGB」的顯示色彩，後製在顯示空間進行
+        FX.rtScene.texture.generateMipmaps = false;
+        FX.half = [fxRT(sz.x >> 1, sz.y >> 1), fxRT(sz.x >> 1, sz.y >> 1)];
+        FX.quarter = [fxRT(sz.x >> 2, sz.y >> 2), fxRT(sz.x >> 2, sz.y >> 2)];
+        FX.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        FX.scene = new THREE.Scene();
+        FX.mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), null);
+        FX.mesh.frustumCulled = false;
+        FX.scene.add(FX.mesh);
+        const T = () => ({ value: null });
+        FX.m = {
+          down: fxMat({ tDiffuse: T(), uTexel: { value: new THREE.Vector2() } }, [
+            'uniform sampler2D tDiffuse; uniform vec2 uTexel; varying vec2 vUv;',
+            'void main() {',
+            '  vec3 c = texture2D(tDiffuse, vUv + uTexel * vec2(-0.5, -0.5)).rgb + texture2D(tDiffuse, vUv + uTexel * vec2(0.5, -0.5)).rgb',
+            '         + texture2D(tDiffuse, vUv + uTexel * vec2(-0.5, 0.5)).rgb + texture2D(tDiffuse, vUv + uTexel * vec2(0.5, 0.5)).rgb;',
+            '  gl_FragColor = vec4(c * 0.25, 1.0);',
+            '}'].join('\n')),
+          blur: fxMat({ tDiffuse: T(), uDir: { value: new THREE.Vector2() } }, [
+            'uniform sampler2D tDiffuse; uniform vec2 uDir; varying vec2 vUv;',
+            'void main() {',
+            '  vec3 c = texture2D(tDiffuse, vUv).rgb * 0.2270270270;',
+            '  c += (texture2D(tDiffuse, vUv + uDir * 1.3846153846).rgb + texture2D(tDiffuse, vUv - uDir * 1.3846153846).rgb) * 0.3162162162;',
+            '  c += (texture2D(tDiffuse, vUv + uDir * 3.2307692308).rgb + texture2D(tDiffuse, vUv - uDir * 3.2307692308).rgb) * 0.0702702703;',
+            '  gl_FragColor = vec4(c, 1.0);',
+            '}'].join('\n')),
+          rays: fxMat({ tDiffuse: T(), uSun: { value: new THREE.Vector2(0.5, 0.5) } }, [
+            'uniform sampler2D tDiffuse; uniform vec2 uSun; varying vec2 vUv;',
+            'void main() {',
+            '  vec2 stepv = (vUv - uSun) * (0.9 / 24.0);',
+            '  vec2 c = vUv; vec3 acc = vec3(0.0); float decay = 1.0;',
+            '  for (int i = 0; i < 24; i++) { c -= stepv; acc += texture2D(tDiffuse, c).rgb * decay; decay *= 0.945; }',
+            '  gl_FragColor = vec4(acc / 13.0, 1.0);',
+            '}'].join('\n')),
+          bright: fxMat({ tDiffuse: T(), uThreshold: { value: 0.87 }, uKnee: { value: 0.1 } }, [
+            'uniform sampler2D tDiffuse; uniform float uThreshold; uniform float uKnee; varying vec2 vUv;',
+            'void main() {',
+            '  vec3 c = texture2D(tDiffuse, vUv).rgb;',
+            '  float l = dot(c, vec3(0.2126, 0.7152, 0.0722));',
+            '  gl_FragColor = vec4(c * smoothstep(uThreshold - uKnee, uThreshold + uKnee, l), 1.0);',
+            '}'].join('\n')),
+          comp: fxMat({ tScene: T(), tSoft: T(), tBloom: T(), tRays: T(), uRays: { value: 0 }, uUseSoft: { value: 1 }, uTilt: { value: 0 }, uFocusY: { value: 0.5 }, uBloom: { value: 0.5 },
+                        uVignette: { value: 0.24 }, uGrain: { value: 0.014 }, uTime: { value: 0 }, uNight: { value: 0 }, uAspect: { value: 1 } }, [
+            'uniform sampler2D tScene; uniform sampler2D tSoft; uniform sampler2D tBloom; uniform sampler2D tRays; uniform float uRays;',
+            'uniform float uUseSoft; uniform float uTilt; uniform float uFocusY; uniform float uBloom; uniform float uVignette; uniform float uGrain; uniform float uTime; uniform float uNight; uniform float uAspect;',
+            'varying vec2 vUv;',
+            'float fHash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
+            'void main() {',
+            '  vec3 col = texture2D(tScene, vUv).rgb;',
+            // 移軸景深：畫面中段（鏡頭注視點附近）清晰，上下漸進柔化，像桌上的微縮模型
+            '  if (uUseSoft > 0.5) {',
+            '    float d = abs(vUv.y - uFocusY);',
+            '    col = mix(col, texture2D(tSoft, vUv).rgb, smoothstep(0.13, 0.46, d) * uTilt);',
+            '  }',
+            // 柔光：亮部的光暈以濾色疊加
+            '  vec3 bl = texture2D(tBloom, vUv).rgb;',
+            '  col = 1.0 - (1.0 - col) * (1.0 - bl * uBloom);',
+            '  if (uRays > 0.001) col = 1.0 - (1.0 - col) * (1.0 - texture2D(tRays, vUv).rgb * uRays);',
+            // 調色：飽和度微增、柔和 S 曲線、亮部偏暖、暗部偏冷
+            '  float l = dot(col, vec3(0.2126, 0.7152, 0.0722));',
+            '  col = mix(vec3(l), col, 1.07);',
+            '  col += 0.12 * (col - 0.5) * (1.0 - abs(2.0 * col - 1.0));',
+            '  float hi = clamp((l - 0.5) * 2.0, 0.0, 1.0);',
+            '  float lo = clamp((0.5 - l) * 2.0, 0.0, 1.0);',
+            '  col += hi * vec3(0.020, 0.008, -0.012) * (1.0 - uNight * 0.7) + lo * vec3(-0.010, 0.004, 0.020);',
+            // 暗角
+            '  vec2 q = vUv - 0.5;',
+            '  q.x *= mix(1.0, uAspect, 0.45);',
+            '  col *= 1.0 - uVignette * smoothstep(0.42, 1.05, length(q) * 1.3);',
+            // 細微顆粒（也能消除漸層色帶）
+            '  col += (fHash(gl_FragCoord.xy + fract(uTime) * 311.0) - 0.5) * uGrain;',
+            '  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);',
+            '}'].join('\n'))
+        };
+        FX.ok = true;
+        const pref = readPref(FX_PREF_KEY);
+        const off = pref === 'off' || new URLSearchParams(location.search).get('fx') === '0';
+        FX.base = IS_COARSE_POINTER ? 1 : 2;
+        setFxLevel(off ? 0 : FX.base);
+        const btn = document.getElementById('btnFx');
+        if (btn) btn.classList.remove('hidden');
+      } catch (err) {
+        FX.ok = false; FX.level = 0;
+      }
+    }
+    function setFxLevel(level) {
+      FX.level = FX.ok ? Math.max(0, Math.min(2, level)) : 0;
+      const btn = document.getElementById('btnFx');
+      if (btn) {
+        const on = FX.level > 0;
+        btn.setAttribute('aria-pressed', String(on));
+        btn.classList.toggle('text-amber-300', on);
+        btn.classList.toggle('text-slate-300', !on);
+      }
+      dirty = true;
+    }
+    function resizeFX() {
+      if (!FX.ok) return;
+      const sz = renderer.getDrawingBufferSize(FX.size);
+      FX.rtScene.setSize(sz.x, sz.y);
+      FX.half.forEach(rt => rt.setSize(Math.max(1, sz.x >> 1), Math.max(1, sz.y >> 1)));
+      FX.quarter.forEach(rt => rt.setSize(Math.max(1, sz.x >> 2), Math.max(1, sz.y >> 2)));
+    }
+    const _fxV = new THREE.Vector3();
+    function renderFrame() {
+      if (!FX.ok || FX.level === 0) { renderer.setRenderTarget(null); renderer.render(scene, camera); return; }
+      const m = FX.m, full = FX.rtScene, h0 = FX.half[0], h1 = FX.half[1], q0 = FX.quarter[0], q1 = FX.quarter[1];
+      const pass = (mat, target) => { FX.mesh.material = mat; renderer.setRenderTarget(target); renderer.render(FX.scene, FX.cam); };
+      m.bright.uniforms.uThreshold.value = 0.87 - 0.25 * nightFactor;   // 柔光門檻：白天只讓最亮的高光發光，夜晚的燈光則明顯暈開
+      renderer.setRenderTarget(full);
+      renderer.render(scene, camera);
+      let brightSrc = full;
+      if (FX.level >= 2) {
+        m.down.uniforms.tDiffuse.value = full.texture; m.down.uniforms.uTexel.value.set(1 / full.width, 1 / full.height); pass(m.down, h0);
+        m.blur.uniforms.tDiffuse.value = h0.texture; m.blur.uniforms.uDir.value.set(1.8 / h0.width, 0); pass(m.blur, h1);
+        m.blur.uniforms.tDiffuse.value = h1.texture; m.blur.uniforms.uDir.value.set(0, 1.8 / h0.height); pass(m.blur, h0);
+        brightSrc = h0;
+      }
+      m.bright.uniforms.tDiffuse.value = brightSrc.texture; pass(m.bright, q0);
+      for (let k = 0; k < 2; k++) {
+        const sc = k === 0 ? 1.4 : 2.6;
+        m.blur.uniforms.tDiffuse.value = q0.texture; m.blur.uniforms.uDir.value.set(sc / q0.width, 0); pass(m.blur, q1);
+        m.blur.uniforms.tDiffuse.value = q1.texture; m.blur.uniforms.uDir.value.set(0, sc / q0.height); pass(m.blur, q0);
+      }
+      const u = m.comp.uniforms;
+      // 光芒：太陽（或月亮）在鏡頭前方且靠近畫面時才計算；太陽越低越明顯
+      let rays = 0;
+      if (skyMat) {
+        const sd = skyMat.uniforms.uSunDir.value;
+        _fxV.copy(camera.position).addScaledVector(sd, 1000).project(camera);
+        if (_fxV.z < 1 && Math.abs(_fxV.x) < 1.5 && Math.abs(_fxV.y) < 1.5) {
+          const edge = 1 - THREE.MathUtils.smoothstep(Math.max(Math.abs(_fxV.x), Math.abs(_fxV.y)), 1.0, 1.5);
+          rays = edge * (1 - THREE.MathUtils.smoothstep(sd.y, 0.25, 0.75)) * (0.6 - 0.3 * nightFactor);
+          if (rays > 0.01) {
+            m.rays.uniforms.tDiffuse.value = q0.texture; m.rays.uniforms.uSun.value.set(_fxV.x * 0.5 + 0.5, _fxV.y * 0.5 + 0.5);
+            pass(m.rays, q1);
+          }
+        }
+      }
+      u.tRays.value = q1.texture; u.uRays.value = rays > 0.01 ? rays : 0;
+      u.tScene.value = full.texture; u.tSoft.value = h0.texture; u.tBloom.value = q0.texture;
+      u.uUseSoft.value = FX.level >= 2 ? 1 : 0;
+      // 景深強度：遠景總覽時最明顯；拉近看單一島、或切到垂直俯瞰時自動減弱，細節保持清楚
+      const dist = camera.position.distanceTo(controls.target);
+      const polar = controls.getPolarAngle();
+      u.uTilt.value = 0.9 * THREE.MathUtils.smoothstep(dist, 170, 560) * THREE.MathUtils.smoothstep(polar, 0.3, 0.85);
+      _fxV.copy(controls.target).project(camera);
+      u.uFocusY.value = THREE.MathUtils.clamp(_fxV.y * 0.5 + 0.5, 0.32, 0.68);
+      u.uBloom.value = 0.3 + 0.45 * nightFactor;
+      u.uNight.value = nightFactor;
+      u.uAspect.value = full.width / full.height;
+      u.uTime.value = frozen ? 0 : motionTime;
+      pass(m.comp, null);
+    }
+    // 後製的效能守門：連續數秒低於約 30 fps 就降一級（完整 → 精簡 → 關閉），不自動升回
+    function sampleFx(now, frameMs) {
+      if (!FX.ok || FX.level === 0) return;
+      if (!FX.bootAt) { FX.bootAt = now; FX.winStart = now; return; }
+      if (now - FX.bootAt < 6000 || frameMs > 250 || document.hidden) { FX.winStart = now; FX.sum = 0; FX.n = 0; return; }
+      FX.sum += frameMs; FX.n++;
+      if (now - FX.winStart < 4000 || FX.n < 40) return;
+      const mean = FX.sum / FX.n;
+      FX.winStart = now; FX.sum = 0; FX.n = 0;
+      if (mean > 33 && now > FX.holdUntil) { FX.holdUntil = now + 15000; setFxLevel(FX.level - 1); }
+    }
+
     function initResolutionGovernor(maxRatio) {
       resGov.max = resGov.ratio = maxRatio;
       resGov.min = Math.min(maxRatio, 1);
@@ -5811,6 +6629,7 @@
     function applyPixelRatio(r) {
       resGov.ratio = r;
       renderer.setPixelRatio(r);
+      resizeFX();
       dirty = true;
     }
 
@@ -5870,6 +6689,7 @@
       TWEEN.update();
       if (controls.update()) dirty = true;
       updateHoverRings(dt);
+      updatePulses(dt);
       updateTourBar(now);
 
       if (!frozen) {
@@ -5881,6 +6701,11 @@
           item.mesh.rotation[item.axis] += item.speed * frameScale;
         }
         animateOcean(motionTime);
+        if (skyMat) skyMat.uniforms.uTime.value = motionTime;
+        WIND.uWindTime.value = motionTime;
+        updateBirds(motionTime);
+        updateBoats(motionTime);
+        updateWeather(motionTime, dt * MOTION_SCALE);
         if (atmosphereParticles) atmosphereParticles.rotation.y = motionTime * 0.02;
         updateWalkers(md);
         updateLiftProp(md);
@@ -5901,8 +6726,8 @@
       updateClouds(frozen ? 0 : dt * MOTION_SCALE);
       updateIslandPins();
       declutterPins();
-      renderer.render(scene, camera);
-      if (renderedLastFrame) sampleResolution(now, frameMs);
+      renderFrame();
+      if (renderedLastFrame) { sampleResolution(now, frameMs); sampleFx(now, frameMs); }
       renderedLastFrame = true;
       dirty = false;
     }
@@ -5997,6 +6822,7 @@
       camera.aspect = viewW() / viewH();
       camera.updateProjectionMatrix();
       renderer.setSize(viewW(), viewH());
+      resizeFX();
       dirty = true;
     }
 
@@ -6074,6 +6900,7 @@
       closeRegionHud();
       selectedModule = mod;
       openDrawer(mod);
+      pulseModule(mod);
 
       const isCenter = mod.id === 0;
       const lookHeight = isCenter ? 36 : 28;
@@ -7060,6 +7887,14 @@
       showIntro(0);
     });
 
+    document.getElementById('btnFx').addEventListener('click', () => {
+      sound.playClick();
+      const on = FX.level === 0;
+      setFxLevel(on ? FX.base : 0);
+      writePref(FX_PREF_KEY, on ? 'on' : 'off');
+      showToast(on ? '畫面特效已開啟（柔光、景深、調色）' : '畫面特效已關閉');
+      track('island_toggle', { toggle: 'fx', active: on });
+    });
     document.getElementById('btnFreeze').addEventListener('click', () => {
       sound.playClick();
       setFrozen(!frozen, true);
