@@ -531,7 +531,7 @@
 
   <!-- ================= 3D WEBGL CANVAS ================= -->
   <main id="stage" class="contents">
-  <canvas id="webgl-canvas" tabindex="0" aria-label="職醫守護島 3D 互動地圖。方向鍵旋轉，加減號縮放；完整文字內容請開啟服務清單"></canvas>
+  <canvas id="webgl-canvas" tabindex="0" aria-label="職醫守護島 3D 互動地圖。方向鍵或 Q、E 旋轉，W、A、S、D 平移，加減號縮放，點兩下飛近；完整文字內容請開啟服務清單"></canvas>
 
   <!-- [新增] WebGL 不可用或 CDN 載入失敗時的備援訊息 -->
   <div id="webglFallback" class="hidden fixed inset-0 z-[5] flex items-center justify-center p-6 text-center">
@@ -692,6 +692,8 @@
     <span class="flex items-center gap-1.5"><span class="text-brand-400 flex items-center gap-1"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-mouse"></use></svg>右鍵</span> 平移地圖</span>
     <span>•</span>
     <span class="flex items-center gap-1.5"><span class="text-brand-400 flex items-center gap-1"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-zoom-in"></use></svg>滾輪</span> 縮放</span>
+    <span>•</span>
+    <span class="flex items-center gap-1.5"><span class="text-brand-400 flex items-center gap-1"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-mouse"></use></svg>點兩下</span> 飛近看細節</span>
     <span>•</span>
     <span class="flex items-center gap-1.5"><span class="text-medblue-400 flex items-center gap-1"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>點擊外圍地名</span> 查看相距方位與測距</span>
   </aside>
@@ -3175,7 +3177,7 @@
       controls.enableDamping = true;
       controls.dampingFactor = 0.06;
       controls.maxPolarAngle = Math.PI / 2 - 0.05;
-      controls.minDistance = 60;
+      controls.minDistance = CAM_MIN_DIST;   // [探索] 可以湊近看細節（原本是 60）
       controls.maxDistance = 1100;
       controls.target.set(OVERVIEW_TARGET_POS.x, OVERVIEW_TARGET_POS.y, OVERVIEW_TARGET_POS.z);
       // [修正] 使用者自己拖曳時，停止進行中的運鏡並中斷巡航，避免鏡頭被搶走
@@ -3207,6 +3209,11 @@
       window.addEventListener('pointercancel', () => { isPointerDown = false; });
       window.addEventListener('pointermove', onPointerMove, { passive: true });
       canvas.addEventListener('keydown', onCanvasKeydown);
+      canvas.addEventListener('dblclick', (e) => { e.preventDefault(); zoomToScreenPoint(e.clientX, e.clientY); });
+      // 手機沒有常駐的操作提示列，第一次來訪時用一則訊息告知可以連點兩下
+      if (IS_COARSE_POINTER && !readPref('tph-ohs-zoomhint')) {
+        setTimeout(() => { if (!document.hidden && !tourActive) { showToast('連點兩下畫面，可以飛近看細節'); writePref('tph-ohs-zoomhint', '1'); } }, 16000);
+      }
     }
 
     function markShadowDirty() {
@@ -4463,7 +4470,11 @@
         sphere: (x, y, z, rad, color) => kitAdd('sphere', tx(x, z), topY + y, tz(x, z), rad * 2, rad * 2, rad * 2, color, rot),
         glow: (x, y, z, rad, color) => kitAdd('glow', tx(x, z), topY + y, tz(x, z), rad * 2, rad * 2, rad * 2, color, rot),
         glowbox: (x, y, z, w, h, d, color) => kitAdd('glowbox', tx(x, z), topY + y + h / 2, tz(x, z), w, h, d, color, rot),
-        bush: (x, z, s = 1) => bushPlacements.push({ x: tx(x, z), y: topY, z: tz(x, z), s, rot: Math.random() * 6.28 }),
+        bush: (x, z, s = 1) => {
+          const bx = tx(x, z), bz = tz(x, z);
+          if (DOCTORS.some(d => Math.hypot(d.pos.x - bx, d.pos.z - bz) < 4.8)) return;   // 不長在醫師公仔的底座旁
+          bushPlacements.push({ x: bx, y: topY, z: bz, s, rot: Math.random() * 6.28 });
+        },
         at: (x, z, r = 0) => islandCtx(cx, cz, topY, ox + x * cos + z * sin, oz - x * sin + z * cos, rot + r)
       };
       return c;
@@ -4789,7 +4800,7 @@
       const cornerR = radius * (isRegion && !big ? 0.86 : 0.84);
       for (let i = 0; i < 6; i++) {
         if (mod.id !== 0 && i % 2 === (mod.id % 2)) continue;
-        if (mod.id === 0 && i === 0) continue;   // 中央島右前方的角落不種樹，以免擋住醫師公仔
+        if (mod.id === 0 && i === 5) continue;   // 中央島左前方的角落不種樹，以免擋住站在左塔前的醫師公仔
         const t = i * Math.PI / 3 + Math.PI / 6;
         const x = cornerR * Math.sin(t), z = cornerR * Math.cos(t);
         treePlacements.push({ x: cx + x, y: topY, z: cz + z, s: (big ? 0.85 : 0.6) + Math.random() * 0.2, rot: Math.random() * 6.28 });
@@ -5044,7 +5055,7 @@
             ctx.fillStyle = v < 0.5 ? `rgba(120,118,112,${0.18 + rnd() * 0.3})` : (v < 0.8 ? `rgba(255,255,255,${0.25 + rnd() * 0.4})` : `rgba(70,68,64,${0.15 + rnd() * 0.25})`);
             ctx.fillRect(rnd() * 256, rnd() * 256, 1 + rnd() * 1.6, 1 + rnd() * 1.6);
           }
-          const tex = new THREE.CanvasTexture(cvs); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(3, 3);
+          const tex = new THREE.CanvasTexture(cvs); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(7, 7);   // 紋理密一點，近看時石材的細點才不會變成一塊一塊
           return tex;
         });
         const stone = new THREE.MeshStandardMaterial({ map: stoneTex, color: 0xc9c8c2, roughness: 0.93 });
@@ -5176,10 +5187,10 @@
         [[-0.5, 9.8], [-0.5, -7.8]].forEach(([x, z]) => box(19, 0.9, 0.36, stone, x, H, z, 0.04));
         [-6.6, -3.4].forEach(x => { box(3.0, 0.5, 3.0, metal, x, H, -4.2, 0.04); add(new THREE.CylinderGeometry(1.25, 1.25, 2.6, 14), new THREE.MeshStandardMaterial({ color: 0xe9e8e2, roughness: 0.6 }), x, H + 1.8, -4.2); });
         [[-0.4, -5.2], [-0.4, -2.4], [2.2, 4.6]].forEach(([x, z]) => { box(2.2, 1.3, 1.6, metal, x, H, z, 0.08); add(new THREE.CylinderGeometry(0.5, 0.5, 0.08, 12), dark, x, H + 1.34, z, false); });
-        add(new THREE.CylinderGeometry(0.11, 0.14, 8, 6), metal, 4.6, H + 4, 7.4);
-        box(2.9, 1.9, 0.08, new THREE.MeshStandardMaterial({ color: 0xd8232a, roughness: 0.8, side: THREE.DoubleSide }), 6.15, H + 6, 7.4, 0.01);
-        box(1.45, 0.95, 0.1, new THREE.MeshStandardMaterial({ color: 0x1f3a93, roughness: 0.8 }), 5.42, H + 6.95, 7.4, 0.01);
-        add(new THREE.SphereGeometry(0.26, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }), 5.42, H + 7.42, 7.47, false);
+        add(new THREE.CylinderGeometry(0.11, 0.14, 8, 6), metal, 0, H + 4, 7.4);   // 旗桿在建築正中央
+        box(2.9, 1.9, 0.08, new THREE.MeshStandardMaterial({ color: 0xd8232a, roughness: 0.8, side: THREE.DoubleSide }), 1.55, H + 6, 7.4, 0.01);
+        box(1.45, 0.95, 0.1, new THREE.MeshStandardMaterial({ color: 0x1f3a93, roughness: 0.8 }), 0.82, H + 6.95, 7.4, 0.01);
+        add(new THREE.SphereGeometry(0.26, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }), 0.82, H + 7.42, 7.47, false);
         // 左塔側面上方的黃色院名看板
         const sideTex = cachedTexture('tph-side-sign', () => signCanvas(512, 192, (ctx, w, h) => {
           ctx.fillStyle = '#e8c33a'; ctx.fillRect(0, 0, w, h);
@@ -5193,11 +5204,7 @@
         [[-10.8, 12.3], [-17.0, 12.4], [10.8, 12.3], [13.2, 12.4], [18.4, 12.4], [20.4, 12.4]].forEach(([x, z], k) => { const t = add(cyGeo, cypress, x, 2.8 + (k % 2) * 0.25, z); t.scale.setScalar(0.9 + (k % 3) * 0.08); });
         box(3.2, 1.1, 1.3, hedge, 19.4, 0, 14.6, 0.3);
 
-        // 右塔頂的天線與旋轉水晶（島的識別標記）
-        const crystal = new THREE.Mesh(new THREE.OctahedronGeometry(3.0, 0), new THREE.MeshStandardMaterial({ color: 0x2dd4bf, emissive: 0x0d9488, emissiveIntensity: 0.9, roughness: 0.1, metalness: 0.8 }));
-        crystal.position.set(15, baseTop + TR + 7.2, 1);
-        bGroup.add(crystal);
-        rotatingElements.push({ mesh: crystal, axis: 'y', speed: 0.025 });
+        // 右塔頂的天線
         add(new THREE.CylinderGeometry(0.2, 0.36, 9, 6), metal, 19.6, TR + 1.1 + 4.5, -6);
 
         logoImg.onload = () => { signRedraws.forEach(fn => fn()); dirty = true; };
@@ -5511,8 +5518,8 @@
       const add = (geo, mat, x, y, z, parent = docGroup) => {
         const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; parent.add(m); return m;
       };
-      const SKIN = M(0xf3c9a5, { roughness: 0.75 }), COAT = M(0xf8fafc, { roughness: 0.45 }), PANTS = M(0x1e293b, { roughness: 0.8 });
-      const SHOE = M(0x0f172a, { roughness: 0.5 }), HAIR = M(doc.id === 'tsai' ? 0x1c1917 : 0x292524, { roughness: 0.9 });
+      const SKIN = M(0xf3cfae, { roughness: 0.7 }), COAT = M(0xffffff, { roughness: 0.7 }), PANTS = M(0x334155, { roughness: 0.7 });
+      const HAIR = M(doc.id === 'tsai' ? 0x1f1d22 : 0x4a3426, { roughness: 0.7 });
 
       // 底座：深色圓台＋識別色光環＋頂面淡淡的發光圓盤
       const pedestal = add(new THREE.CylinderGeometry(2.7, 3.0, 0.6, 40), M(0x1e293b, { metalness: 0.6, roughness: 0.3 }), 0, 0.3, 0);
@@ -5522,110 +5529,17 @@
       const glow = add(new THREE.CircleGeometry(2.62, 40), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0.18, depthWrite: false }), 0, 0.61, 0);
       glow.rotation.x = -Math.PI / 2; glow.castShadow = false;
 
-      // 會呼吸、晃動的身體群組（不含底座）
+      // 人形：和島上的路人同一種簡單造型（圓柱身體、圓球頭、半球頭髮、兩條方腿，沒有五官與手臂），只是放大並穿白袍；
+      //   身分靠底座的識別色光環與上方的姓名標籤辨識
+      const S = 2.4;                                   // 路人尺寸的倍數
       const body = new THREE.Group();
-      body.position.y = -0.2;
+      body.position.y = 0.6;                           // 站在底座上
       docGroup.add(body);
-
-      // 鞋子與腿
-      [-0.72, 0.72].forEach(x => {
-        add(rbox(1.05, 0.55, 1.7, 0.24), SHOE, x, 1.1, 0.25, body);
-        add(rbox(0.95, 3.4, 0.95, 0.32), PANTS, x, 3.05, 0, body);
-      });
-
-      // 白袍下擺：左右兩片，略向外張，中間露出褲子
-      [-1, 1].forEach(side => {
-        const panel = add(rbox(1.55, 3.1, 2.05, 0.28), COAT, side * 0.83, 5.25, 0, body);
-        panel.rotation.z = side * 0.05;
-      });
-      // 上半身白袍
-      const torso = add(rbox(3.2, 4.0, 2.15, 0.62), COAT, 0, 8.55, 0, body);
-      // 胸前 V 領：淺藍襯衫＋領帶（識別色）
-      add(new THREE.BoxGeometry(0.95, 1.55, 0.06), M(0xdbeafe, { roughness: 0.6 }), 0, 9.7, 1.07, body);
-      const tie = add(new THREE.BoxGeometry(0.3, 1.45, 0.07), M(accent, { roughness: 0.5 }), 0, 9.45, 1.11, body);
-      tie.castShadow = false;
-      // 白袍翻領：兩片斜放的薄板
-      [-1, 1].forEach(side => {
-        const lapel = add(new THREE.BoxGeometry(0.5, 1.9, 0.08), COAT, side * 0.55, 9.6, 1.1, body);
-        lapel.rotation.z = side * 0.32; lapel.castShadow = false;
-      });
-      // 名牌與胸前口袋的筆
-      add(new THREE.BoxGeometry(0.9, 0.46, 0.06), M(0xcbd5e1, { roughness: 0.4 }), -0.9, 9.92, 1.1, body).castShadow = false;   // 名牌（淺灰底，和白袍區隔）
-      add(new THREE.BoxGeometry(0.9, 0.14, 0.07), M(accent), -0.9, 10.1, 1.12, body).castShadow = false;
-      [0.72, 0.9].forEach((x, k) => {
-        const pen = add(new THREE.CylinderGeometry(0.06, 0.06, 0.6, 6), M(k ? 0x0070b0 : 0x0f172a), x, 9.95, 1.1, body);
-        pen.castShadow = false;
-      });
-
-      // 脖子與頭（頭部群組可以輕微點頭）
-      add(new THREE.CylinderGeometry(0.45, 0.5, 0.7, 12), SKIN, 0, 10.85, 0, body);
-      const headGroup = new THREE.Group(); headGroup.position.set(0, 12.2, 0); body.add(headGroup);
-      const head = add(new THREE.SphereGeometry(1.32, 20, 16), SKIN, 0, 0, 0, headGroup);
-      head.scale.set(1, 1.08, 1);
-      [-1, 1].forEach(side => add(new THREE.SphereGeometry(0.24, 10, 8), SKIN, side * 1.3, -0.05, 0, headGroup));       // 耳朵
-      [-1, 1].forEach(side => add(new THREE.SphereGeometry(0.11, 8, 6), M(0x1e293b, { roughness: 0.3 }), side * 0.44, 0.1, 1.22, headGroup).castShadow = false); // 眼睛
-      // [畫質] 五官：眼白與高光、眉毛、鼻子、微笑、腮紅
-      const noShadow = (m) => { m.castShadow = false; return m; };
-      [-1, 1].forEach(side => {
-        noShadow(add(new THREE.SphereGeometry(0.19, 12, 10), M(0xffffff, { roughness: 0.3 }), side * 0.44, 0.1, 1.14, headGroup)).scale.set(1, 1.15, 0.6);
-        noShadow(add(new THREE.SphereGeometry(0.04, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }), side * 0.44 + 0.04, 0.16, 1.33, headGroup));
-        const brow = noShadow(add(rbox(0.4, 0.07, 0.08, 0.03), HAIR, side * 0.45, 0.42, 1.2, headGroup)); brow.rotation.z = side * -0.12;
-        const cheek = noShadow(add(new THREE.CircleGeometry(0.2, 14), new THREE.MeshBasicMaterial({ color: 0xf59a8b, transparent: true, opacity: 0.35, depthWrite: false }), side * 0.78, -0.26, 1.07, headGroup)); cheek.rotation.y = side * 0.55;
-      });
-      noShadow(add(new THREE.SphereGeometry(0.11, 10, 8), SKIN, 0, -0.12, 1.36, headGroup));
-      const smile = noShadow(add(new THREE.TorusGeometry(0.3, 0.035, 6, 16, Math.PI * 0.7), M(0x9a4a3c, { roughness: 0.6 }), 0, -0.36, 1.21, headGroup));
-      smile.rotation.set(0.12, 0, Math.PI + Math.PI * 0.15);
-      // 頭髮：頭頂半球＋後腦，略往前蓋住額頭
-      const hairCap = add(new THREE.SphereGeometry(1.42, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.52), HAIR, 0, 0.12, -0.04, headGroup);
-      hairCap.rotation.x = -0.22; hairCap.scale.set(1, 1.05, 1.04);
-      add(new THREE.SphereGeometry(1.36, 16, 12, 0, Math.PI * 2, Math.PI * 0.45, Math.PI * 0.3), HAIR, 0, 0.05, -0.12, headGroup).rotation.x = 0.5;
-
-      // [畫質] 白袍細節：三顆鈕扣、兩側口袋、袖口、鞋底
-      [7.9, 7.0, 6.1].forEach(y => noShadow(add(new THREE.CylinderGeometry(0.1, 0.1, 0.05, 10), M(0xcbd5e1, { roughness: 0.4 }), 0.28, y, 1.1, body)).rotation.x = Math.PI / 2);
-      [-1, 1].forEach(side => { noShadow(add(rbox(0.95, 0.9, 0.06, 0.03), M(0xeef2f6, { roughness: 0.5 }), side * 0.95, 5.5, 1.05, body)); noShadow(add(rbox(0.95, 0.07, 0.07, 0.02), M(0xd5dbe3, { roughness: 0.5 }), side * 0.95, 5.93, 1.07, body)); });
-      [-0.72, 0.72].forEach(x => noShadow(add(rbox(1.1, 0.16, 1.76, 0.06), M(0xe2e8f0, { roughness: 0.7 }), x, 0.84, 0.25, body)));
-      // 手臂：右手自然下垂；左手彎曲，在胸前拿著東西
-      const SLEEVE = COAT;
-      const rUpper = add(rbox(0.88, 2.7, 0.92, 0.32), SLEEVE, 1.88, 9.25, 0, body); rUpper.rotation.z = -0.1;
-      add(rbox(0.8, 2.3, 0.86, 0.3), SLEEVE, 2.02, 6.95, 0.05, body);
-      add(new THREE.SphereGeometry(0.42, 12, 10), SKIN, 2.06, 5.6, 0.08, body);
-      add(new THREE.SphereGeometry(0.17, 8, 6), SKIN, 1.86, 5.5, 0.4, body);                                   // 右手拇指
-      noShadow(add(new THREE.CylinderGeometry(0.47, 0.47, 0.22, 14), M(0xe9eef4, { roughness: 0.5 }), 2.04, 5.98, 0.06, body)); // 右袖口
-      const lUpper = add(rbox(0.88, 2.7, 0.92, 0.32), SLEEVE, -1.88, 9.25, 0, body); lUpper.rotation.z = 0.1;
-      const lFore = add(rbox(0.8, 2.2, 0.86, 0.3), SLEEVE, -1.78, 7.95, 0.95, body); lFore.rotation.x = -Math.PI / 2 + 0.15;
-      add(new THREE.SphereGeometry(0.42, 12, 10), SKIN, -1.55, 8.15, 2.05, body);
-      add(new THREE.SphereGeometry(0.17, 8, 6), SKIN, -1.3, 8.42, 2.1, body);                                   // 左手拇指
-
-      if (doc.id === 'tsai') {
-        // 聽診器：掛在頸部的 U 形管、垂下的管線與金屬聽頭；左手拿病歷夾
-        const tubeMat = M(0x334155, { roughness: 0.4 });
-        const u = add(new THREE.TorusGeometry(0.78, 0.08, 8, 24, Math.PI), tubeMat, 0, 10.35, 1.14, body);
-        u.rotation.z = Math.PI; u.castShadow = false;
-        const drop = add(new THREE.CylinderGeometry(0.07, 0.07, 1.7, 8), tubeMat, 0.55, 9.1, 1.16, body);
-        drop.rotation.z = 0.32; drop.castShadow = false;
-        const bell = add(new THREE.CylinderGeometry(0.3, 0.3, 0.14, 16), M(0xcbd5e1, { metalness: 0.9, roughness: 0.25 }), 0.85, 8.25, 1.18, body);
-        bell.rotation.x = Math.PI / 2;
-        const board = add(new THREE.BoxGeometry(1.7, 2.2, 0.12), M(0x8b5e34, { roughness: 0.7 }), -1.0, 8.55, 1.85, body);
-        board.rotation.set(-0.32, 0.35, 0);
-        const paper = add(new THREE.BoxGeometry(1.45, 1.8, 0.04), M(0xffffff, { roughness: 0.9 }), -0.98, 8.5, 1.93, body);
-        paper.rotation.set(-0.32, 0.35, 0); paper.castShadow = false;
-        const clip = add(new THREE.BoxGeometry(0.6, 0.2, 0.12), M(0xcbd5e1, { metalness: 0.8, roughness: 0.3 }), -1.16, 9.55, 1.6, body);
-        clip.rotation.set(-0.32, 0.35, 0); clip.castShadow = false;
-      } else {
-        // 眼鏡：兩個細框與鼻樑（和蔡主任區隔）
-        const gMat = M(0x1f2937, { roughness: 0.35, metalness: 0.5 });
-        [-1, 1].forEach(side => noShadow(add(new THREE.TorusGeometry(0.27, 0.03, 6, 20), gMat, side * 0.44, 0.1, 1.3, headGroup)));
-        noShadow(add(rbox(0.36, 0.04, 0.04, 0.01), gMat, 0, 0.14, 1.32, headGroup));
-        // 左手拿平板（螢幕微亮），右手邊口袋插著筆
-        const tablet = add(rbox(1.9, 1.35, 0.14, 0.08), M(0x0f172a, { roughness: 0.3, metalness: 0.4 }), -0.95, 8.65, 1.95, body);
-        tablet.rotation.set(-0.55, 0.3, 0);
-        const screen = add(new THREE.PlaneGeometry(1.65, 1.1), new THREE.MeshBasicMaterial({ color: 0x1d4ed8 }), -0.93, 8.69, 2.03, body);
-        screen.rotation.set(-0.55, 0.3, 0); screen.castShadow = false;
-        // 螢幕上的內容：識別色的標題列與三條文字線
-        const ui = new THREE.Group(); ui.position.copy(screen.position); ui.rotation.copy(screen.rotation); body.add(ui);
-        const bar = new THREE.Mesh(new THREE.PlaneGeometry(1.65, 0.22), new THREE.MeshBasicMaterial({ color: accent })); bar.position.set(0, 0.44, 0.005); ui.add(bar);
-        [0.12, -0.12, -0.36].forEach((yy, k) => { const ln = new THREE.Mesh(new THREE.PlaneGeometry(k === 2 ? 0.8 : 1.3, 0.08), new THREE.MeshBasicMaterial({ color: 0xbfdbfe })); ln.position.set(k === 2 ? -0.25 : 0, yy, 0.005); ui.add(ln); });
-      }
+      [-0.3, 0.3].forEach(x => add(new THREE.BoxGeometry(0.42 * S, 1.3 * S, 0.42 * S), PANTS, x * S, 0.7 * S, 0, body));
+      const torso = add(new THREE.CylinderGeometry(0.7 * S, 0.85 * S, 2.1 * S, 14), COAT, 0, 2.35 * S, 0, body);
+      const headGroup = new THREE.Group(); headGroup.position.set(0, 3.95 * S, 0); body.add(headGroup);
+      add(new THREE.SphereGeometry(0.78 * S, 16, 12), SKIN, 0, 0, 0, headGroup);
+      add(new THREE.SphereGeometry(0.82 * S, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), HAIR, 0, 0.15 * S, 0, headGroup);
 
       docGroup.traverse(child => { if (child.isMesh) child.userData = ud; });
       doctorRigs.push({ body, torso, headGroup, phase: doc.id === 'tsai' ? 0 : 1.7 });
@@ -6700,6 +6614,7 @@
       const tweening = TWEEN.getAll().length > 0;
       TWEEN.update();
       if (controls.update()) dirty = true;
+      applyCameraFreedom();
       updateHoverRings(dt);
       updatePulses(dt);
       updateTourBar(now);
@@ -6781,6 +6696,65 @@
       return null;
     }
 
+    // =============================================================
+    // [探索] 更自由的鏡頭：點兩下飛近、可拉到很近、平移有邊界、靠近時標籤淡出
+    // =============================================================
+    const CAM_MIN_DIST = 15, CAM_PAN_RADIUS = 560, CAM_TARGET_MAX_Y = 70;
+    const _zoomRay = new THREE.Raycaster(), _zoomV = new THREE.Vector2(), _camV = new THREE.Vector3();
+    let lastSelectAt = 0, lastTap = { t: 0, x: 0, y: 0 };
+    // 在畫面上點兩下（手機是連點兩下）：鏡頭飛到那個位置並拉近；已經很近時再點會更近
+    function zoomToScreenPoint(clientX, clientY) {
+      if (!camera || !scene) return false;
+      _zoomV.set((clientX / viewW()) * 2 - 1, -(clientY / viewH()) * 2 + 1);
+      _zoomRay.setFromCamera(_zoomV, camera);
+      const hits = _zoomRay.intersectObjects(scene.children, true);
+      let pt = null;
+      for (let k = 0; k < hits.length; k++) {
+        const o = hits[k].object;
+        if (!o.isMesh || !o.visible || o === skyMesh) continue;
+        if (o.material && (o.material.blending === THREE.AdditiveBlending || o.material.opacity < 0.5)) continue;   // 光暈、霧、尾流等半透明物不算
+        pt = hits[k].point; break;
+      }
+      if (!pt) return false;
+      if (Math.hypot(pt.x - OVERVIEW_TARGET_POS.x, pt.z - OVERVIEW_TARGET_POS.z) > CAM_PAN_RADIUS) return false;
+      if (tourActive) endNarrativeTour(true, false);
+      // 第一下若剛打開了說明抽屜，點兩下的意思是「靠近看」，把抽屜收起來
+      if (performance.now() - lastSelectAt < 500 && typeof closeDrawer === 'function') closeDrawer();
+      const dist = camera.position.distanceTo(controls.target);
+      const d = dist > 60 ? THREE.MathUtils.clamp(dist * 0.42, 30, 95) : Math.max(CAM_MIN_DIST + 3, dist * 0.6);
+      const dir = _camV.subVectors(camera.position, controls.target).normalize();
+      if (dir.y < 0.32) { dir.y = 0.32; dir.normalize(); }                    // 保持在目標上方，避免鑽到地面下
+      const target = new THREE.Vector3(pt.x, Math.min(Math.max(pt.y, 0) + 1.5, CAM_TARGET_MAX_Y), pt.z);
+      isTopDownView = false;
+      flyCameraTo(target.clone().addScaledVector(dir, d), target, 900);
+      track('island_explore', { action: 'zoom_point' });
+      return true;
+    }
+    // 每幀在 controls.update() 之後呼叫：限制平移範圍、鏡頭不低於水面、依距離調整近裁切面與標籤透明度
+    let _pinsOpacity = 1, _pinsEl = null;
+    function applyCameraFreedom() {
+      const t = controls.target;
+      const dx = t.x - OVERVIEW_TARGET_POS.x, dz = t.z - OVERVIEW_TARGET_POS.z, r = Math.hypot(dx, dz);
+      if (r > CAM_PAN_RADIUS) {
+        const k = CAM_PAN_RADIUS / r, nx = OVERVIEW_TARGET_POS.x + dx * k, nz = OVERVIEW_TARGET_POS.z + dz * k;
+        camera.position.x += nx - t.x; camera.position.z += nz - t.z; t.x = nx; t.z = nz;
+      }
+      if (t.y < 0) { camera.position.y -= t.y; t.y = 0; }
+      if (t.y > CAM_TARGET_MAX_Y) { camera.position.y -= t.y - CAM_TARGET_MAX_Y; t.y = CAM_TARGET_MAX_Y; }
+      if (camera.position.y < 2.5) camera.position.y = 2.5;
+      const dist = camera.position.distanceTo(t);
+      // 近看時把近裁切面拉近（不會切掉眼前的物件）；遠看時維持原本的 4，保留深度精度
+      const near = THREE.MathUtils.clamp(dist * 0.045, 0.8, 4);
+      if (Math.abs(camera.near - near) > 0.05) { camera.near = near; camera.updateProjectionMatrix(); }
+      // 靠近到一定距離後，島上的標籤逐漸淡出，不擋住細節
+      const op = tourActive ? 1 : THREE.MathUtils.smoothstep(dist, 38, 62);
+      if (Math.abs(op - _pinsOpacity) > 0.02 || (op === 0) !== (_pinsOpacity === 0) || (op === 1) !== (_pinsOpacity === 1)) {
+        _pinsEl = _pinsEl || document.getElementById('pins-container');
+        if (_pinsEl) { _pinsEl.style.opacity = op.toFixed(2); _pinsEl.style.visibility = op < 0.03 ? 'hidden' : ''; }
+        _pinsOpacity = op;
+      }
+    }
+
     function onPointerDown(e) {
       pointerDownPos.x = e.clientX;
       pointerDownPos.y = e.clientY;
@@ -6809,8 +6783,16 @@
       const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
       if (dist > 6 || e.target !== canvas) return;
 
+      // [探索] 觸控連點兩下：飛近觀察（滑鼠由 dblclick 事件處理）
+      if (e.pointerType === 'touch') {
+        const now = performance.now();
+        if (now - lastTap.t < 330 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 30) { lastTap.t = 0; if (zoomToScreenPoint(e.clientX, e.clientY)) return; }
+        lastTap = { t: now, x: e.clientX, y: e.clientY };
+      }
+
       const hit = pickAt(e.clientX, e.clientY);
       if (!hit) return;
+      lastSelectAt = performance.now();
       if (hit.doctor) {
         focusDoctor(hit.doctor);
       } else if (hit.lift) {
@@ -6838,16 +6820,36 @@
       dirty = true;
     }
 
-    // [新增] 鍵盤操作：焦點在 3D 畫布上時，方向鍵旋轉、+/- 縮放
+    // [新增] 鍵盤操作：焦點在 3D 畫布上時，方向鍵與 Q/E 旋轉、W/A/S/D 平移、+/- 縮放
     const KEY_ORBIT = {
       ArrowLeft: [0.1, 0, 1], ArrowRight: [-0.1, 0, 1],
       ArrowUp: [0, -0.06, 1], ArrowDown: [0, 0.06, 1],
-      '+': [0, 0, 0.88], '=': [0, 0, 0.88], '-': [0, 0, 1.14], '_': [0, 0, 1.14]
+      '+': [0, 0, 0.88], '=': [0, 0, 0.88], '-': [0, 0, 1.14], '_': [0, 0, 1.14],
+      q: [0.1, 0, 1], e: [-0.1, 0, 1]
     };
 
     function onCanvasKeydown(e) {
-      const m = KEY_ORBIT[e.key];
-      if (!m || !camera) return;
+      if (!camera || e.ctrlKey || e.metaKey || e.altKey) return;
+      const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      // [探索] W/A/S/D 沿地面平移（依鏡頭朝向）、Q/E 左右旋轉
+      if ('wasd'.includes(k) && k.length === 1) {
+        e.preventDefault();
+        if (tourActive) endNarrativeTour(true, false);
+        stopCameraTweens();
+        const fwd = new THREE.Vector3().subVectors(controls.target, camera.position); fwd.y = 0;
+        if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, -1);
+        fwd.normalize();
+        const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
+        const step = Math.max(4, camera.position.distanceTo(controls.target) * 0.09);
+        const mv = new THREE.Vector3();
+        if (k === 'w') mv.copy(fwd); else if (k === 's') mv.copy(fwd).negate(); else if (k === 'd') mv.copy(right); else mv.copy(right).negate();
+        mv.multiplyScalar(step);
+        camera.position.add(mv); controls.target.add(mv);
+        isTopDownView = false; dirty = true;
+        return;
+      }
+      const m = KEY_ORBIT[k] || KEY_ORBIT[e.key];
+      if (!m) return;
       e.preventDefault();
       if (tourActive) endNarrativeTour(true, false);
       stopCameraTweens();
