@@ -5139,11 +5139,23 @@
         [-7.4, -4.6, -1.7, 1.7, 4.6, 7.4].forEach(x => box(0.18, 6.9, 0.36, dark, x, 0.2, 10.16, 0.02));
         box(17.4, 0.2, 0.4, dark, -0.3, 3.6, 10.16, 0.02);
         const lintelTex = cachedTexture('tph-lintel-sign', () => signCanvas(1024, 192, (ctx, w, h) => {
-          drawLogo(ctx, 100, 98, 150, '#e2b23c');
-          ctx.fillStyle = '#e2b23c'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
-          ctx.font = `600 34px ${FONT}`; ctx.fillText('Taipei', 186, 80); ctx.fillText('Hospital', 186, 122);
-          ctx.font = `700 50px ${FONT}`; ctx.fillText('衛 生', 360, 70); ctx.fillText('福利部', 352, 130);
-          ctx.font = `800 118px ${FONT}`; ctx.fillText('臺 北 醫 院', 512, 100);
+          // 版面由左到右：院徽｜Taipei Hospital｜衛生福利部（兩行）｜臺北醫院。每一段都先量字寬再排，四個大字逐字等距放置，不會超出畫布
+          const GOLD = '#e2b23c';
+          drawLogo(ctx, 84, 96, 148, GOLD);
+          ctx.fillStyle = GOLD; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+          let x = 168;
+          ctx.font = `600 32px ${FONT}`;
+          ctx.fillText('Taipei', x, 76); ctx.fillText('Hospital', x, 116);
+          x += Math.max(ctx.measureText('Taipei').width, ctx.measureText('Hospital').width) + 22;
+          ctx.font = `700 46px ${FONT}`;
+          const wSub = ctx.measureText('福利部').width;
+          ctx.textAlign = 'center';
+          ctx.fillText('衛生', x + wSub / 2, 66); ctx.fillText('福利部', x + wSub / 2, 126);
+          x += wSub + 26;
+          const chars = ['臺', '北', '醫', '院'], right = w - 14;
+          const step = (right - x) / chars.length, size = Math.min(124, Math.floor(step * 0.9));
+          ctx.font = `800 ${size}px ${FONT}`;
+          chars.forEach((ch, k) => ctx.fillText(ch, x + step * (k + 0.5), 98));
         }));
         const lintelMat = new THREE.MeshStandardMaterial({ map: lintelTex, transparent: true, roughness: 0.35, metalness: 0.4, emissive: 0xffe2a0, emissiveMap: lintelTex, emissiveIntensity: 0.15 });
         add(new THREE.PlaneGeometry(14.6, 2.74), lintelMat, 0.2, 8.9, 17.62, false);
