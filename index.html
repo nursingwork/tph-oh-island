@@ -371,6 +371,8 @@
       font-size: 11px; font-weight: 800; color: #0f172a;
       box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
     }
+    .flow-chev { transition: transform 0.2s ease; }
+    [aria-expanded="true"] > .flow-chev { transform: rotate(180deg); }
     .flow-chip[aria-pressed="true"] { color: #ffffff; border-color: var(--chip); box-shadow: 0 0 0 1px var(--chip), 0 6px 18px rgba(0, 0, 0, 0.25); }
 
     /* [新增] 職醫小叮嚀：醫師頭上的雲朵對話框 */
@@ -581,7 +583,7 @@
       </div>
 
       <div class="flex items-center gap-1.5 md:gap-2 pl-2 border-l border-white/10 shrink-0">
-        <button id="bgmToggleBtn" type="button" aria-pressed="false" aria-label="播放背景音樂" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-brand-300 border border-brand-500/20 transition flex items-center gap-2 group" title="背景音樂：《沉沒的神殿》Ambient Piano（程式即時合成）">
+        <button id="bgmToggleBtn" type="button" aria-pressed="false" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-brand-300 border border-brand-500/20 transition flex items-center gap-2 group" title="背景音樂：《沉沒的神殿》Ambient Piano（程式即時合成）">
           <div class="flex items-center gap-0.5 h-4 px-0.5 bgm-paused" id="bgmVisualizer" aria-hidden="true">
             <span class="w-1 bg-brand-400 rounded-full audio-bar-1"></span>
             <span class="w-1 bg-brand-400 rounded-full audio-bar-2"></span>
@@ -591,9 +593,9 @@
             <span class="text-[9px] font-mono text-slate-400 uppercase tracking-wider">BGM AUDIO</span>
             <span class="text-[10px] font-bold text-brand-300 tracking-wide mt-0.5" id="bgmStateText">輕觸畫面播放</span>
           </div>
-        </button>
+        <span class="sr-only bgm-sr">背景音樂，按一下播放背景音樂</span></button>
 
-        <button id="timeCycleBtn" type="button" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-amber-400 border border-amber-500/20 transition flex items-center gap-2 group" title="切換天色（切回目前台北時段即恢復自動對齊）" aria-label="切換天色">
+        <button id="timeCycleBtn" type="button" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-amber-400 border border-amber-500/20 transition flex items-center gap-2 group" title="切換天色（切回目前台北時段即恢復自動對齊）">
           <span id="timeCycleIcon" class="flex group-hover:scale-110 transition-transform" aria-hidden="true"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-moon"></use></svg></span>
           <div class="hidden md:flex flex-col text-left leading-none">
             <div class="flex items-center gap-1">
@@ -602,7 +604,7 @@
             </div>
             <span class="text-[10px] font-bold text-amber-300 tracking-wide mt-0.5" id="timePeriodName">靜謐星夜</span>
           </div>
-        </button>
+        <span class="sr-only">，按一下切換天色</span></button>
       </div>
     </div>
 
@@ -626,20 +628,23 @@
 
   <!-- ================= 協作能量流線快捷區 =================
        [修正] 容器改為 pointer-events-none，只有按鈕可點，不再擋住整塊畫布的拖曳；手機版下移避免與標頭重疊 -->
-  <nav id="flowBar" aria-label="服務路徑" class="hud-fade below-hud absolute md:top-28 left-0 right-0 md:left-8 md:right-auto z-10 md:max-w-md pointer-events-none">
-    <div id="flowChips" class="flex flex-nowrap md:flex-wrap gap-1.5 md:gap-2 overflow-x-auto no-scrollbar px-3 md:px-0 pointer-events-auto md:pointer-events-none">
-      <div class="shrink-0 glass-morphism px-2.5 md:px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 flex items-center gap-2">
+  <nav id="flowBar" aria-label="服務路徑" class="hud-fade below-hud absolute md:top-28 left-0 right-0 md:left-8 md:right-auto z-10 md:flex md:items-start md:gap-2 pointer-events-none">
+    <div id="flowChips" class="shrink-0 flex flex-col items-start gap-1.5 px-3 md:px-0 pointer-events-none">
+      <button id="flowToggle" type="button" aria-expanded="true" aria-controls="flowList" class="pointer-events-auto glass-morphism px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-brand-400 animate-ping" aria-hidden="true"></span>
-        <span class="whitespace-nowrap">服務路徑</span>
-      </div>
-      <!-- 路徑按鈕由 island-data.js 的 scenarios 自動產生 -->
-      <button id="clearFlowBtn" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-2.5 py-1.5 rounded-xl text-xs text-slate-400 hover:text-rose-400 transition hidden">
-        <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg> 關閉路徑
+        <span id="flowToggleText" class="whitespace-nowrap">服務路徑</span>
+        <svg class="icon flow-chev" aria-hidden="true" focusable="false"><use href="#i-arrow-down"></use></svg>
       </button>
+      <!-- 路徑按鈕由 island-data.js 的 scenarios 自動產生：獨立的路徑在前，「臨場服務」群組可展開 -->
+      <div id="flowList" class="pointer-events-auto flex flex-col items-stretch gap-1.5 max-h-[58vh] overflow-y-auto no-scrollbar">
+        <button id="clearFlowBtn" type="button" class="whitespace-nowrap glass-morphism px-3 py-1.5 rounded-xl text-xs text-left text-slate-400 hover:text-rose-400 transition hidden">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg> 關閉路徑
+        </button>
+      </div>
     </div>
 
     <!-- [新增] 路徑說明：列出每一站做什麼，點一站可查看該服務 -->
-    <div id="routePanel" class="hidden mt-2 glass-morphism rounded-2xl p-3.5 pointer-events-auto w-[min(340px,92vw)] border border-white/10 overflow-y-auto no-scrollbar">
+    <div id="routePanel" class="hidden mt-2 md:mt-0 glass-morphism rounded-2xl p-3.5 pointer-events-auto w-[min(340px,92vw)] border border-white/10 overflow-y-auto no-scrollbar">
       <div class="flex items-center justify-between gap-2 mb-2">
         <div>
           <div id="routeTitle" class="text-sm font-extrabold text-white"></div>
@@ -658,7 +663,7 @@
         <span id="regionHudIcon" class="text-medblue-300 flex" aria-hidden="true"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-map-pin"></use></svg></span>
         <div>
           <span class="text-[10px] font-mono tracking-widest text-medblue-400 font-bold block uppercase" id="regionHudCode">GEOGRAPHIC BEACON</span>
-          <h3 id="regionHudTitle" class="text-sm font-bold text-white leading-tight">地區名稱</h3>
+          <h2 id="regionHudTitle" class="text-sm font-bold text-white leading-tight">地區名稱</h2>
         </div>
       </div>
       <button id="closeRegionHudBtn" type="button" aria-label="關閉地區資訊" class="p-1 rounded-lg text-slate-400 hover:text-white transition flex"><svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
@@ -1695,7 +1700,7 @@
     <div class="p-4 sm:p-5 flex items-start gap-3 border-b border-white/10">
       <div id="personIcon" class="w-11 h-11 shrink-0 rounded-2xl flex items-center justify-center bg-slate-800/80 text-brand-300"></div>
       <div class="min-w-0 flex-1">
-        <div id="personBadge" class="text-[11px] font-bold text-brand-300"></div>
+        <ul id="personTags" class="flex flex-wrap gap-1.5 mb-1.5" aria-label="這個人物的分類標籤"></ul>
         <h2 id="personTitle" class="text-lg font-bold text-white leading-snug"></h2>
         <div id="personSub" class="text-xs text-slate-400"></div>
       </div>
@@ -1818,6 +1823,7 @@
     const DOCTORS = DATA_OK ? (DATA.doctors || []) : [];
     const TOUR_STOPS = DATA_OK ? (DATA.tourStops || []) : [];
     const SCENARIOS = DATA_OK ? (DATA.scenarios || {}) : {};
+    const SCENARIO_GROUPS = DATA_OK ? (DATA.scenarioGroups || {}) : {};
     const CALC_RULES = DATA_OK ? DATA.calcRules : null;
     const INTRO_STEPS = DATA_OK ? (DATA.introSteps || []) : [];
     const TIPS = DATA_OK ? (DATA.tips || []) : [];
@@ -3106,8 +3112,8 @@
     let activeFlow = null;
 
     const CORE_SPACING = 76.07;   // 相鄰服務島的中心距離：六角島外接半徑 36（邊心距 31.18）時，62.35 為邊貼邊；目前拉開成島與島之間約 13.7 寬的水道，用橋連接
-    const OVERVIEW_CAMERA_POS = { x: 318, y: 333, z: 400 };   // 島群拉開後，全景鏡頭退後約 15%
-    const OVERVIEW_TARGET_POS = { x: 25, y: 0, z: 20 };
+    const OVERVIEW_CAMERA_POS = { x: 418, y: 333, z: 340 };   // 從前方偏右約 40 度看：量測結果這個方位被擋住的人物最少   // 島群拉開後，全景鏡頭退後約 15%
+    const OVERVIEW_TARGET_POS = { x: 50, y: 0, z: 32 };
     const HOSPITAL_CAM = { pos: { x: 78, y: 68, z: 95 }, look: { x: 0, y: 36, z: 0 } };
 
     const pickables = [];        // [優化] 島嶼與醫師的 Mesh 合併成一個清單，一次射線即可依距離判斷
@@ -3846,7 +3852,7 @@
       nightLinked.push({ apply: (n) => { mat.opacity = 0.2 * (1 - n * 0.7); } });
       const geo = new THREE.PlaneGeometry(1, 1);
       geo.rotateX(-Math.PI / 2);
-      const spots = [{ x: 16, z: 0, r: 215 }].concat(ISLAND_MODULES.filter(m => m.type === 'region').map(m => ({ x: m.gridPos.x, z: m.gridPos.z, r: m.id === 13 ? 120 : 82 })));
+      const spots = [{ x: 50, z: 32, r: 215 }].concat(ISLAND_MODULES.filter(m => m.type === 'region').map(m => ({ x: m.gridPos.x, z: m.gridPos.z, r: m.id === 13 ? 120 : 82 })));
       spots.forEach(sp => {
         const mesh = new THREE.Mesh(geo, mat);
         mesh.scale.set(sp.r * 2, 1, sp.r * 2);
@@ -3859,149 +3865,18 @@
     // =============================================================
     // 5.25 [新增] 搬抬演示的小場景：工作環境危害評估島上，一個小人反覆彎腰搬箱子；點它打開演示
     // =============================================================
-    const LIFT_PROP = { module: 1, r: 20.5, deg: 330 };
-    let liftProp = null;
-    function buildLiftProp() {
-      const m = modById(LIFT_PROP.module);
-      if (!m) return;
-      const [ox, oz] = polar(LIFT_PROP.r, LIFT_PROP.deg);
-      const g = new THREE.Group();
-      g.position.set(m.gridPos.x + ox, tileTop(m), m.gridPos.z + oz);
-      g.rotation.y = THREE.MathUtils.degToRad(-20);
-      g.scale.setScalar(1.3);
-      const mat = (c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85 });
-      const mesh = (geo, c, x, y, z) => { const o = new THREE.Mesh(geo, mat(c)); o.position.set(x, y, z); o.castShadow = true; return o; };
-      // 地墊
-      g.add(mesh(new THREE.CylinderGeometry(3.4, 3.4, 0.12, 24), '#e7d7c1', 0, 0.06, 0));
-      // 腿
-      g.add(mesh(new THREE.BoxGeometry(0.5, 1.6, 0.5), '#334155', 0, 0.8, -0.35));
-      g.add(mesh(new THREE.BoxGeometry(0.5, 1.6, 0.5), '#334155', 0, 0.8, 0.35));
-      // 軀幹（以髖為軸心旋轉）
-      const torso = new THREE.Group(); torso.position.set(0, 1.65, 0);
-      torso.add(mesh(new THREE.BoxGeometry(0.9, 1.5, 1.2), '#f97316', 0, 0.75, 0));   // 反光背心
-      torso.add(mesh(new THREE.SphereGeometry(0.42, 12, 10), '#f1c9a5', 0, 1.85, 0));  // 頭
-      torso.add(mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.3, 12), '#fbbf24', 0, 2.2, 0)); // 安全帽
-      torso.add(mesh(new THREE.BoxGeometry(0.9, 0.25, 0.3), '#f1c9a5', 0.75, 0.55, 0.5));   // 手臂
-      torso.add(mesh(new THREE.BoxGeometry(0.9, 0.25, 0.3), '#f1c9a5', 0.75, 0.55, -0.5));
-      const box = mesh(new THREE.BoxGeometry(1.1, 1.0, 1.1), '#d6a66b', 1.3, 0.35, 0);
-      torso.add(box);
-      g.add(torso);
-      // 看板
-      const sign = mesh(new THREE.BoxGeometry(2.2, 1.3, 0.1), '#0f172a', -2.2, 1.6, -1.2);
-      g.add(sign); g.add(mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.6, 6), '#94a3b8', -2.2, 0.8, -1.2));
-      g.traverse(o => { if (o.isMesh) { o.userData.lift = true; pickables.push(o); } });
-      prepColors(g);
-      scene.add(g);
-      liftProp = { group: g, torso, t: 0 };
-    }
-    // 臨場次數試算看板：「四大計畫指導與法規諮詢」島右前方；點它打開臨場服務頻率試算
-    //   位置用該島的區域座標（島中心為原點），x 正向為右、z 正向為前（面向預設視角）
-    const CALC_PROP = { module: 5, x: 15.2, z: 8.8 };
-    let calcProp = null;
-    function buildCalcProp() {
-      const m = modById(CALC_PROP.module);
-      if (!m) return;
-      const g = new THREE.Group();
-      g.position.set(m.gridPos.x + CALC_PROP.x, tileTop(m), m.gridPos.z + CALC_PROP.z);
-      g.rotation.y = -0.3;                        // 略轉向預設視角
-      g.scale.setScalar(1.2);
-      const mat = (c, extra) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.6 }, extra || {}));
-      const mesh = (geo, mt, x, y, z) => { const o = new THREE.Mesh(geo, mt); o.position.set(x, y, z); o.castShadow = true; g.add(o); return o; };
-      mesh(new THREE.CylinderGeometry(1.9, 2.2, 0.35, 24), mat('#cbd5e1', { metalness: 0.3 }), 0, 0.18, 0);     // 底座
-      mesh(new THREE.BoxGeometry(0.4, 3.4, 0.4), mat('#94a3b8', { metalness: 0.5, roughness: 0.4 }), 0, 1.9, 0);  // 立柱
-      const board = mesh(rbox(4.6, 3.1, 0.34, 0.12), mat('#0f172a', { metalness: 0.3, roughness: 0.35 }), 0, 4.75, 0);
-      board.rotation.x = -0.12;
-      // 螢幕：畫上「臨場次數試算」與小鍵盤，讓遠看也認得出是試算工具
-      const cvs = document.createElement('canvas'); cvs.width = 512; cvs.height = 340;
-      const ctx = cvs.getContext('2d');
-      const grd = ctx.createLinearGradient(0, 0, 0, 340); grd.addColorStop(0, '#0b3a5c'); grd.addColorStop(1, '#0a2540');
-      ctx.fillStyle = grd; ctx.fillRect(0, 0, 512, 340);
-      ctx.fillStyle = '#68b828'; ctx.fillRect(0, 0, 512, 64);
-      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 40px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif'; ctx.textBaseline = 'middle';
-      ctx.fillText('臨場次數試算', 24, 34);
-      ctx.fillStyle = '#bfe3ff'; ctx.font = '26px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';
-      ctx.fillText('勞工人數', 28, 104);
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(28, 126, 250, 56);
-      ctx.fillStyle = '#0f172a'; ctx.font = 'bold 34px "PingFang TC","Noto Sans TC",sans-serif'; ctx.fillText('人', 236, 155);
-      ctx.fillStyle = '#bfe3ff'; ctx.font = '26px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';
-      ctx.fillText('→ 醫護臨場次數', 28, 224);
-      ctx.fillStyle = '#fde68a'; ctx.font = 'bold 30px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';
-      ctx.fillText('點我試算', 28, 290);
-      for (let r = 0; r < 4; r++) for (let c = 0; c < 3; c++) {                  // 小鍵盤
-        ctx.fillStyle = (r === 3 && c === 2) ? '#68b828' : '#1e4b72';
-        ctx.fillRect(318 + c * 60, 96 + r * 58, 50, 48);
-      }
-      const tex = new THREE.CanvasTexture(cvs); tex.encoding = THREE.sRGBEncoding;
-      const screen = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 2.8), new THREE.MeshBasicMaterial({ map: tex }));
-      screen.position.set(0, 4.75, 0.18); screen.rotation.x = -0.12; g.add(screen);
-      // 閃爍的游標，提示可以輸入
-      const cursor = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 0.38), new THREE.MeshBasicMaterial({ color: 0x0f172a, transparent: true }));
-      cursor.position.set(-1.72, 4.75 + 0.12, 0.2); cursor.rotation.x = -0.12; g.add(cursor);   // 位在「勞工人數」輸入框內
-      g.traverse(o => { if (o.isMesh) { o.userData.calc = true; pickables.push(o); } });
-      prepColors(g);
-      scene.add(g);
-      calcProp = { group: g, cursor, t: 0 };
-    }
-    function updateCalcProp(dt) {
-      if (!calcProp) return;
-      calcProp.t += dt;
-      calcProp.cursor.material.opacity = (Math.floor(calcProp.t * 2) % 2) ? 0 : 1;
-    }
-
-    // 十年心血管風險（火山腳下的房子）：健檢分析與健康管理島上的迷你模型；點它打開工具
-    const CVD_PROP = { module: 6, r: 19, deg: 140 };
-    let cvdProp = null;
-    function buildCvdProp() {
-      const m = modById(CVD_PROP.module);
-      if (!m) return;
-      const [ox, oz] = polar(CVD_PROP.r, CVD_PROP.deg);
-      const g = new THREE.Group();
-      g.position.set(m.gridPos.x + ox, tileTop(m), m.gridPos.z + oz);
-      g.rotation.y = THREE.MathUtils.degToRad(25);
-      g.scale.setScalar(1.3);
-      const mat = (c, extra) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85 }, extra || {}));
-      const mesh = (geo, mt, x, y, z) => { const o = new THREE.Mesh(geo, mt); o.position.set(x, y, z); o.castShadow = true; return o; };
-      g.add(mesh(new THREE.CylinderGeometry(3.6, 3.6, 0.12, 24), mat('#dcd3bf'), 0, 0.06, 0));              // 底座
-      g.add(mesh(new THREE.ConeGeometry(2.3, 2.6, 7), mat('#3b3f4a', { flatShading: true }), -0.6, 1.3, -0.4)); // 火山
-      const lavaMat = new THREE.MeshStandardMaterial({ color: '#ff4d1f', emissive: '#ff6a2a', emissiveIntensity: 1.2, roughness: 0.6 });
-      g.add(mesh(new THREE.CylinderGeometry(0.42, 0.3, 0.3, 10), lavaMat, -0.6, 2.5, -0.4));                 // 火山口
-      const smokeMat = new THREE.MeshStandardMaterial({ color: '#cbd5e1', transparent: true, opacity: 0.5, roughness: 1 });
-      const smokes = [0, 1, 2].map(i => { const sm = mesh(new THREE.SphereGeometry(0.28, 8, 6), smokeMat, -0.6, 2.8 + i * 0.6, -0.4); sm.castShadow = false; g.add(sm); return sm; });
-      g.add(mesh(new THREE.BoxGeometry(1.0, 0.8, 0.9), mat('#f1e3c6'), 1.9, 0.5, 0.9));                     // 房子
-      const roof = mesh(new THREE.ConeGeometry(0.85, 0.6, 4), mat('#c2410c', { flatShading: true }), 1.9, 1.2, 0.9);
-      roof.rotation.y = Math.PI / 4; g.add(roof);
-      g.add(mesh(new THREE.BoxGeometry(2.2, 1.3, 0.1), mat('#0f172a'), -2.6, 1.6, 1.6));                     // 看板
-      g.add(mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.6, 6), mat('#94a3b8'), -2.6, 0.8, 1.6));
-      g.traverse(o => { if (o.isMesh) { o.userData.cvd = true; pickables.push(o); } });
-      prepColors(g);
-      scene.add(g);
-      cvdProp = { group: g, lavaMat, smokes, t: 0 };
-    }
-    function updateCvdProp(dt) {
-      if (!cvdProp) return;
-      cvdProp.t += dt;
-      cvdProp.lavaMat.emissiveIntensity = 0.9 + Math.sin(cvdProp.t * 2.1) * 0.4;
-      cvdProp.smokes.forEach((sm, i) => {
-        const u = ((cvdProp.t * 0.35 + i / 3) % 1);                 // 0→1 往上飄
-        sm.position.set(-0.6 + Math.sin(cvdProp.t * 0.8 + i) * 0.25 * u, 2.7 + u * 2.2, -0.4);
-        const k = 0.6 + u * 1.2;
-        sm.scale.setScalar(k);
-        sm.material.opacity = 0.5 * (1 - u);
-      });
-    }
-
-    function updateLiftProp(dt) {
-      if (!liftProp) return;
-      liftProp.t = (liftProp.t + dt / 4.2) % 1;   // 一個循環 4.2 秒：彎下→停→抬起→停
-      const t = liftProp.t;
-      const ease = (x) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
-      let bend;
-      if (t < 0.3) bend = ease(t / 0.3);
-      else if (t < 0.45) bend = 1;
-      else if (t < 0.75) bend = 1 - ease((t - 0.45) / 0.3);
-      else bend = 0;
-      liftProp.torso.rotation.z = -THREE.MathUtils.degToRad(68) * bend;
-      liftProp.group.position.y = tileTop(modById(LIFT_PROP.module)) - 0.15 * bend;
+    // 三個小工具已融入各島的造景（在 buildBuildingForModule 裡建立），不再是獨立的道具：
+    //   搬抬演示＝危害評估島堆置區正在搬紙箱的勞工；臨場次數試算＝四大計畫島會議桌旁的行事曆；心血管風險＝健檢分析島會談桌上的衛教模型
+    //   這裡記錄它們在島上的位置（島中心為原點；y 是名牌離島面的高度），給名牌與灌木避讓使用
+    const LIFT_PROP = { module: 1, x: -8.4, z: 6.2, y: 7.4 };
+    const CALC_PROP = { module: 5, x: 5.4, z: 1.2, y: 8.8 };
+    const CVD_PROP = { module: 6, x: -7.4, z: 0.6, y: 10.2 };
+    // 讓場景裡的物件可以點：flag 是 'lift'、'calc' 或 'cvd'
+    function markTool(root, flag) { root.traverse(o => { if (o.isMesh) { o.userData[flag] = true; pickables.push(o); } }); }
+    // 看不見的點選範圍（比實際物件大一圈，手機上才點得到）
+    function toolHitBox(parent, flag, x, y, z, w, h, d) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, colorWrite: false }));
+      m.position.set(x, y, z); m.userData[flag] = true; m.userData.hitProxy = true; parent.add(m); pickables.push(m); return m;
     }
 
     // =============================================================
@@ -4692,19 +4567,34 @@
     // 各島邊緣道路中心線的邊心距：服務島與臺北市島較大（28.9），其餘地區島較小
     const roadRadius = (m) => (m.type === 'region' && m.id !== 13) ? 22 * Math.cos(Math.PI / 6) - 2.28 : ROAD_R;
     function addHexRoad(cx, cz, topY, R = ROAD_R) {
-      if (!WALK_MAT) WALK_MAT = new THREE.MeshStandardMaterial({
-          color: 0xf1ebe1, roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4
+      if (!WALK_MAT) {
+        // 步道鋪面：米色系的六角形連鎖磚（和島的六邊形呼應），用世界座標貼圖，所以各島、各條邊的磚縫是連續的
+        const tex = cachedTexture('road-hex-pavers', () => {
+          const S = 32, W = 192, H = Math.round(S * Math.sqrt(3) * 2), cvs = document.createElement('canvas'); cvs.width = W; cvs.height = H;
+          const ctx = cvs.getContext('2d'); ctx.fillStyle = '#b9a88a'; ctx.fillRect(0, 0, W, H);      // 磚縫
+          const fills = ['#ece2d0', '#e3d6bf', '#f1e9da', '#dccdb3'], rowH = H / 2;
+          for (let i = -1; i <= 5; i++) for (let j = -1; j <= 3; j++) {
+            const cx2 = i * 1.5 * S, cy2 = j * rowH + (((i % 2) + 2) % 2 ? rowH / 2 : 0);
+            ctx.fillStyle = fills[((((i % 4) + 4) % 4) * 3 + (((j % 2) + 2) % 2)) % 4];
+            ctx.beginPath(); for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; ctx[k ? 'lineTo' : 'moveTo'](cx2 + Math.cos(a) * (S - 2), cy2 + Math.sin(a) * (S - 2)); } ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1; ctx.stroke();
+          }
+          const t = new THREE.CanvasTexture(cvs); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t;
         });
+        WALK_MAT = new THREE.MeshStandardMaterial({ map: tex, color: 0xffffff, roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+      }
       const c30 = Math.cos(Math.PI / 6), rin = (R - ROAD_HALF_W) / c30, rout = (R + ROAD_HALF_W) / c30;
-      const pos = [], idx = [];
+      const pos = [], idx = [], uv = [], UW = 3.2, UH = UW * Math.sqrt(3) * 2 * 32 / 192;   // 貼圖一個循環對應的實際寬高
       for (let k = 0; k < 6; k++) {
         const a = k * Math.PI / 3;
         pos.push(Math.cos(a) * rin, 0, Math.sin(a) * rin, Math.cos(a) * rout, 0, Math.sin(a) * rout);
+        uv.push((cx + Math.cos(a) * rin) / UW, (cz + Math.sin(a) * rin) / UH, (cx + Math.cos(a) * rout) / UW, (cz + Math.sin(a) * rout) / UH);
         const i0 = k * 2, i1 = i0 + 1, j0 = ((k + 1) % 6) * 2, j1 = j0 + 1;
         idx.push(i0, j0, i1, i1, j0, j1);
       }
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
       g.setIndex(idx);
       g.computeVertexNormals();
       const road = new THREE.Mesh(g, WALK_MAT);
@@ -4820,54 +4710,26 @@
           lampsAt([60, 120, 240, 300]);
           break;
         case 1: // 工作環境危害評估：危害物桶、交通錐、噪音計、木箱
-          put(18, 200, (c) => { Props.barrel(c); Props.barrel(c.at(1.6, 0.4), '#f97316'); Props.barrel(c.at(0.6, 1.6)); });
-          [150, 160, 170].forEach(d => put(19, d, Props.trafficCone));
-          put(18, 300, Props.noiseMeter);
-          put(19, 50, (c) => { Props.crate(c); Props.crate(c.at(1.3, 0.2)); Props.crate(c.at(0.6, 0), 1.0, '#a16207'); });
-          lampsAt([90, 250]);
+          lampsAt([90, 250]);                 // 造景在 buildBuildingForModule
           break;
         case 2: // 員工工作適應性評估：人因辦公桌、身高量尺、重量塊、地墊
-          put(19, 30, Props.desk, -Math.PI / 6);
-          put(19, 150, Props.measurePole);
-          put(19, 260, (c) => { Props.weights(c); Props.weights(c.at(2, 0)); });
-          put(18, 330, (c) => Props.mat(c, '#a5f3fc'), Math.PI / 2);
-          lampsAt([90, 210]);
+          lampsAt([90, 210]);                 // 造景在 buildBuildingForModule
           break;
         case 3: // 職業病與傷害診治：門診小屋、候診長椅、盆栽、指示牌
-          put(15, 215, Props.clinicHut, Math.PI / 5);
-          put(13, 330, Props.bench, Math.PI / 3);
-          put(13, 30, Props.bench, -Math.PI / 3 + Math.PI);
-          [112, 135, 290].forEach(d => put(15, d, Props.planter));
-          put(19, 68, Props.signpost);
-          lampsAt([0, 180]);
+          lampsAt([0, 180]);                  // 造景在 buildBuildingForModule
           break;
         case 4: // 職能復健與重返職場：平行桿、階梯、治療球、跑步機、地墊
-          put(18, 120, Props.parallelBars, Math.PI / 3);
-          put(18, 200, Props.stairs);
-          put(19, 250, (c) => { c.sphere(0, 0.8, 0, 0.8, '#f472b6'); c.sphere(1.8, 0.65, 0.4, 0.65, '#60a5fa'); });
-          put(18, 300, Props.treadmill, Math.PI / 4);
-          put(18, 40, (c) => { Props.mat(c, '#5eead4'); Props.mat(c.at(0, 1.9), '#fcd34d'); });
+          // 訓練器材改由 buildBuildingForModule 的戶外訓練場造景呈現
           lampsAt([80, 220]);
           break;
         case 5: // 四大計畫指導與法規諮詢：公告欄、講台、文件夾
-          put(19, 60, Props.noticeBoard, -Math.PI / 2 - Math.PI / 3);
-          put(19, 180, Props.podium, Math.PI / 2);
-          put(19, 300, Props.binders, Math.PI / 3);
-          lampsAt([0, 120, 240]);
+          lampsAt([0, 120, 240]);             // 造景在 buildBuildingForModule
           break;
         case 6: // 健檢分析與健康管理：伺服器機櫃、資料螢幕、通訊天線
-          put(16, 45, (c) => { Props.serverRack(c); Props.serverRack(c.at(1.7, 0)); Props.serverRack(c.at(3.4, 0)); }, -Math.PI / 4);
-          put(17, 200, Props.screen, Math.PI / 2 + Math.PI / 9);
-          put(17, 300, Props.dish);
-          lampsAt([120, 260]);
+          lampsAt([120, 260]);                // 造景在 buildBuildingForModule
           break;
         case 7: // 勞動能力減損鑑定（職興市場）：市集攤位、陽傘咖啡座、貨箱
-          put(19, 210, Props.stall, Math.PI / 2 - Math.PI / 6);
-          put(19, 250, (c) => Props.stall(c, '#14b8a6'), Math.PI / 2 - Math.PI / 4);
-          put(18, 330, Props.umbrellaTable);
-          put(18, 25, (c) => Props.umbrellaTable(c, '#f59e0b'));
-          put(14, 60, (c) => { Props.crate(c); Props.crate(c.at(1.3, 0)); Props.crate(c.at(0.6, 0, 0), 1.0); });
-          lampsAt([170, 290]);
+          lampsAt([170, 290]);                // 造景在 buildBuildingForModule
           break;
         case 8: break;            // 新莊：整座島中央是棒球場
         case 9: case 10: break;   // 五股、三重：地標在 buildBuildingForModule
@@ -4889,7 +4751,7 @@
       }
 
       // 樹種在六角的角落（步道外側），灌木點綴在步道內側空位
-      const cornerR = radius * (isRegion && !big ? 0.68 : 0.84);   // 小的地區島：樹種在道路內側的角落
+      const cornerR = radius * (isRegion && !big ? 0.6 : 0.72);    // 樹種在道路內側，連樹冠都不蓋到路面（道路內緣的角落：大島約 31.5、小島約 17.5）
       for (let i = 0; i < 6; i++) {
         if (mod.id === 8) continue;                                       // 新莊：球場占滿島中央，角落不種樹
         if (mod.id !== 0 && i % 2 === (mod.id % 2)) continue;
@@ -4902,10 +4764,8 @@
           const [x, z] = polar(pathR - 3.2, i * 60 + 15 + mod.id * 7);
           if (mod.id === 0 && Math.abs(x) < 23 && Math.abs(z) < 12) continue;
           if (mod.id === 0 && DOCTORS.some(d => z > d.pos.z && Math.hypot(x - d.pos.x, z - d.pos.z) < 10)) continue;   // 不擋住醫師公仔
-          if (mod.id === CALC_PROP.module && Math.hypot(x - CALC_PROP.x, z - CALC_PROP.z) < 6) continue;   // 讓開試算看板
+          if ([CALC_PROP, CVD_PROP, LIFT_PROP].some(p => mod.id === p.module && Math.hypot(x - p.x, z - p.z) < 5)) continue;   // 讓開小工具
           if (Math.abs(x) < 4.5 && z > 0) continue; // 讓開通往門口的岔路
-          if (mod.id === CVD_PROP.module) { const [px, pz] = polar(CVD_PROP.r, CVD_PROP.deg); if (Math.hypot(x - px, z - pz) < 6.5) continue; }
-          if (mod.id === LIFT_PROP.module) { const [px, pz] = polar(LIFT_PROP.r, LIFT_PROP.deg); if (Math.hypot(x - px, z - pz) < 6.5) continue; }
           C.bush(x, z, 0.6 + Math.random() * 0.35);
         }
       }
@@ -4966,6 +4826,22 @@
       updatePedestrians(0);
     }
 
+    // [人物] 髮型與帽子：走動的居民（實例化零件）與造景人物（合併幾何）共用同一組形狀
+    //   頭頂的半球（cap）是頭髮或安全帽的本體；下面這些是加在上面的配件，位置是相對於人物腳底的偏移
+    //   helmet 安全帽＝帽簷加頂部的稜；bob 中長髮＝蓋到脖子的後髮；bun 包頭＝後上方的髮髻；
+    //   nurse 護士帽＝髮髻加白色的帽子；bandage 繃帶＝額頭一圈白色；short 短髮與 bald 光頭沒有配件
+    const HEAD_OFFSETS = { brim: [0, 4.1, 0], hairBack: [0, 3.74, 0], bun: [0, 4.62, -0.6], ncap: [0, 5.02, 0.16], bandage: [0, 4.27, 0] };   // 護士帽要高過頭髮才看得到
+    const HEAD_PARTS = { helmet: ['brim'], short: [], bob: ['hairBack'], bun: ['bun'], nurse: ['bun', 'ncap'], bandage: ['bandage'], bald: [] };
+    const HEAD_SHAPES = {
+      brim: () => { const T = (x, y, z) => new THREE.Matrix4().makeTranslation(x, y, z);
+        return [[new THREE.CylinderGeometry(1.0, 1.0, 0.09, 18), T(0, 0.02, 0)], [new THREE.BoxGeometry(0.62, 0.09, 0.36), T(0, 0.02, 1.02)], [new THREE.BoxGeometry(0.18, 0.1, 1.2), T(0, 0.79, 0)]]; },
+      hairBack: () => [[new THREE.CylinderGeometry(0.87, 0.8, 1.0, 14, 1, false, Math.PI / 2, Math.PI), null]],
+      bun: () => [[new THREE.SphereGeometry(0.32, 10, 8), null]],
+      ncap: () => [[new THREE.BoxGeometry(1.02, 0.36, 0.5), null], [new THREE.BoxGeometry(0.74, 0.22, 0.42), new THREE.Matrix4().makeTranslation(0, 0.27, 0)]],
+      bandage: () => [[new THREE.CylinderGeometry(0.845, 0.845, 0.26, 16), null]]
+    };
+    const headPartColor = (part, capColor) => (part === 'ncap' || part === 'bandage') ? '#ffffff' : capColor;
+
     const _ped = { base: new THREE.Matrix4(), local: new THREE.Matrix4(), out: new THREE.Matrix4(), q: new THREE.Quaternion(), p: new THREE.Vector3(), s: new THREE.Vector3(), up: new THREE.Vector3(0, 1, 0) };
     // [人物] 所有人物共用的五官與四肢：眼睛兩顆、手臂（袖子同上衣顏色）、手掌（膚色）
     const FACE_LIMBS = { eyeL: [-0.27, 4.02, 0.71], eyeR: [0.27, 4.02, 0.71], armL: [-0.92, 3.3, 0], armR: [0.92, 3.3, 0], handL: [-0.92, 3.3, 0], handR: [0.92, 3.3, 0] };
@@ -5021,13 +4897,13 @@
     let agents = null;
     function buildAgents() {
       const cores = ISLAND_MODULES.filter(m => m.type !== 'region'), links = coreLinks();
-      const keys = Object.keys(SCENARIOS).filter(k => k !== 'annual');   // 臨場服務不再由走服務島的人呈現，改由搭船（或過橋）到各地區的護理人員呈現
+      const keys = Object.keys(SCENARIOS);
       if (!links.length) return;
       const nb = new Map(cores.map(m => [m.id, []]));
       links.forEach(k => { nb.get(k.a.id).push(k.b); nb.get(k.b.id).push(k.a); });
       const NW = IS_COARSE_POINTER ? 9 : 15, NR = keys.length ? (IS_COARSE_POINTER ? 4 : 7) : 0;
       // 醫師的巡迴順序：沿著相鄰的島繞一圈，八座服務島都會走到。資料若改到不相鄰，醫師改成一般遊蕩
-      const ROUNDS = [0, 1, 6, 5, 3, 2, 4, 7];
+      const ROUNDS = [0, 7, 4, 6, 5, 1, 3, 2];   // 醫院 → 鑑定 → 復健 → 健檢分析 → 四大計畫 → 危害評估 → 門診 → 適性評估 → 回醫院
       const roundsOk = ROUNDS.every((id, k) => nb.has(id) && nb.get(id).some(m => m.id === ROUNDS[(k + 1) % ROUNDS.length]));
       const rand = seededRandom(2025);
       const shirts = ['#f8fafc', '#5eead4', '#93c5fd', '#fda4af', '#fcd34d', '#a7f3d0', '#c4b5fd', '#fdba74'];
@@ -5051,9 +4927,9 @@
       const adjacent = (order) => order.every((id, k) => nb.has(id) && nb.get(id).some(m => m.id === order[(k + 1) % order.length]));
       const PATROLS = [
         // 職安人員：只在企業端活動，危害評估 ↔ 健檢分析 ↔ 四大計畫 來回
-        { role: 'safety', order: [1, 6, 5, 6], n: IS_COARSE_POINTER ? 2 : 3, shirt: '#a3e635', cap: '#2563eb', pants: '#334155', speed: 4.0, dwell: 2.6 },
+        { role: 'safety', order: [1, 5, 6, 5], n: IS_COARSE_POINTER ? 2 : 3, shirt: '#a3e635', cap: '#2563eb', pants: '#334155', speed: 4.0, dwell: 2.6 },
         // 事業單位聘僱的護理人員：平常在健檢分析與四大計畫之間；陪同仁就醫時經過臺北醫院到門診、再到配工評估，原路回來
-        { role: 'nurseCorp', order: [6, 5, 6, 0, 3, 2, 3, 0], n: IS_COARSE_POINTER ? 1 : 2, shirt: '#6ee7b7', cap: '#4a3426', pants: '#f8fafc', speed: 3.8, dwell: 3.2 }
+        { role: 'nurseCorp', order: [6, 5, 6, 2, 0, 2], n: IS_COARSE_POINTER ? 1 : 2, shirt: '#6ee7b7', cap: '#4a3426', pants: '#f8fafc', speed: 3.8, dwell: 3.2 }
       ];
       let ownerForced = false;
       try { ownerForced = /[?&]owner=1/.test(location.search) || readPref('tph-ohs-owner') === 'always'; } catch (e) {}
@@ -5109,12 +4985,22 @@
                      cap: new THREE.SphereGeometry(0.82, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), legL: legGeo, legR: legGeo, box: new THREE.BoxGeometry(1.25, 0.95, 0.95),
                      band: new THREE.CylinderGeometry(0.8, 0.86, 0.3, 10), pack: new THREE.BoxGeometry(1.0, 1.25, 0.55) };   // 反光條（職災勞工）、背包（來訪民眾）
       Object.assign(geos, personLimbGeos());
+      // 髮型與帽子的配件（每個人只顯示自己用到的那幾件）
+      Object.keys(HEAD_SHAPES).forEach(p => { geos[p] = mergeColored(HEAD_SHAPES[p]().map(([g2, m2]) => [g2, '#ffffff', m2])); });
+      list.forEach((a, n) => {
+        if (a.role === 'onsite') a.cap = '#4a3426';      // 醫院特約的護理師：棕色頭髮，白色的是護士帽
+        if (!a.head) a.head = a.role === 'owner' ? 'bald' : a.type === 'doctor' ? 'short' : a.role === 'onsite' ? 'nurse' : a.role === 'nurseCorp' ? 'bob'
+          : (a.cap === '#facc15' || a.cap === '#2563eb') ? 'helmet' : ['short', 'bob', 'bun'][n % 3];
+      });
+      // 眼鏡（只有林醫師戴）：兩個鏡框加鼻樑
+      const ring = () => new THREE.TorusGeometry(0.21, 0.035, 6, 18), TX = (x) => new THREE.Matrix4().makeTranslation(x, 0, 0);
+      geos.glasses = mergeColored([[ring(), '#1f2937', TX(-0.27)], [ring(), '#1f2937', TX(0.27)], [new THREE.BoxGeometry(0.14, 0.04, 0.04), '#1f2937', TX(0)]]);
       const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7 });
       mat.userData.linear = true;
       const col = new THREE.Color(), meshes = {};
       Object.entries(geos).forEach(([part, geo]) => {
         const mesh = new THREE.InstancedMesh(geo, mat, list.length);
-        list.forEach((a, n) => mesh.setColorAt(n, col.set(part === 'box' ? (a.type === 'onsite' ? '#38bdf8' : '#ffffff') : part === 'band' ? '#fde047' : part === 'pack' ? '#64748b' : personPartColor(part, a.shirt, a.pants, a.cap)).convertSRGBToLinear()));
+        list.forEach((a, n) => mesh.setColorAt(n, col.set(HEAD_SHAPES[part] ? headPartColor(part, a.cap) : part === 'glasses' ? '#1f2937' : part === 'box' ? (a.type === 'onsite' ? '#38bdf8' : '#ffffff') : part === 'band' ? '#fde047' : part === 'pack' ? '#64748b' : personPartColor(part, a.shirt, a.pants, a.cap)).convertSRGBToLinear()));
         mesh.instanceColor.needsUpdate = true; mesh.frustumCulled = false; mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
         mesh.raycast = () => {};
         scene.add(mesh); meshes[part] = mesh;
@@ -5234,24 +5120,46 @@
       a.prev = cur; a.mod = next; a.node = edgeNodeToward(next, cur); a.idx = (a.idx + 1) % a.order.length;
     }
     // 跑服務路徑：從起點出現，沿路走到終點（循環路徑則繞回起點），之後換下一條路徑
+    // 各條服務路徑上走動的人：[上衣, 安全帽或頭髮的顏色, 髮型或帽子]
+    const ROUTE_LOOKS = {
+      rtw: ['#f97316', '#1f1d22', 'bandage'],        // 職災復工：橘背心、短髮、額頭纏繃帶
+      occ: ['#c084fc', '#facc15', 'helmet'],         // 職業病認定：紫色上衣、安全帽
+      ergo: ['#14b8a6', '#facc15', 'helmet'],        // 人因性危害預防：青綠上衣、安全帽
+      maternal: ['#fb7185', '#4a3426', 'bob'],       // 母性健康保護：珊瑚色上衣、中長髮
+      overload: ['#1e40af', '#1f1d22', 'short'],     // 異常工作負荷預防：深藍上衣、短髮
+      mgmt: ['#3b82f6', '#facc15', 'helmet'],        // 在職健康檢查管理：藍色上衣、安全帽
+      newhire: ['#86efac', '#facc15', 'helmet']      // 新進體格檢查管理：淺綠上衣、安全帽
+    };
+    // 「有需要時轉介」的路徑去掉轉介路段後的版本：只走到轉介前的最後一站
+    function shortScenario(sc) {
+      if (sc._short) return sc._short;
+      let next = 0, cut = sc.route.length;
+      for (let k = 0; k < sc.route.length; k++) { if (sc.stops[next] && sc.stops[next].id === sc.route[k]) { next++; if (next === sc.optionalFrom) { cut = k + 1; break; } } }
+      return (sc._short = { route: sc.route.slice(0, cut), stops: sc.stops.slice(0, sc.optionalFrom) });
+    }
     function planRouteTask(a, n) {
-      const sc = SCENARIOS[a.key], r = buildRoutePoints(sc);
+      const full = SCENARIOS[a.key];
+      // 有「有需要時轉介」路段的路徑：大部分的人走到轉介前那一站就結束，只有少數人繼續走到醫院與門診
+      a.short = full.optionalFrom !== undefined && agents.rand() < 0.7;
+      const sc = a.short ? shortScenario(full) : full, r = buildRoutePoints(sc);
       a.path = r.pts.map(p => p.clone().setY(p.y - 0.3));
       if (r.loop) a.path.push(a.path[0].clone());
       a.stops = r.stopIdx.filter(k => k > 0 && k < a.path.length - 1);
       a.seg = 0; a.d = 0; a.pos.copy(a.path[0]); a.leaving = false;
       a.stopsAll = r.stopIdx.slice(); a.loop = r.loop;
-      // 外觀跟著任務換：健檢異常追蹤＝藍衣黃帽；職災勞工＝橘色背心加反光條、白色繃帶；臨場服務年度循環＝醫院特約的護理人員（粉紅上衣、白色護士帽與長褲）
+      // 外觀跟著任務換（見 ROUTE_LOOKS）
       const idx = n === undefined ? agents.list.indexOf(a) : n, M = agents.meshes, c = new THREE.Color();
       a.role = a.key;
-      const look = { checkup: ['#3b82f6', '#facc15'], rtw: ['#f97316', '#f8fafc'], annual: ['#f9a8d4', '#ffffff', '#f8fafc'] }[a.key] || ['#94a3b8', '#facc15'];
-      M.body.setColorAt(idx, c.set(look[0]).convertSRGBToLinear()); M.cap.setColorAt(idx, c.set(look[1]).convertSRGBToLinear());
+      const look = ROUTE_LOOKS[a.key] || ['#94a3b8', '#facc15', 'helmet'];
+      a.head = look[2]; a.cap = look[1];
+      M.body.setColorAt(idx, c.set(look[0]).convertSRGBToLinear());
+      [M.cap, M.brim, M.hairBack, M.bun].forEach(m => { m.setColorAt(idx, c.set(look[1]).convertSRGBToLinear()); m.instanceColor.needsUpdate = true; });
       M.armL.setColorAt(idx, c.set(look[0]).convertSRGBToLinear()); M.armR.setColorAt(idx, c);          // 袖子跟著上衣換色
-      M.box.setColorAt(idx, c.set(sc.color).convertSRGBToLinear());
-      M.legL.setColorAt(idx, c.set(look[2] || a.pants).convertSRGBToLinear()); M.legR.setColorAt(idx, c);
+      M.box.setColorAt(idx, c.set(full.color).convertSRGBToLinear());
+      M.legL.setColorAt(idx, c.set(a.pants).convertSRGBToLinear()); M.legR.setColorAt(idx, c);
       [M.body, M.cap, M.box, M.armL, M.armR, M.legL, M.legR].forEach(m => { m.instanceColor.needsUpdate = true; });
     }
-    const AGENT_PARTS = Object.assign({ body: [0, 2.35, 0], head: [0, 3.95, 0], cap: [0, 4.1, 0], legL: [-0.3, 1.35, 0], legR: [0.3, 1.35, 0], box: [0, 2.55, 1.0], band: [0, 2.5, 0], pack: [0, 2.55, -0.95] }, FACE_LIMBS);
+    const AGENT_PARTS = Object.assign({ body: [0, 2.35, 0], head: [0, 3.95, 0], cap: [0, 4.1, 0], legL: [-0.3, 1.35, 0], legR: [0.3, 1.35, 0], box: [0, 2.55, 1.0], band: [0, 2.5, 0], pack: [0, 2.55, -0.95], glasses: [0, 4.02, 0.82] }, HEAD_OFFSETS, FACE_LIMBS);
     function updateAgents(dt) {
       if (!agents) return;
       const T = _ped;
@@ -5308,7 +5216,7 @@
         const carrying = a.type === 'route' || a.type === 'onsite';             // 手上有資料箱的人，雙手往前抱著
         Object.entries(AGENT_PARTS).forEach(([part, off]) => {
           if (personLimbLocal(T, part, off, swing, carrying)) { agents.meshes[part].setMatrixAt(n, T.out.multiplyMatrices(T.base, T.local)); return; }
-          if ((part === 'box' && a.type !== 'route' && a.type !== 'onsite') || (part === 'band' && a.role !== 'rtw' && a.role !== 'safety') || (part === 'pack' && a.role !== 'visitor') || (part === 'cap' && a.role === 'owner')) T.local.makeScale(0, 0, 0);
+          if ((part === 'box' && a.type !== 'route' && a.type !== 'onsite') || (part === 'band' && a.role !== 'rtw' && a.role !== 'safety') || (part === 'pack' && a.role !== 'visitor') || (part === 'cap' && a.head === 'bald') || (HEAD_SHAPES[part] && !(HEAD_PARTS[a.head] || []).includes(part)) || (part === 'glasses' && !(a.doc && a.doc.id === 'lin'))) T.local.makeScale(0, 0, 0);
           else T.local.identity();
           T.local.setPosition(off[0], off[1], off[2]);
           agents.meshes[part].setMatrixAt(n, T.out.multiplyMatrices(T.base, T.local));
@@ -5322,33 +5230,42 @@
     // =============================================================
     // 角色設計規則：「光頭＋灰色上衣＋黑色褲子」是彩蛋角色島主專用的特徵組合，之後新增任何角色都不要採用這個組合
     const ROLES = {
-      doctor:  { badge: '醫師', icon: 'stethoscope', color: 0x4ade80, trait: '白色醫師袍、深色頭髮，頭上有姓名的名牌。' },
-      checkup: { label: '勞工（健檢異常追蹤中）', badge: '勞工', icon: 'chart-column', color: 0x14b8a6,
-                 trait: '藍色上衣、黃色安全帽，手上抱著青綠色的資料箱。', desc: '健康檢查有異常項目的勞工，正依照「健檢異常追蹤」的流程，到各個服務單位。' },
-      rtw:     { label: '職災勞工（復工中）', badge: '職災勞工', icon: 'accessibility', color: 0xf59e0b,
-                 trait: '橘色背心加黃色反光條、頭上纏著白色繃帶，手上抱著橘黃色的資料箱。', desc: '因工作受傷或生病的勞工，正依照「職災勞工復工」的流程，從診治、復健走到復工評估。' },
-      annual:  { label: '勞工健康服務護理人員（醫院特約）', badge: '護理人員', icon: 'hospital', color: 0x38bdf8,
-                 trait: '粉紅色上衣、白色護士帽與長褲，手上抱著淺藍色的資料箱。', desc: '臺北醫院職業醫學科的護理人員，依特約到事業單位提供臨場健康服務。每一輪都從臺北醫院出發，做完現場訪視、健檢分析與四大計畫的指導後回到醫院，隔年再出發。' },
-      onsite:  { label: '勞工健康服務護理人員（醫院特約）', badge: '臨場服務', icon: 'hospital', color: 0x38bdf8,
+      doctor:  { org: 'hospital', job: '醫師', badge: '醫師', icon: 'stethoscope', color: 0x4ade80, trait: '白色醫師袍、深色頭髮，頭上有姓名的名牌。' },
+      rtw:     { org: 'company', job: '勞工', task: '職災復工', label: '勞工（職災復工中）', badge: '勞工', icon: 'accessibility', color: 0xf59e0b,
+                 trait: '橘色背心加黃色反光條、短髮、額頭纏著一圈白色繃帶，手上抱著橘黃色的資料箱。', desc: '因工作受傷或生病的勞工，正依照「職災勞工復工」的流程，從門診、復工評估走到復健。' },
+      occ:     { org: 'company', job: '勞工', task: '職業病認定', label: '勞工（職業病認定中）', badge: '勞工', icon: 'microscope', color: 0xa855f7,
+                 trait: '紫色上衣、黃色安全帽，手上抱著紫色的資料箱。', desc: '懷疑疾病和工作有關的勞工，正依照「職業病認定」的流程到門診就醫，並進行工作環境的危害評估。' },
+      ergo:    { org: 'company', job: '勞工', task: '人因性危害預防', label: '勞工（人因性危害預防中）', badge: '勞工', icon: 'activity', color: 0x06b6d4,
+                 trait: '青綠色上衣、黃色安全帽，手上抱著青色的資料箱。', desc: '從事搬運或重複性作業、有痠痛不適的勞工，正依照「人因性危害預防」的流程接受評估與工作調整。' },
+      maternal: { org: 'company', job: '勞工', task: '母性健康保護', label: '勞工（母性健康保護中）', badge: '勞工', icon: 'heart-pulse', color: 0xf472b6,
+                 trait: '珊瑚色上衣、中長髮，手上抱著粉紅色的資料箱。', desc: '妊娠中、分娩後未滿一年或哺乳中的女性勞工，正依照「母性健康保護」的流程，接受作業危害評估與醫師面談。' },
+      overload: { org: 'company', job: '勞工', task: '異常工作負荷預防', label: '勞工（異常工作負荷預防中）', badge: '勞工', icon: 'clock', color: 0x6366f1,
+                 trait: '深藍色上衣、短髮，手上抱著靛藍色的資料箱。', desc: '長時間工作或輪班、心血管風險較高的勞工，正依照「異常工作負荷預防」的流程接受評估與醫師面談。' },
+      mgmt:    { org: 'company', job: '勞工', task: '在職健檢管理', label: '勞工（在職健康檢查管理中）', badge: '勞工', icon: 'chart-column', color: 0x14b8a6,
+                 trait: '藍色上衣、黃色安全帽，手上抱著青綠色的資料箱。', desc: '做完定期健康檢查的在職勞工，正依照「在職勞工健康檢查管理」的流程，由醫師評估是否適合原工作。' },
+      newhire: { org: 'company', job: '勞工', task: '新進體格檢查管理', label: '勞工（新進體格檢查管理中）', badge: '勞工', icon: 'clipboard-check', color: 0x84cc16,
+                 trait: '淺綠色上衣、黃色安全帽，手上抱著黃綠色的資料箱。', desc: '剛做完體格檢查的新進勞工，正依照「新進勞工體格檢查管理」的流程，由醫師提出選工、配工的建議。' },
+      onsite:  { org: 'hospital', job: '護理師', task: '臨場服務', label: '護理師（醫院特約）', badge: '護理師', icon: 'hospital', color: 0x38bdf8,
                  trait: '粉紅色上衣、白色護士帽與長褲，手上抱著淺藍色的臨場服務資料箱。',
-                 desc: '臺北醫院職業醫學科的護理人員，依特約到各地區的事業單位提供臨場健康服務。每一趟都從臺北醫院出發，搭交通船（新莊是走長橋）到當地，做完訪視與諮詢後回到醫院，再前往下一區。' },
-      worker:  { label: '勞工', badge: '勞工', icon: 'wrench', color: 0xfacc15,
+                 desc: '臺北醫院職業醫學科的護理師（勞工健康服務護理人員），依特約到各地區的事業單位提供臨場健康服務。每一趟都從臺北醫院出發，搭交通船（新莊是走長橋）到當地，做完訪視與諮詢後回到醫院，再前往下一區。' },
+      worker:  { org: 'company', job: '勞工', label: '勞工', badge: '勞工', icon: 'wrench', color: 0xfacc15,
                  trait: '各種顏色的上衣、黃色安全帽，手上沒有拿東西。', desc: '在各服務島之間走動的勞工，還沒有進入特定的服務流程。' },
-      visitor: { label: '來訪民眾', badge: '民眾', icon: 'user-round', color: 0xc4b5fd,
+      visitor: { org: 'public', label: '一般民眾', badge: '一般民眾', icon: 'user-round', color: 0xc4b5fd,
                  trait: '各種顏色的上衣、背著灰色背包，沒有戴帽子。', desc: '到職業醫學科洽詢或就診的民眾，正在島上四處看看。' },
-      safety:  { label: '職業安全衛生人員', badge: '事業單位', icon: 'radar', color: 0xa3e635, sub: '事業單位的職安人員',
+      safety:  { org: 'company', job: '安全衛生人員', label: '安全衛生人員', badge: '安全衛生人員', icon: 'radar', color: 0xa3e635, sub: '事業單位的職安人員',
                  trait: '螢光黃綠色背心加反光條、藍色安全帽。', desc: '事業單位的職業安全衛生人員，負責辨識與改善作業現場的危害，並和醫護人員一起推動各項預防計畫。',
-                 carry: '只在企業端活動：在危害評估、健檢分析、四大預防計畫三座島之間來回。' },
-      nurseCorp: { label: '勞工健康服務護理人員（事業單位聘僱）', badge: '護理人員', icon: 'clipboard-list', color: 0x6ee7b7, sub: '事業單位自己聘僱的職護',
-                 trait: '薄荷綠色上衣、白色長褲，沒有戴帽子，手上沒有拿東西。', desc: '事業單位依規定聘僱的勞工健康服務護理人員，長期在公司內做健康管理：整理健檢結果、執行預防計畫，需要時協助同仁轉介門診與配工評估。',
-                 carry: '平常在健檢分析與四大計畫之間；有同仁需要時，陪同經過臺北醫院到門診，再到工作適應性評估，然後原路回到公司。' },
-      owner:   { label: '島主', badge: '彩蛋', icon: 'sparkles', color: 0xfde047, sub: '每次進站大約只有一成的機率出現',
+                 carry: '只在企業端活動：在危害評估、四大預防計畫、健檢分析三座島之間來回。' },
+      nurseCorp: { org: 'company', job: '護理師', label: '護理師（事業單位聘僱）', badge: '護理師', icon: 'clipboard-list', color: 0x6ee7b7, sub: '事業單位自己聘僱的職護',
+                 trait: '薄荷綠色上衣、白色長褲，沒有戴帽子，手上沒有拿東西。', desc: '事業單位依規定聘僱的護理師（勞工健康服務護理人員），長期在公司內做健康管理：整理健檢結果、執行預防計畫，需要時協助同仁轉介門診與配工評估。',
+                 carry: '平常在健檢分析與四大計畫之間；有同仁需要時，陪同到工作適應性評估，有需要時再陪同到醫院，然後原路回到公司。' },
+      owner:   { egg: true, label: '島主', badge: '彩蛋', icon: 'sparkles', color: 0xfde047, sub: '每次進站大約只有一成的機率出現',
                  trait: '光頭、灰色上衣、黑色褲子，頭上有「島主」的名牌。', desc: '恭喜你遇見島主！每次進入守護島，島主大約只有十分之一的機率出現，下次來不一定遇得到。',
                  carry: '謝謝你來逛守護島，祝你工作平安、身體健康。' }
     };
     let selectedAgent = null, personRing = null, personTimer = null;
     const personDrawer = document.getElementById('personDrawer');
     // 跑服務路徑的人目前走在第幾段（從哪一站到哪一站、手上搬的是什麼）
+    const stopName = (st) => st.label || modById(st.id).name;       // 站名：資料裡有寫 label 就用它，否則用島名
     function agentLeg(a) {
       const sc = SCENARIOS[a.key], n = sc.stops.length;
       const passed = (a.stopsAll || []).filter(k => k <= a.seg).length;
@@ -5357,14 +5274,36 @@
       const first = modById(sc.route[0]), last = modById(sc.route[sc.route.length - 1]);
       const pre = passed === 0 && first.id !== sc.stops[0].id;                       // 還沒到第一站（從起點的島出發中）
       const post = passed >= n && last.id !== sc.stops[n - 1].id;                    // 最後一站已完成，正在回到終點的島
-      return { sc, leg, from, to, carry: sc.carries[leg], pre, post, first, last };
+      return { sc, leg, from, to, carry: sc.carries[leg], pre, post, first, last, fromName: stopName(sc.stops[leg % n]), toName: stopName(sc.stops[(leg + 1) % n]) };
+    }
+    // 人物說明上方的標籤：所屬（醫院／事業單位／一般民眾）、角色（醫師／護理師／安全衛生人員／勞工）、正在進行的服務
+    const TAG_BASE = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold border';
+    const ORG_TAGS = {
+      hospital: { text: '醫院', icon: 'hospital', cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/30' },
+      company:  { text: '事業單位', icon: 'building-2', cls: 'bg-amber-500/15 text-amber-300 border-amber-400/30' },
+      public:   { text: '一般民眾', icon: 'user-round', cls: 'bg-violet-500/15 text-violet-300 border-violet-400/30' }
+    };
+    const JOB_ICONS = { '醫師': 'stethoscope', '護理師': 'heart-pulse', '安全衛生人員': 'hard-hat', '勞工': 'wrench' };
+    function renderPersonTags(R) {
+      const ul = document.getElementById('personTags'); ul.replaceChildren();
+      const add = (kind, text, icon, cls) => {
+        const li = document.createElement('li'); li.className = `${TAG_BASE} ${cls}`;
+        li.innerHTML = `${svgIcon(icon, 'icon-sm')}<span class="sr-only">${kind}：</span><span></span>`;
+        li.lastElementChild.textContent = text; li.title = `${kind}：${text}`;
+        ul.appendChild(li);
+      };
+      if (R.egg) { add('類型', '彩蛋', 'sparkles', 'bg-yellow-400/15 text-yellow-300 border-yellow-300/30'); return; }
+      const org = ORG_TAGS[R.org];
+      if (org) add('所屬', org.text, org.icon, org.cls);
+      if (R.job) add('角色', R.job, JOB_ICONS[R.job] || 'user-round', 'bg-slate-700/60 text-slate-100 border-white/15');
+      if (R.task) add('進行中的服務', R.task, 'activity', 'bg-sky-500/15 text-sky-300 border-sky-400/30');
     }
     function renderPerson() {
       const a = selectedAgent;
       if (!a) return;
       const R = ROLES[a.role] || ROLES.worker, $ = (id) => document.getElementById(id);
       $('personIcon').innerHTML = svgIcon(R.icon, 'icon-lg');
-      $('personBadge').textContent = R.badge;
+      renderPersonTags(R);
       $('personTrait').textContent = R.trait;
       $('personTraitBlock').classList.toggle('hidden', a.role === 'owner');     // 島主是彩蛋，不公開辨認方式
       const ol = $('personRoute'); ol.replaceChildren();
@@ -5381,16 +5320,17 @@
         $('personSub').textContent = `服務路徑：${L.sc.name}（對象：${L.sc.audience}）`;
         $('personDesc').textContent = R.desc;
         $('personDoing').textContent = a.leaving || a.grow < 1 ? `剛完成一趟「${L.sc.name}」，準備開始下一趟。`
-          : L.pre ? `剛從「${L.first.name}」出發，正前往第一站「${L.from.name}」。`
+          : L.pre ? `剛從「${L.first.name}」出發，正前往第一站「${L.fromName}」。`
           : L.post ? `各站都完成了，正回到「${L.last.name}」。`
-          : `正從「${L.from.name}」前往「${L.to.name}」。`;
+          : (a.short && L.leg >= L.sc.optionalFrom - 1) ? `${L.sc.optionalEnd || '評估後不需要轉介'}，流程到「${L.fromName}」結束。`
+          : `正從「${L.fromName}」前往「${L.toName}」。`;
         $('personCarry').textContent = `手上搬的是：${L.carry.text}`;
         L.sc.stops.forEach((st, k) => {
           const li = document.createElement('li');
           const here = L.pre ? k === 0 : L.post ? k === L.sc.stops.length - 1 : (k === L.leg || k === (L.leg + 1) % L.sc.stops.length);
           li.className = 'flex gap-2 ' + (here ? 'text-white' : 'text-slate-400');
           li.innerHTML = `<span class="shrink-0 w-5 h-5 rounded-full text-[11px] font-bold flex items-center justify-center ${here ? 'bg-brand-400 text-slate-950' : 'bg-slate-700 text-slate-300'}">${k + 1}</span><span></span>`;
-          li.lastChild.textContent = `${modById(st.id).name}：${st.text}`;
+          li.lastChild.textContent = `${stopName(st)}：${st.text}`;
           ol.appendChild(li);
         });
       } else if (a.type === 'onsite') {
@@ -5409,7 +5349,7 @@
       } else if (a.type === 'local') {
         $('personTitle').textContent = R.label;
         $('personSub').textContent = `${a.mod.name}`;
-        $('personDesc').textContent = a.role === 'worker' ? `在${a.mod.name}工作的勞工。本科的臨場服務會到這一區的事業單位。` : `住在${a.mod.name}的民眾。`;
+        $('personDesc').textContent = a.role === 'worker' ? `在${a.mod.name}工作的勞工。本科的臨場服務會到這一區的事業單位。` : `住在${a.mod.name}的一般民眾。`;
         $('personDoing').textContent = `正在${a.mod.name}的道路上走動。`;
         $('personCarry').textContent = '';
       } else if (a.type === 'patrol') {
@@ -5716,7 +5656,8 @@
         tile.group.userData = ud;
         tile.group.traverse(child => {
           if (child.isMesh) {
-            child.userData = ud;
+            if (child.userData.lift || child.userData.cvd || child.userData.calc) return;   // 融入造景的小工具：保留自己的標記（建立時已加入可點選清單）
+            child.userData = Object.assign({}, child.userData, ud);
             pickables.push(child);
           }
         });
@@ -5728,9 +5669,6 @@
       buildPedestrians();
       buildAgents();
 
-      buildLiftProp();
-      buildCvdProp();
-      buildCalcProp();
 
       // 醫師不再是站在底座上的公仔，而是和居民一樣走在路上（見 buildAgents 的 doctor 類型）
     }
@@ -5747,6 +5685,56 @@
       return {
         mesh(geo, mat, x, y, z, cast = true) { const m = new THREE.Mesh(geo, mat); m.position.set(x, baseTop + y, z); m.castShadow = cast; m.receiveShadow = true; bGroup.add(m); return m; },
         box(x, y, z, w, h, d, color, yaw = 0) { boxes.push({ m: new THREE.Matrix4().compose(new THREE.Vector3(x, baseTop + y, z), new THREE.Quaternion().setFromAxisAngle(UP, yaw), new THREE.Vector3(w, h, d)), color }); },
+        figMats: {},
+        // 造景人物：站在 (x, z)，面向 ry（0＝朝 +Z），腳底高度 y
+        fig(look, x, z, ry = 0, y = 0.14) { const f = makeFigure(look, this.figMats); f.g.position.set(x, baseTop + y, z); f.g.rotation.y = ry; bGroup.add(f.g); return f; },
+        // 文字看板：一片有底色的牌子，文字可用 \n 換行
+        sign(text, w, h, x, y, z, bg = '#0f766e', fg = '#ffffff', ry = 0) {
+          const tex = cachedTexture(`sign-${text}-${bg}-${w}x${h}`, () => {
+            const W = 512, H = Math.max(48, Math.round(512 * h / w)), cvs = document.createElement('canvas'); cvs.width = W; cvs.height = H;
+            const ctx = cvs.getContext('2d'), lines = text.split('\n'); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+            ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            let size = Math.floor(H * 0.72 / lines.length); const font = (px) => `800 ${px}px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif`;
+            ctx.font = font(size); const widest = Math.max(...lines.map(l => ctx.measureText(l).width));
+            if (widest > W * 0.9) { size = Math.floor(size * W * 0.9 / widest); ctx.font = font(size); }
+            lines.forEach((l, k) => ctx.fillText(l, W / 2, H / 2 + (k - (lines.length - 1) / 2) * size * 1.18 + size * 0.04));
+            return new THREE.CanvasTexture(cvs);
+          });
+          const m = this.mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7 }), x, y, z, false); m.rotation.y = ry; m.userData.sign = true;
+          const back = this.mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ color: bg, roughness: 0.7 }), x, y, z, false); back.rotation.y = ry + Math.PI;   // 背面：素色底板
+          return m;
+        },
+        // 涼亭／遮陽棚：四根柱子撐起一個四角錐屋頂
+        // 椅子：座面高度配合坐姿，ry 是椅子面向的方向
+        chair(x, z, ry = 0, hex = 0x94a3b8) {
+          // 以坐的人為原點：椅面前緣 +0.7（膝蓋在椅面外）、後緣 -1.0；椅背在 -1.04（身體半徑 0.85 的後方）
+          const at = (dx, dz) => [x + dx * Math.cos(ry) + dz * Math.sin(ry), z - dx * Math.sin(ry) + dz * Math.cos(ry)];
+          const [sx, sz] = at(0, -0.15), [bx2, bz] = at(0, -1.04);
+          this.box(sx, 0.14 + SEAT_TOP - 0.07, sz, 1.8, 0.14, 1.7, hex, ry);
+          this.box(bx2, 0.14 + SEAT_TOP + 0.95, bz, 1.8, 1.9, 0.14, hex, ry);
+          [[-0.78, -0.9], [0.78, -0.9], [-0.78, 0.58], [0.78, 0.58]].forEach(([dx, dz]) => { const [lx, lz] = at(dx, dz); this.box(lx, 0.14 + (SEAT_TOP - 0.14) / 2, lz, 0.12, SEAT_TOP - 0.14, 0.12, 0x64748b, ry); });
+        },
+        // 坐著的人物（連同椅子）
+        seat(look, x, z, ry = 0) { this.chair(x, z, ry); const f = this.fig(look, x, z, ry); figureSit(f); return f; },
+        // 會談用的小圓桌（桌面離地 2.0，配合坐姿）
+        roundTable(x, z, r = 1.25) {
+          this.mesh(new THREE.CylinderGeometry(r, r, 0.14, 20), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6 }), x, 0.14 + 1.93, z);
+          this.box(x, 0.14 + 0.93, z, 0.22, 1.86, 0.22, 0x94a3b8); this.box(x, 0.14 + 0.04, z, 1.0, 0.08, 1.0, 0x94a3b8);
+        },
+        // 兩點之間的一根桿子（方形斷面，邊長 t）
+        beam(x0, y0, z0, x1, y1, z1, t, hex) {
+          const a = new THREE.Vector3(x0, baseTop + y0, z0), b = new THREE.Vector3(x1, baseTop + y1, z1);
+          const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), b.clone().sub(a).normalize());
+          boxes.push({ m: new THREE.Matrix4().compose(a.clone().add(b).multiplyScalar(0.5), q, new THREE.Vector3(t, t, a.distanceTo(b))), color: hex });
+        },
+        // 涼亭：四根柱子撐起四角錐形的屋架。只有骨架、沒有實心屋面，從上方看得到裡面的人
+        pavilion(x, z, w, d, h, roofHex, postHex = 0xe2e8f0) {
+          const hw = w / 2 - 0.25, hd = d / 2 - 0.25, top = h + 1.9, ew = w / 2 + 0.5, ed = d / 2 + 0.5;
+          [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => { this.box(x + sx * hw, h / 2, z + sz * hd, 0.3, h, 0.3, postHex); this.beam(x + sx * ew, h, z + sz * ed, x, top, z, 0.26, roofHex); });
+          [-1, 1].forEach(sg => { this.beam(x - ew, h, z + sg * ed, x + ew, h, z + sg * ed, 0.3, roofHex); this.beam(x + sg * ew, h, z - ed, x + sg * ew, h, z + ed, 0.3, roofHex); });
+          [0.5].forEach(f => [-1, 1].forEach(sg => { this.beam(x - ew * f, h + 1.9 * (1 - f), z + sg * ed * f, x + ew * f, h + 1.9 * (1 - f), z + sg * ed * f, 0.16, roofHex); this.beam(x + sg * ew * f, h + 1.9 * (1 - f), z - ed * f, x + sg * ew * f, h + 1.9 * (1 - f), z + ed * f, 0.16, roofHex); }));
+          this.box(x, top + 0.1, z, 0.6, 0.5, 0.6, roofHex);
+        },
         flush() {
           if (!boxes.length) return;
           const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 }); mat.userData.linear = true;
@@ -5757,6 +5745,85 @@
         }
       };
     }
+    // [造景] 造景裡的人物：和居民同樣的造型與大小，站在場景裡做事（不能點選）。正面朝 +Z
+    //   look：{ shirt, pants, cap（null＝光頭，保留給島主，造景不用）, band（反光條）}
+    //   角色外觀：職災勞工＝橘背心＋反光條＋白色繃帶；治療師與造景裡的醫護人員＝淺藍色工作服（不穿白袍，白袍只留給兩位醫師）
+    const STAGE_LOOKS = {
+      patient:   { shirt: '#f97316', pants: '#334155', cap: '#1f1d22', head: 'bandage', band: true },   // 職災勞工：短髮、額頭纏繃帶
+      therapist: { shirt: '#93c5fd', pants: '#93c5fd', cap: '#1f1d22', head: 'short' },                   // 治療師：短髮
+      medic:     { shirt: '#93c5fd', pants: '#93c5fd', cap: '#4a3426', head: 'bun' },                     // 造景裡的醫護人員（淺藍色工作服）：包頭
+      worker:    { shirt: '#5eead4', pants: '#334155', cap: '#facc15', head: 'helmet' },                  // 勞工：黃色安全帽
+      worker2:   { shirt: '#fca5a5', pants: '#475569', cap: '#facc15', head: 'helmet' },
+      checkup:   { shirt: '#3b82f6', pants: '#334155', cap: '#facc15', head: 'helmet' },
+      staff:     { shirt: '#a78bfa', pants: '#334155', cap: '#4a3426', head: 'bob' },                     // 公司的主管或人資：中長髮
+      safety:    { shirt: '#a3e635', pants: '#334155', cap: '#2563eb', head: 'helmet', band: true },      // 安全衛生人員：藍色安全帽
+      nurseCorp: { shirt: '#6ee7b7', pants: '#f8fafc', cap: '#4a3426', head: 'bob' }                      // 事業單位聘僱的護理師：中長髮
+    };
+    // 把幾個幾何合併成一個（各自帶顏色），讓一個人物只需要少數幾次繪製
+    function mergeColored(parts) {
+      const pos = [], nor = [], col = [], c = new THREE.Color(), v = new THREE.Vector3(), n = new THREE.Vector3(), nm = new THREE.Matrix3();
+      parts.forEach(([geo, hex, m]) => {
+        const g = geo.index ? geo.toNonIndexed() : geo, Pa = g.attributes.position, Na = g.attributes.normal;
+        c.set(hex).convertSRGBToLinear(); if (m) nm.getNormalMatrix(m);
+        for (let k = 0; k < Pa.count; k++) {
+          v.fromBufferAttribute(Pa, k); n.fromBufferAttribute(Na, k);
+          if (m) { v.applyMatrix4(m); n.applyMatrix3(nm).normalize(); }
+          pos.push(v.x, v.y, v.z); nor.push(n.x, n.y, n.z); col.push(c.r, c.g, c.b);
+        }
+      });
+      const out = new THREE.BufferGeometry();
+      out.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); out.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); out.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+      return out;
+    }
+    let FIG_MAT = null; const FIG_GEO = {};
+    function makeFigure(look) {
+      if (!FIG_MAT) { FIG_MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7 }); FIG_MAT.userData.linear = true; }
+      const HIP = 1.3;                                   // 髖部的高度：上半身以這裡為軸彎腰
+      const T = (x, y, z) => new THREE.Matrix4().makeTranslation(x, y, z), lite = IS_COARSE_POINTER;     // 手機省略眼睛與手掌
+      const cache = (key, build) => FIG_GEO[key] || (FIG_GEO[key] = build());
+      const head = look.head || (look.cap ? 'short' : 'bald');
+      const torsoGeo = cache(`t|${look.shirt}|${look.cap}|${head}|${look.band ? 1 : 0}|${lite}`, () => {
+        const parts = [[new THREE.CylinderGeometry(0.7, 0.85, 2.1, 12), look.shirt, T(0, 2.35 - HIP, 0)], [new THREE.SphereGeometry(0.78, 14, 10), '#f3cfae', T(0, 3.95 - HIP, 0)]];
+        if (look.band) parts.push([new THREE.CylinderGeometry(0.8, 0.86, 0.3, 12), '#fde047', T(0, 2.5 - HIP, 0)]);
+        if (head !== 'bald') parts.push([new THREE.SphereGeometry(0.82, 14, 6, 0, Math.PI * 2, 0, Math.PI / 2), look.cap, T(0, 4.1 - HIP, 0)]);
+        (HEAD_PARTS[head] || []).forEach(p => { const o = HEAD_OFFSETS[p]; HEAD_SHAPES[p]().forEach(([g, m]) => parts.push([g, headPartColor(p, look.cap), m ? T(o[0], o[1] - HIP, o[2]).multiply(m) : T(o[0], o[1] - HIP, o[2])])); });
+        if (!lite) [-0.27, 0.27].forEach(x => parts.push([new THREE.SphereGeometry(0.1, 8, 6), '#1f2937', T(x, 4.02 - HIP, 0.71)]));
+        return mergeColored(parts);
+      });
+      const legGeo = cache(`l|${look.pants}`, () => mergeColored([[new THREE.BoxGeometry(0.42, 1.3, 0.42), look.pants, T(0, -0.65, 0)]]));
+      const armGeo = cache(`a|${look.shirt}|${lite}`, () => { const parts = [[new THREE.BoxGeometry(0.3, 1.5, 0.3), look.shirt, T(0, -0.75, 0)]]; if (!lite) parts.push([new THREE.SphereGeometry(0.2, 8, 6), '#f3cfae', T(0, -1.55, 0)]); return mergeColored(parts); });
+      const g = new THREE.Group(), upper = new THREE.Group();
+      const part = (geo, parent, x, y, z, cast) => { const m = new THREE.Mesh(geo, FIG_MAT); m.position.set(x, y, z); m.castShadow = cast; parent.add(m); return m; };
+      // 結構：腿直接掛在人物上（原點在髖部）；身體、頭、手臂掛在「上半身」底下，上半身以髖部為軸，可以往前彎腰
+      const legL = part(legGeo, g, -0.3, 1.35, 0, false), legR = part(legGeo, g, 0.3, 1.35, 0, false);
+      upper.position.set(0, HIP, 0); g.add(upper);
+      part(torsoGeo, upper, 0, 0, 0, true);
+      const armL = part(armGeo, upper, -0.92, 3.3 - HIP, 0, false), armR = part(armGeo, upper, 0.92, 3.3 - HIP, 0, false);
+      return { g, legL, legR, armL, armR, upper, look };
+    }
+    // 走路的姿勢：腿前後擺、手臂反向擺（amp 越小越慢、越小步）
+    function figureWalk(f, ph, amp = 0.5) {
+      const sw = Math.sin(ph) * amp;
+      f.legL.rotation.x = sw; f.legR.rotation.x = -sw;
+      f.armL.rotation.x = -sw * 0.8; f.armR.rotation.x = sw * 0.8;
+    }
+    // 坐姿。回傳坐下後肩膀離地的高度
+    const SEAT_TOP = 0.89, SIT_DROP = 1.3 - SEAT_TOP;      // 椅面離地的高度；坐下時身體下降的量（身體底面剛好落在椅面）
+    function figureSit(f) {
+      // 大腿：往前平放，底面和身體底面同高（都貼著椅面）；小腿：從膝蓋垂到地面，腳踩在地上
+      f.legL.rotation.x = f.legR.rotation.x = -Math.PI / 2;
+      f.legL.position.y = f.legR.position.y = 1.3 + 0.21;
+      const L = SEAT_TOP + 0.42, pants = f.look.pants;
+      const shinGeo = FIG_GEO[`s|${pants}`] || (FIG_GEO[`s|${pants}`] = mergeColored([[new THREE.BoxGeometry(0.42, 0.42, L), pants, new THREE.Matrix4().makeTranslation(0, -1.09, 0.21 - L / 2)]]));
+      [f.legL, f.legR].forEach(l => l.add(new THREE.Mesh(shinGeo, FIG_MAT)));
+      f.g.position.y -= SIT_DROP;
+      return 3.3 - SIT_DROP;                                 // 坐下後肩膀離地的高度
+    }
+    // 手放在桌面上時手臂要抬的角度（桌面離地 top、肩膀離地 sh；手掌半徑 0.2，手剛好貼著桌面）
+    const restAngle = (sh, top) => Math.acos(Math.max(-1, Math.min(1, (sh - (top + 0.2)) / 1.55)));
+    const pingPong = (t, speed) => { const p = (t * speed) % 2; return p < 1 ? p : 2 - p; };   // 0→1→0 來回
+    const ease = (u) => u * u * (3 - 2 * u);
+
     // 大樓立面的貼圖：stone = 石材牆面上一格一格的小窗；band = 一層一層的橫向帶狀窗。回傳 [顏色貼圖, 夜間發光貼圖]
     function facadeTextures(key, kind, cols, rows, wall, glass) {
       const make = (lit) => cachedTexture(`facade-${key}-${lit ? 'e' : 'c'}`, () => {
@@ -5965,234 +6032,472 @@
         } });
 
       } else if (mod.id === 1) {
-        // 環境探勘哨所
-        const bunker = new THREE.Mesh(
-          new THREE.CylinderGeometry(11, 13, 8, 8),
-          new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7, flatShading: true })
-        );
-        bunker.position.y = baseTop + 4;
-        bunker.castShadow = true;
-        bGroup.add(bunker);
-
-        const mast = new THREE.Mesh(
-          new THREE.CylinderGeometry(1.2, 1.6, 14, 8),
-          new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.6 })
-        );
-        mast.position.y = baseTop + 14;
-        bGroup.add(mast);
-
-        const dishPivot = new THREE.Group();
-        dishPivot.position.set(0, baseTop + 21, 0);
-        const dish = new THREE.Mesh(
-          new THREE.CylinderGeometry(6, 1.5, 2.5, 12, 1, true),
-          new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.5, side: THREE.DoubleSide })
-        );
-        dish.rotation.x = Math.PI / 4;
-        dishPivot.add(dish);
-        const needle = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 5, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-        needle.position.set(0, 2, 2);
-        needle.rotation.x = Math.PI / 4;
-        dishPivot.add(needle);
-        bGroup.add(dishPivot);
-        rotatingElements.push({ mesh: dishPivot, axis: 'y', speed: 0.035 });
-
-        const solarMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.7, roughness: 0.2 });
-        const solarGeo = new THREE.BoxGeometry(6, 0.4, 4);
-        [-1, 1].forEach(i => {
-          const panel = new THREE.Mesh(solarGeo, solarMat);
-          panel.position.set(i * 12, baseTop + 3, 6);
-          panel.rotation.x = -Math.PI / 6;
-          bGroup.add(panel);
+        // 工作環境危害評估：作業現場。半開放的棚架下有機台與輸送帶，地上有黃色標線與警示牌；
+        //   醫護人員與職安人員並肩巡視現場、在各處停下來討論並記錄；堆置區有一位勞工在兩疊棧板之間搬紙箱，點他可以打開「搬抬演示」
+        const K = makeBuildKit(bGroup, baseTop), FY = 0.14, L = STAGE_LOOKS;
+        K.mesh(rbox(30, 0.14, 21, 0.4), new THREE.MeshStandardMaterial({ color: 0xd9d6cf, roughness: 0.95 }), -1, 0.07, 3, false);
+        // 棚架
+        const roofM = new THREE.MeshStandardMaterial({ color: 0x7c8aa0, roughness: 0.6, metalness: 0.3 });
+        const roof = K.mesh(new THREE.BoxGeometry(18, 0.35, 8.6), roofM, -4.5, 6.9, -9.2); roof.rotation.x = -0.09;
+        [-13, -4.5, 4].forEach(x => { K.box(x, 3.6, -13.1, 0.4, 7.2, 0.4, 0x64748b); K.box(x, 3.2, -5.3, 0.4, 6.4, 0.4, 0x64748b); });
+        K.box(-4.5, 3.4, -13.3, 17.4, 6.4, 0.2, 0xb8c2cf);                                // 後牆
+        // 機台與輸送帶
+        const mach = new THREE.MeshStandardMaterial({ color: 0x3f6b5a, roughness: 0.6, metalness: 0.2 });
+        K.mesh(rbox(3.6, 3.4, 3, 0.2), mach, -10.6, 1.7, -9.6); K.box(-10.6, 2.6, -8.05, 1.6, 1.0, 0.08, 0x1f2937); K.box(-10.2, 2.7, -8.0, 0.3, 0.3, 0.04, 0x22c55e); K.box(-10.9, 2.7, -8.0, 0.3, 0.3, 0.04, 0xef4444);
+        K.mesh(new THREE.CylinderGeometry(0.5, 0.5, 2.6, 12), new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.4, metalness: 0.5 }), -10.6, 5.0, -9.6);   // 局部排氣管
+        K.box(-3.6, FY + 1.75, -9.6, 10.4, 0.22, 1.6, 0x1f2937); [-8.2, -5.2, -2.2, 0.8].forEach(x => K.box(x, FY + 0.85, -9.6, 0.2, 1.7, 1.3, 0x64748b));
+        K.mesh(rbox(2.6, 2.6, 2.4, 0.2), new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6 }), 2.8, 1.3, -9.6);
+        const beltBoxes = [0, 1, 2].map(k => K.mesh(new THREE.BoxGeometry(1.0, 0.8, 0.9), new THREE.MeshStandardMaterial({ color: 0xc8a46e, roughness: 0.8 }), -8 + k * 3.2, FY + 2.26, -9.6));
+        // 黃色標線與警示牌
+        [[-4.5, -4.2, 18.4, 0.3], [-4.5, -13.9, 18.4, 0.3], [-13.7, -9.05, 0.3, 10], [4.7, -9.05, 0.3, 10]].forEach(([x, z, w, d]) => K.box(x, FY + 0.02, z, w, 0.04, d, 0xfacc15));
+        K.box(-12.2, FY + 1.6, -3.4, 0.14, 3.2, 0.14, 0x64748b); K.sign('噪音作業區\n請戴耳塞', 3.4, 2.0, -12.2, FY + 3.4, -3.32, '#facc15', '#1f2937');
+        // 醫護人員與職安人員共同巡視現場（本科不做作業環境監測，所以不放噪音計、熱危害量測器與測點旗）
+        const walkerA = K.fig(L.medic, -8.2, -2.9, Math.PI), walkerB = K.fig(L.safety, -6.3, -2.9, Math.PI), operator = K.fig(L.worker, -5.6, -7.7, Math.PI);
+        const clip = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.95, 0.08), new THREE.MeshStandardMaterial({ color: 0xb98a5e, roughness: 0.7 })); clip.position.set(0.2, -1.55, 0.3); clip.rotation.x = 0.9; walkerB.armL.add(clip);
+        // 巡視路線：機台 → 輸送帶 → 堆置區 → 回到機台。look 是停下來時看的地方
+        const tourPts = [{ x: -8.2, z: -2.9, look: [-10.6, -9.6] }, { x: 0.2, z: -2.9, look: [-3.6, -9.6] }, { x: 4.4, z: 3.0 }, { x: -2.4, z: 6.4, look: [LIFT_PROP.x, LIFT_PROP.z] }, { x: -2.4, z: 1.2 }];   // 第三站停在堆置區，看那位勞工搬紙箱
+        const SPEED = 3.0, DWELL = 6.5, legsT = tourPts.map((p, k) => { const q = tourPts[(k + 1) % tourPts.length]; return Math.hypot(q.x - p.x, q.z - p.z) / SPEED; });
+        const cycleT = legsT.reduce((a, b2) => a + b2, 0) + DWELL * tourPts.filter(p => p.look).length;
+        // 堆置區：勞工把紙箱在左右兩個棧板之間搬來搬去（搬抬演示的入口）；旁邊是化學品桶
+        //   紙箱直接放在貼地的棧板上，所以要彎腰才搬得到：上半身往前彎約 65 度、雙手垂下抓住紙箱，再挺身抱到腰前、轉身，彎腰放到另一個棧板
+        const LX = LIFT_PROP.x, LZ = LIFT_PROP.z, BEND = 1.13, REACH = 2.0 * Math.sin(BEND);        // 彎腰時雙手垂下的位置離腳的水平距離
+        [-1, 1].forEach(sd => {
+          K.box(LX + sd * REACH, FY + 0.1, LZ, 1.5, 0.2, 4.3, 0xb98a5e);
+          [-1.62, 1.62].forEach(dz => K.box(LX + sd * (REACH + 0.05), FY + 0.6, LZ + dz, 1.15, 0.8, 0.85, 0xc8a46e));       // 棧板上其他的紙箱（讓開雙手的位置）
+        });
+        const lifter = K.fig(L.worker2, LX, LZ, -Math.PI / 2);
+        const carryBox = K.mesh(new THREE.BoxGeometry(1.5, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: 0xd2ad78, roughness: 0.8 }), LX - REACH, FY + 0.6, LZ);
+        const handL = new THREE.Vector3(), handR = new THREE.Vector3();
+        markTool(lifter.g, 'lift'); markTool(carryBox, 'lift');
+        toolHitBox(bGroup, 'lift', LX, baseTop + FY + 2.5, LZ, 6.4, 5.0, 4.6);
+        [[-12.6, 10.4, 0x2563eb], [-10.9, 11.2, 0xf97316], [-12.2, 12.2, 0x2563eb]].forEach(([x, z, c]) => { K.mesh(new THREE.CylinderGeometry(0.7, 0.7, 2.0, 14), new THREE.MeshStandardMaterial({ color: c, roughness: 0.5 }), x, FY + 1.0, z); K.box(x, FY + 1.2, z + 0.71, 0.6, 0.6, 0.02, 0xfacc15); });
+        [[4.2, 8.4], [5.4, 9.2], [3.2, 9.8]].forEach(([x, z]) => { K.mesh(new THREE.ConeGeometry(0.4, 1.3, 10), new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.6 }), x, FY + 0.65, z); K.box(x, FY + 0.05, z, 0.9, 0.1, 0.9, 0xf97316); });
+        K.flush();
+        LANDMARK_ANIMS.push((t) => {
+          beltBoxes.forEach((b2, k) => { b2.position.x = -8.4 + ((t * 0.9 + k * 3.2) % 9.6); });        // 輸送帶上的紙箱
+          operator.armL.rotation.x = -1.0 + Math.sin(t * 2.2) * 0.25; operator.armR.rotation.x = -1.0 + Math.sin(t * 2.2 + 1.6) * 0.25;
+          // 搬紙箱：彎腰抓住 → 挺身抱到腰前 → 轉身 → 彎腰放下，再反方向搬回來。紙箱永遠在兩手之間（位置由兩隻手的實際位置算出）
+          {
+            const HALF = 6, p = (t % HALF) / HALF, back = Math.floor(t / HALF) % 2 === 1;
+            const up = p < 0.32 ? ease(p / 0.32) : p < 0.68 ? 1 : 1 - ease((p - 0.68) / 0.32);          // 0＝彎腰，1＝站直
+            const turn = p < 0.32 ? 0 : p < 0.68 ? ease((p - 0.32) / 0.36) : 1;
+            const yaw = -Math.PI / 2 + Math.PI * (back ? 1 - turn : turn);                              // -90 度＝面向左邊的棧板，+90 度＝面向右邊的棧板
+            const bend = BEND * (1 - up), arm = -BEND + (BEND - 0.9) * up;                               // 彎腰時手臂相對身體往回收，剛好垂直往下；站直時往前抱
+            lifter.g.rotation.y = yaw; lifter.upper.rotation.x = bend;
+            lifter.armL.rotation.set(arm, 0, 0); lifter.armR.rotation.set(arm, 0, 0);
+            lifter.g.updateMatrixWorld(true);
+            lifter.armL.localToWorld(handL.set(0, -1.55, 0)); lifter.armR.localToWorld(handR.set(0, -1.55, 0));
+            carryBox.position.copy(bGroup.worldToLocal(handL.add(handR).multiplyScalar(0.5)));
+            carryBox.rotation.y = yaw;
+          }
+          // 兩人並肩沿路線走，到每一站停下來：醫護人員指著現場說明，職安人員在板夾上記錄
+          let tt = t % cycleT, px = 0, pz = 0, yaw = 0, stopped = false;
+          for (let k = 0; k < tourPts.length; k++) {
+            const p0 = tourPts[k], p1 = tourPts[(k + 1) % tourPts.length];
+            if (p0.look) { if (tt < DWELL) { px = p0.x; pz = p0.z; yaw = Math.atan2(p0.look[0] - p0.x, p0.look[1] - p0.z); stopped = true; break; } tt -= DWELL; }
+            if (tt < legsT[k]) { const u = tt / legsT[k]; px = p0.x + (p1.x - p0.x) * u; pz = p0.z + (p1.z - p0.z) * u; yaw = Math.atan2(p1.x - p0.x, p1.z - p0.z); break; }
+            tt -= legsT[k];
+          }
+          const sx = Math.cos(yaw) * 1.9, sz = -Math.sin(yaw) * 1.9;                     // 第二個人站在旁邊
+          walkerA.g.position.x = px; walkerA.g.position.z = pz; walkerB.g.position.x = px + sx; walkerB.g.position.z = pz + sz;
+          walkerA.g.rotation.y = yaw; walkerB.g.rotation.y = stopped ? yaw - 0.35 + Math.sin(t * 0.5) * 0.1 : yaw;
+          if (stopped) {
+            figureWalk(walkerA, 0, 0); figureWalk(walkerB, 0, 0);
+            walkerA.armR.rotation.x = -1.35 + Math.sin(t * 1.3) * 0.12;                   // 抬手指向現場
+            walkerB.armR.rotation.x = -0.95 + Math.sin(t * 6) * 0.06;                     // 寫字
+          } else { figureWalk(walkerA, t * 4.2, 0.45); figureWalk(walkerB, t * 4.2 + 0.6, 0.45); }
+          walkerB.armL.rotation.x = -1.0;                                                // 另一手一直拿著板夾
         });
 
       } else if (mod.id === 2) {
-        // 適能選配所
-        const hall = new THREE.Mesh(
-          new THREE.CylinderGeometry(12, 14, 10, 40),
-          new THREE.MeshStandardMaterial({ color: 0x0891b2, roughness: 0.45 })
-        );
-        hall.position.y = baseTop + 5;
-        hall.castShadow = true;
-        bGroup.add(hall);
-
-        const dome = new THREE.Mesh(
-          new THREE.SphereGeometry(8, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2),
-          new THREE.MeshStandardMaterial({ color: 0x06b6d4, roughness: 0.2, metalness: 0.5, transparent: true, opacity: 0.85 })
-        );
-        dome.position.y = baseTop + 10;
-        bGroup.add(dome);
-
-        const gearPivot = new THREE.Group();
-        gearPivot.position.set(0, baseTop + 18, 0);
-        gearPivot.add(new THREE.Mesh(
-          new THREE.TorusGeometry(5, 0.4, 8, 24),
-          new THREE.MeshStandardMaterial({ color: 0x67e8f9, emissive: 0x0891b2, emissiveIntensity: 0.5 })
-        ));
-        gearPivot.add(new THREE.Mesh(
-          new THREE.BoxGeometry(12, 0.5, 0.5),
-          new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.8 })
-        ));
-        bGroup.add(gearPivot);
-        rotatingElements.push({ mesh: gearPivot, axis: 'y', speed: -0.02 });
+        // 員工工作適應性評估：模擬工作站。中央是可以升降的工作檯，勞工在檯前作業，醫護人員拿板夾評估、公司主管在旁討論；
+        //   旁邊有標示重量的荷重箱與量尺，右後方的涼亭是會談區
+        const K = makeBuildKit(bGroup, baseTop), FY = 0.14, L = STAGE_LOOKS;
+        K.mesh(rbox(30, 0.14, 21, 0.4), new THREE.MeshStandardMaterial({ color: 0xfbf0cf, roughness: 0.95 }), 0, 0.07, 4.5, false);
+        const glassM = new THREE.MeshStandardMaterial({ color: 0x7a5a1e, roughness: 0.2, metalness: 0.4, emissive: 0xffe6b8, emissiveIntensity: 0 });
+        K.mesh(rbox(15, 6.4, 6.2, 0.3), new THREE.MeshStandardMaterial({ color: 0xfdf8ec, roughness: 0.75 }), -3.5, 3.2, -12.4);
+        K.mesh(new THREE.BoxGeometry(12.6, 3.1, 0.12), glassM, -3.5, 2.2, -9.26, false);
+        [-9.5, -6.5, -3.5, -0.5, 2.5].forEach(x => K.box(x, 2.2, -9.2, 0.22, 3.2, 0.2, 0xb45309));
+        K.box(-3.5, 4.15, -8.3, 15.6, 0.28, 2.2, 0xb45309); K.box(-3.5, 6.55, -12.4, 15.4, 0.3, 6.6, 0xeadfc4);
+        K.sign('工作適應性評估', 9.4, 1.7, -3.5, 7.6, -9.5, '#b45309');
+        // 升降工作檯（檯面會慢慢升降，表示依個人調整工作站的高度）
+        const tz = 5.6;
+        [-1.5, 1.5].forEach(x => { K.box(x, FY + 0.12, tz, 0.9, 0.24, 2.0, 0x64748b); K.box(x, FY + 1.1, tz, 0.5, 1.9, 0.5, 0x94a3b8); });
+        const lift = new THREE.Group(); bGroup.add(lift);
+        const topM = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6 }), colM = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.4, metalness: 0.5 });
+        const top = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.18, 2.0), topM); top.castShadow = true; lift.add(top);
+        [-1.5, 1.5].forEach(x => { const c2 = new THREE.Mesh(new THREE.BoxGeometry(0.34, 1.6, 0.34), colM); c2.position.set(x, -0.89, 0); lift.add(c2); });
+        [[-1.2, 0xf97316], [-0.2, 0x38bdf8], [0.9, 0x22c55e]].forEach(([x, c]) => { const p = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.45, 0.6), new THREE.MeshStandardMaterial({ color: c, roughness: 0.6 })); p.position.set(x, 0.32, -0.3); lift.add(p); });
+        lift.position.set(0, baseTop + FY + 2.5, tz);
+        const opr = K.fig(L.worker, 0, tz + 1.9, Math.PI), asr = K.fig(L.medic, 4.4, tz + 1.4, -Math.PI * 0.72), boss = K.fig(L.staff, -4.4, tz + 1.6, Math.PI * 0.72);
+        asr.armL.rotation.x = -1.0;
+        const clip = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.95, 0.08), new THREE.MeshStandardMaterial({ color: 0xb98a5e, roughness: 0.7 })); clip.position.set(0.2, -1.55, 0.3); clip.rotation.x = 0.9; asr.armL.add(clip);
+        // 量尺
+        K.box(3.2, FY + 2.6, tz - 1.4, 0.16, 5.2, 0.16, 0xfacc15); for (let k = 1; k <= 9; k++) K.box(3.32, FY + k * 0.5, tz - 1.4, 0.3, 0.05, 0.05, 0x1f2937);
+        // 荷重箱：三種重量
+        K.box(-10, FY + 0.12, 4.8, 6.4, 0.24, 2.4, 0xb98a5e);
+        [['5 公斤', 0x86efac, 0.9], ['10 公斤', 0xfde047, 1.15], ['15 公斤', 0xfca5a5, 1.4]].forEach(([txt, c, sz], k) => {
+          const x = -12 + k * 2.05; K.box(x, FY + 0.24 + sz / 2, 4.8, sz, sz, sz, c); K.sign(txt, sz * 0.9, sz * 0.4, x, FY + 0.24 + sz / 2, 4.8 + sz / 2 + 0.02, '#ffffff', '#1f2937');
+        });
+        // 會談涼亭
+        K.pavilion(9.6, -2.4, 6.4, 6.4, 5.4, 0xd97706);
+        K.roundTable(9.6, -2.4);
+        const talkA = K.seat(L.medic, 7.7, -2.4, Math.PI / 2), talkB = K.seat(L.patient, 11.5, -2.4, -Math.PI / 2);   // 面對面坐著會談
+        K.flush();
+        LANDMARK_ANIMS.push((t) => {
+          const h = 2.3 + 0.55 * (0.5 + 0.5 * Math.sin(t * 0.45));                     // 檯面高度
+          lift.position.y = baseTop + FY + h;
+          const th = Math.acos(Math.max(-1, Math.min(1, (3.3 - (h + 0.29)) / 1.55)));       // 手剛好放在檯面上
+          opr.armL.rotation.x = -th + Math.sin(t * 2.4) * 0.06; opr.armR.rotation.x = -th + Math.sin(t * 2.4 + 1.5) * 0.06;
+          asr.g.rotation.y = -Math.PI * 0.72 + Math.sin(t * 0.4) * 0.1;
+          boss.armR.rotation.x = -0.6 + Math.sin(t * 1.2) * 0.25; boss.g.rotation.y = Math.PI * 0.72 + Math.sin(t * 0.35 + 1) * 0.12;
+          const r2 = restAngle(3.3 - SIT_DROP, 2.0);
+          talkA.armL.rotation.x = -r2; talkA.armR.rotation.x = -r2 - 0.3 * (0.5 + 0.5 * Math.sin(t * 1.5)); talkB.armL.rotation.x = talkB.armR.rotation.x = -r2;
+          talkB.g.rotation.y = -Math.PI / 2 + Math.sin(t * 0.3) * 0.05;
+        });
+        nightLinked.push({ apply: (n) => { glassM.emissiveIntensity = 0.9 * n; } });
 
       } else if (mod.id === 3) {
-        // 因果真理燈塔
-        const tower = new THREE.Mesh(
-          new THREE.CylinderGeometry(4.2, 7.5, 28, 28),
-          new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.5 })
-        );
-        tower.position.y = baseTop + 14;
-        tower.castShadow = true;
-        bGroup.add(tower);
-
-        const redMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.4 });
-        const stripe1 = new THREE.Mesh(new THREE.CylinderGeometry(5.2, 6.2, 5.5, 28), redMat);
-        stripe1.position.y = baseTop + 12;
-        bGroup.add(stripe1);
-        const stripe2 = new THREE.Mesh(new THREE.CylinderGeometry(4.4, 4.8, 4.5, 28), redMat);
-        stripe2.position.y = baseTop + 23;
-        bGroup.add(stripe2);
-
-        const lantern = new THREE.Mesh(
-          new THREE.CylinderGeometry(4.5, 4.5, 4.5, 28),
-          new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8 })
-        );
-        lantern.position.y = baseTop + 29;
-        bGroup.add(lantern);
-
-        const cap = new THREE.Mesh(
-          new THREE.ConeGeometry(5.5, 3.5, 28),
-          new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.5 })
-        );
-        cap.position.y = baseTop + 33;
-        bGroup.add(cap);
-
-        const lightPivot = new THREE.Group();
-        lightPivot.position.set(0, baseTop + 29, 0);
-        lightPivot.add(new THREE.Mesh(new THREE.SphereGeometry(1.6, 12, 12), new THREE.MeshBasicMaterial({ color: 0xe0f2fe })));
-
-        const beamLength = 54;
-        const beamGeo = new THREE.CylinderGeometry(0.8, 10, beamLength, 24, 1, true);
-        beamGeo.translate(0, -beamLength / 2, 0);
-        beamGeo.rotateX(-Math.PI / 2);
-        const beamMesh = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({
-          color: 0x38bdf8, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending
-        }));
-        beamMesh.raycast = () => {}; // [修正] 54 單位長的光錐不參與點擊，避免點空中卻選到燈塔
-        // [畫質] 白天看不到探照光，只在黃昏與夜晚亮起
-        nightLinked.push({ apply: (n) => { beamMesh.material.opacity = 0.32 * n; beamMesh.visible = n > 0.05; } });
-        lightPivot.add(beamMesh);
-        bGroup.add(lightPivot);
-        rotatingElements.push({ mesh: lightPivot, axis: 'y', speed: 0.028 });
+        // 職業病與傷害診治：門診。後方是門診棟，左後是掛號櫃台，左前是有屋頂的候診長廊，右前是開放式的診間亭（診療桌、電腦、診療床）
+        const K = makeBuildKit(bGroup, baseTop), FY = 0.14, L = STAGE_LOOKS;
+        K.mesh(rbox(30, 0.14, 21, 0.4), new THREE.MeshStandardMaterial({ color: 0xdff1e4, roughness: 0.95 }), 0, 0.07, 4.5, false);
+        const glassM = new THREE.MeshStandardMaterial({ color: 0x2c6b55, roughness: 0.2, metalness: 0.4, emissive: 0xffe6b8, emissiveIntensity: 0 });
+        K.mesh(rbox(15, 6.8, 6.2, 0.3), new THREE.MeshStandardMaterial({ color: 0xf5faf6, roughness: 0.75 }), 3.5, 3.4, -12.4);
+        K.mesh(new THREE.BoxGeometry(12.6, 3.3, 0.12), glassM, 3.5, 2.3, -9.26, false);
+        [-2.5, 0.5, 3.5, 6.5, 9.5].forEach(x => K.box(x, 2.3, -9.2, 0.22, 3.4, 0.2, 0x15803d));
+        K.box(3.5, 4.4, -8.3, 15.6, 0.28, 2.2, 0x15803d); K.box(3.5, 6.95, -12.4, 15.4, 0.3, 6.6, 0xd3e6d8);
+        K.sign('職業醫學科門診', 9.4, 1.7, 4.4, 8.0, -9.5, '#15803d');
+        K.box(-2.2, 8.0, -9.5, 1.7, 1.7, 0.1, 0xffffff); K.box(-2.2, 8.0, -9.42, 1.2, 0.4, 0.06, 0x16a34a); K.box(-2.2, 8.0, -9.42, 0.4, 1.2, 0.06, 0x16a34a);   // 綠十字
+        // 掛號櫃台
+        K.box(-10.4, FY + 1.3, -5.2, 5.0, 2.6, 1.5, 0xf1f5f9); K.box(-10.4, FY + 2.66, -5.2, 5.3, 0.14, 1.9, 0x15803d);
+        K.box(-12.7, FY + 2.75, -5.2, 0.2, 5.5, 0.2, 0x94a3b8); K.box(-8.1, FY + 2.75, -5.2, 0.2, 5.5, 0.2, 0x94a3b8); K.box(-10.4, FY + 5.6, -5.2, 5.6, 0.3, 2.6, 0x15803d);
+        K.sign('掛號', 2.4, 0.9, -10.4, FY + 4.9, -4.2, '#15803d');
+        const clerk = K.fig(L.medic, -10.4, -6.9, 0), regW = K.fig(L.checkup, -10.4, -2.6, Math.PI);
+        // 候診長廊：屋頂、長椅與候診的人
+        [7.75, 11.45].forEach(z => K.box(-7.5, FY + 5.4, z, 13.6, 0.28, 0.3, 0x4d9f7a)); [-14.15, -0.85].forEach(x => K.box(x, FY + 5.4, 9.6, 0.3, 0.28, 4.0, 0x4d9f7a));
+        for (let k2 = 1; k2 < 10; k2++) K.box(-14.15 + k2 * 1.33, FY + 5.55, 9.6, 0.14, 0.16, 4.3, 0x8ecbb0);   // 格柵屋頂：從上方看得到候診的人
+        [-13.8, -7.5, -1.2].forEach(x => [8.0, 11.2].forEach(z => K.box(x, FY + 2.6, z, 0.26, 5.2, 0.26, 0xcbd5e1)));
+        // 一排候診椅（面向前方），三個人坐著等候，另外三張空著
+        const waitX = [0, 1, 2, 3, 4, 5].map(k => -12.5 + k * 2.1), waitLooks = [L.patient, null, L.worker2, null, L.checkup, null];
+        const waiters = []; waitX.forEach((x, k) => { if (waitLooks[k]) waiters.push(K.seat(waitLooks[k], x, 9.9, 0)); else K.chair(x, 9.9, 0, 0x8ecbb0); });
+        K.sign('候診區', 3.0, 0.9, -7.5, FY + 4.6, 7.86, '#4d9f7a');
+        // 診間亭：診療桌、電腦、診療床，醫護人員為勞工看診
+        K.pavilion(8.2, 5.4, 9, 7.6, 5.8, 0x4d9f7a);
+        // 診療桌（桌面離地 2.0，配合坐姿）：螢幕在桌子遠側、鍵盤在兩手之間
+        K.box(6.4, FY + 1.92, 4.6, 3.0, 0.16, 1.5, 0xf8fafc); [[-1.3, -0.6], [1.3, -0.6], [-1.3, 0.6], [1.3, 0.6]].forEach(([dx, dz]) => K.box(6.4 + dx, FY + 0.92, 4.6 + dz, 0.14, 1.84, 0.14, 0x94a3b8));
+        K.box(6.4, FY + 2.72, 5.1, 1.4, 0.95, 0.08, 0x1f2937); K.box(6.4, FY + 2.13, 5.1, 0.2, 0.26, 0.2, 0x475569); K.box(6.4, FY + 2.03, 4.3, 1.1, 0.05, 0.4, 0xe2e8f0);
+        K.box(10.4, FY + 1.5, 7.0, 4.2, 0.5, 1.7, 0xffffff); K.box(10.4, FY + 0.65, 7.0, 3.8, 1.3, 1.3, 0xcbd5e1); K.box(12.0, FY + 1.9, 7.0, 0.9, 0.3, 1.2, 0xbfdbfe);
+        const doc2 = K.seat(L.medic, 6.4, 2.8, 0), pat2 = K.seat(L.patient, 9.5, 4.2, -Math.PI / 2);   // 醫護人員坐在桌前，勞工坐在桌子旁邊
+        K.flush();
+        LANDMARK_ANIMS.push((t) => {
+          const r3 = restAngle(3.3 - SIT_DROP, 2.0);
+          doc2.armL.rotation.x = -r3 - 0.04 * (1 + Math.sin(t * 6)); doc2.armR.rotation.x = -r3 - 0.04 * (1 + Math.sin(t * 6 + 1.6));   // 打字記錄
+          doc2.g.rotation.y = 0.1 * Math.max(0, Math.sin(t * 0.35)) ** 2;                    // 不時微微轉向勞工（幅度要小，手才不會掃到鍵盤）
+          pat2.g.rotation.y = -Math.PI / 2 + Math.sin(t * 0.4 + 1) * 0.05;
+          clerk.armR.rotation.x = -1.42 + Math.sin(t * 1.3) * 0.08;                            // 手在櫃台上方（不壓進櫃台）
+          waiters.forEach((w, k) => { w.g.rotation.y = Math.sin(t * 0.3 + k * 2.1) * 0.12; });   // 候診的人左右張望
+        });
+        nightLinked.push({ apply: (n) => { glassM.emissiveIntensity = 0.9 * n; } });
 
       } else if (mod.id === 4) {
-        // 復能再造基地
-        const workshop = new THREE.Mesh(
-          rbox(20, 11, 16, 0.9),
-          new THREE.MeshStandardMaterial({ color: 0x0f766e, roughness: 0.6 })
-        );
-        workshop.position.y = baseTop + 5.5;
-        workshop.castShadow = true;
-        bGroup.add(workshop);
-
-        const gantryMat = new THREE.MeshStandardMaterial({ color: 0x10b981, metalness: 0.6 });
-        const postGeo = new THREE.BoxGeometry(1.5, 18, 1.5);
-        [-8, 8].forEach(x => {
-          const post = new THREE.Mesh(postGeo, gantryMat);
-          post.position.set(x, baseTop + 9, 7);
-          bGroup.add(post);
+        // 職能復健與重返職場：戶外功能訓練場。後方是職能復健中心，前方的訓練地墊上有平行桿、階梯訓練台、搬運訓練架與推車道；
+        //   職災勞工（橘背心、白色繃帶）在治療師（淺藍色工作服）陪同下做訓練
+        const K = makeBuildKit(bGroup, baseTop), mats = {}, FY = 0.14;     // FY：訓練地墊的高度
+        // 訓練地墊
+        K.mesh(rbox(31, 0.14, 21, 0.4), new THREE.MeshStandardMaterial({ color: 0x8fd3c4, roughness: 0.95 }), 0, 0.07, 6.5, false);
+        K.box(0, 0.15, 6.5, 30.6, 0.02, 0.18, 0xffffff); K.box(-5.2, 0.15, 6.5, 0.18, 0.02, 20.6, 0xffffff);
+        // 職能復健中心（後方）
+        const wallM = new THREE.MeshStandardMaterial({ color: 0xeef6f4, roughness: 0.75 });
+        const glassM = new THREE.MeshStandardMaterial({ color: 0x2b6f73, roughness: 0.2, metalness: 0.4, emissive: 0xffe6b8, emissiveIntensity: 0 });
+        K.mesh(rbox(19, 7, 7, 0.3), wallM, 0, 3.5, -12.2);
+        K.mesh(new THREE.BoxGeometry(16, 3.4, 0.12), glassM, 0, 2.3, -8.66, false);
+        [-8, -4, 0, 4, 8].forEach(x => K.box(x, 2.3, -8.6, 0.25, 3.5, 0.2, 0x0f766e));
+        K.box(0, 4.35, -7.5, 19.6, 0.3, 2.6, 0x0f766e);                        // 雨遮
+        [-9, 9].forEach(x => K.box(x, 2.1, -6.4, 0.3, 4.2, 0.3, 0xe2e8f0));
+        K.box(0, 7.15, -12.2, 19.4, 0.3, 7.4, 0xcfe3df);
+        const signTex = cachedTexture('rehab-sign', () => {
+          const cvs = document.createElement('canvas'); cvs.width = 512; cvs.height = 96; const ctx = cvs.getContext('2d');
+          ctx.fillStyle = '#0f766e'; ctx.fillRect(0, 0, 512, 96); ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.font = '800 56px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif'; ctx.fillText('職能復健中心', 256, 52);
+          return new THREE.CanvasTexture(cvs);
         });
-        const crossbeam = new THREE.Mesh(new THREE.BoxGeometry(18, 1.5, 1.5), gantryMat);
-        crossbeam.position.set(0, baseTop + 17.5, 7);
-        bGroup.add(crossbeam);
+        K.mesh(new THREE.PlaneGeometry(8.4, 1.6), new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.6 }), 0, 5.7, -8.63, false);
+        // 平行桿（左前）
+        const barM = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.3, metalness: 0.7 });
+        // 桿子的高度與間距對準人物垂下的手（手在肩膀外側 0.92、離地約 1.8）
+        [12.1 - 0.92, 12.1 + 0.92].forEach(z => {
+          const bar = K.mesh(new THREE.CylinderGeometry(0.1, 0.1, 8.4, 8), barM, -9, FY + 1.5, z); bar.rotation.z = Math.PI / 2;
+          [-13, -9, -5].forEach(x => K.box(x, FY + 0.75, z, 0.16, 1.5, 0.16, 0x94a3b8));
+        });
+        K.box(-9, FY + 0.05, 12.1, 9.2, 0.1, 2.6, 0x3b82a0);
+        // 階梯訓練台（右前）：上三階、平台、下三階，兩側扶手
+        const stepH = 0.5, tread = 1.15, x0 = 2.6, platL = 2.2;
+        const stairH = (x) => {
+          const u = x - x0; if (u < 0) return 0;
+          if (u < 3 * tread) return stepH * (Math.floor(u / tread) + 1);
+          if (u < 3 * tread + platL) return stepH * 3;
+          const v = u - 3 * tread - platL; if (v < 3 * tread) return stepH * (3 - Math.floor(v / tread)); return 0;   // 下坡三階的高度：1.5、1.0、0.5（和方塊一致）
+        };
+        for (let k = 0; k < 3; k++) {
+          K.box(x0 + tread * (k + 0.5), FY + stepH * (k + 1) / 2, 12.1, tread, stepH * (k + 1), 2.4, 0xd8c6a8);
+          K.box(x0 + 3 * tread + platL + tread * (k + 0.5), FY + stepH * (3 - k) / 2, 12.1, tread, stepH * (3 - k), 2.4, 0xd8c6a8);
+        }
+        K.box(x0 + 3 * tread + platL / 2, FY + stepH * 1.5, 12.1, platL, stepH * 3, 2.4, 0xcbb894);
+        const stairEnd = x0 + 6 * tread + platL;
+        // 扶手跟著階梯升降：上坡、平台、下坡三段，高度維持在踏面上方約 1.9（手垂下的高度）
+        const railPts = [[x0 - 0.3, 1.9, 0], [x0 + 3 * tread, 1.5 + 1.9, 1.5], [x0 + 3 * tread + platL, 1.5 + 1.9, 1.5], [stairEnd + 0.3, 1.9, 0]];
+        [10.75, 13.45].forEach(z => {
+          for (let k = 0; k < 3; k++) {
+            const [ax, ay] = railPts[k], [bx2, by] = railPts[k + 1], len = Math.hypot(bx2 - ax, by - ay);
+            const rail = K.mesh(new THREE.CylinderGeometry(0.08, 0.08, len, 8), barM, (ax + bx2) / 2, FY + (ay + by) / 2, z); rail.rotation.z = Math.atan2(by - ay, bx2 - ax) - Math.PI / 2;
+          }
+          railPts.forEach(([x, y, h0]) => K.box(x, FY + (h0 + y) / 2, z, 0.14, y - h0, 0.14, 0x94a3b8));
+        });
+        // 搬運訓練架（左側中段）：兩層層架與紙箱
+        const shelfX = -9.5, shelfZ = 1.6;
+        [[-1.6], [1.6]].forEach(([dx]) => K.box(shelfX + dx, FY + 1.9, shelfZ, 0.18, 3.8, 1.4, 0x64748b));
+        [1.2, 2.6, 3.8].forEach(y => K.box(shelfX, FY + y, shelfZ, 3.4, 0.14, 1.4, 0x94a3b8));
+        [[-0.9, 1.6], [0.8, 1.6], [0.5, 3.0]].forEach(([dx, y]) => K.box(shelfX + dx, FY + y, shelfZ, 1.0, 0.75, 0.9, 0xc8a46e));
+        [[-12.5, 2.2], [-12.5, 3.4]].forEach(([x, z]) => K.box(x, FY + 0.38, z, 1.0, 0.75, 0.9, 0xc8a46e));
+        // 搬運訓練的工作檯：紙箱從檯面抬到胸前再放回（檯面高度對準半蹲時手的位置）
+        const liftZ = shelfZ + 2.7;
+        K.box(shelfX, FY + 1.33, liftZ - 1.47, 2.3, 0.14, 1.05, 0xb98a5e);
+        [[-1, -0.4], [1, -0.4], [-1, 0.4], [1, 0.4]].forEach(([dx, dz]) => K.box(shelfX + dx, FY + 0.63, liftZ - 1.47 + dz, 0.14, 1.26, 0.14, 0x8b6b4a));
+        // 推車道（中央）：地上的起訖線
+        [1.2, 9.6].forEach(x => K.box(x, FY + 0.02, 3.6, 0.18, 0.04, 2.6, 0xfacc15));
+        // 地墊與治療球（中心前方）
+        K.box(-1.5, FY + 0.06, -4.4, 3.2, 0.12, 1.9, 0x5eead4); K.box(2.0, FY + 0.06, -4.4, 3.2, 0.12, 1.9, 0xfcd34d);
+        K.mesh(new THREE.SphereGeometry(0.85, 14, 10), new THREE.MeshStandardMaterial({ color: 0xf472b6, roughness: 0.5 }), 6.4, FY + 0.85, -4.0);
+        K.mesh(new THREE.SphereGeometry(0.7, 14, 10), new THREE.MeshStandardMaterial({ color: 0x60a5fa, roughness: 0.5 }), 8.3, FY + 0.7, -4.6);
+        K.flush();
 
-        const armPivot = new THREE.Group();
-        armPivot.position.set(0, baseTop + 17, 7);
-        const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-        cable.position.y = -3;
-        armPivot.add(cable);
-        const clamp = new THREE.Mesh(rbox(3, 2, 2, 0.4), new THREE.MeshStandardMaterial({ color: 0xfbbf24, roughness: 0.5 }));
-        clamp.position.y = -6;
-        armPivot.add(clamp);
-        bGroup.add(armPivot);
-        rotatingElements.push({ mesh: armPivot, axis: 'z', speed: 0.015 });
+        // ---- 造景人物 ----
+        const add = (look, x, z, ry = 0) => { const f = makeFigure(look, mats); f.g.position.set(x, baseTop + FY, z); f.g.rotation.y = ry; bGroup.add(f.g); return f; };
+        // 1) 平行桿：職災勞工扶著桿子慢慢走，治療師在旁邊跟著
+        const walker = add(STAGE_LOOKS.patient, -12, 12.1), guide = add(STAGE_LOOKS.therapist, -12, 14.3);
+        // 2) 階梯：職災勞工上下樓梯
+        const climber = add(STAGE_LOOKS.patient, x0 - 0.6, 12.1, Math.PI / 2);
+        // 3) 搬運訓練：把紙箱從地上搬到層架；治療師拿著板夾在旁邊記錄
+        const lifter = add(STAGE_LOOKS.patient, shelfX, liftZ, Math.PI);
+        const liftBox = K.mesh(new THREE.BoxGeometry(1.5, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: 0xc8a46e, roughness: 0.8 }), shelfX, FY + 1.83, liftZ - 1.17);   // 寬度等於兩手的距離
+        const coach = add(STAGE_LOOKS.therapist, shelfX + 3.7, liftZ + 0.7, -Math.PI * 0.7);
+        coach.armR.rotation.x = -1.0;
+        const clip = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.95, 0.08), new THREE.MeshStandardMaterial({ color: 0xb98a5e, roughness: 0.7 }));
+        clip.position.set(-0.2, -1.55, 0.3); clip.rotation.x = 0.9; coach.armR.add(clip);
+        // 4) 推車：職災勞工推著載貨的推車來回
+        const pusher = add(STAGE_LOOKS.patient, 1.6, 3.6, Math.PI / 2);
+        const cart = new THREE.Group();
+        const cartM = new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.5 }), wheelM = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.6 });
+        const cb = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.2, 1.5), cartM); cb.position.y = 0.6; cart.add(cb);
+        const load = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.9, 1.0), new THREE.MeshStandardMaterial({ color: 0xc8a46e, roughness: 0.8 })); load.position.set(0.2, 1.15, 0); cart.add(load);
+        // 把手：橫桿的高度（2.46）與寬度（兩手相距 1.84）對準推車的人往前伸的手
+        const HANDLE_Y = 3.3 - 1.55 * Math.cos(1.0), HANDLE_REACH = 1.55 * Math.sin(1.0);
+        const hbar = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.1, 8), cartM); hbar.rotation.x = Math.PI / 2; hbar.position.set(-1.1, HANDLE_Y, 0); cart.add(hbar);
+        [-0.92, 0.92].forEach(z => { const up = new THREE.Mesh(new THREE.BoxGeometry(0.1, HANDLE_Y - 0.7, 0.1), cartM); up.position.set(-1.1, (HANDLE_Y + 0.7) / 2, z); cart.add(up); });
+        [[-0.8, -0.6], [-0.8, 0.6], [0.8, -0.6], [0.8, 0.6]].forEach(([x, z]) => { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.15, 10), wheelM); w.rotation.x = Math.PI / 2; w.position.set(x, 0.25, z); cart.add(w); });
+        cart.traverse(o => { if (o.isMesh) o.castShadow = true; });
+        cart.position.set(4.0, baseTop + FY, 3.6); bGroup.add(cart);
+
+        LANDMARK_ANIMS.push((t) => {
+          // 平行桿：慢慢走到底再轉身走回來
+          const u = ease(pingPong(t, 0.06)), dir = ((t * 0.06) % 2) < 1 ? 1 : -1, wx = -12.4 + 6.8 * u;
+          walker.g.position.x = wx; walker.g.rotation.y = dir > 0 ? Math.PI / 2 : -Math.PI / 2;
+          figureWalk(walker, t * 3.2, 0.32);
+          walker.armL.rotation.set(-0.25, 0, 0); walker.armR.rotation.set(-0.25, 0, 0);            // 雙手垂下扶在兩側的桿子上
+          guide.g.position.x = wx - dir * 0.6; guide.g.rotation.y = walker.g.rotation.y; figureWalk(guide, t * 3.2 + 1, 0.3);
+          // 階梯：上去、走過平台、下來，再折返
+          const cu = ease(pingPong(t, 0.045)), cdir = ((t * 0.045) % 2) < 1 ? 1 : -1, cx = x0 - 0.6 + (stairEnd - x0 + 1.2) * cu;
+          climber.g.position.x = cx; climber.g.position.y = baseTop + FY + Math.max(stairH(cx - 0.56), stairH(cx), stairH(cx + 0.56)); climber.g.rotation.y = cdir > 0 ? Math.PI / 2 : -Math.PI / 2;   // 取前後腳範圍內最高的踏面
+          figureWalk(climber, t * 3.6, 0.22);
+          // 搬運：蹲下把紙箱抱起來放上層架，再拿下來
+          // 紙箱的位置直接由手的位置算出來：手臂長 1.55、肩高 3.3，人面向 -Z
+          const lu = ease(pingPong(t, 0.16)), th = 0.85 + 0.62 * lu, squat = 0.45 * (1 - lu), lunge = Math.acos(1 - squat / 1.3);
+          lifter.armL.rotation.set(-th, 0, 0); lifter.armR.rotation.set(-th, 0, 0);
+          lifter.legL.rotation.x = -lunge; lifter.legR.rotation.x = lunge;                       // 弓箭步半蹲，兩腳都踩在地上
+          lifter.g.position.y = baseTop + FY - squat;
+          liftBox.position.set(shelfX, baseTop + FY - squat + 3.3 - 1.55 * Math.cos(th), liftZ - 1.55 * Math.sin(th));
+          coach.g.rotation.y = -Math.PI * 0.7 + Math.sin(t * 0.5) * 0.25;
+          // 推車：推到底再轉身推回來（車子一直在人的前方）
+          const pu = ease(pingPong(t, 0.07)), pdir = ((t * 0.07) % 2) < 1 ? 1 : -1, px = 1.6 + 6.0 * pu;
+          pusher.g.position.x = px; pusher.g.rotation.y = pdir > 0 ? Math.PI / 2 : -Math.PI / 2;
+          figureWalk(pusher, t * 3.0, 0.35); pusher.armL.rotation.x = pusher.armR.rotation.x = -1.0;
+          cart.position.x = px + pdir * (HANDLE_REACH + 1.1); cart.rotation.y = pdir > 0 ? 0 : Math.PI;   // 把手剛好在手的位置
+        });
+        nightLinked.push({ apply: (n) => { glassM.emissiveIntensity = 0.9 * n; } });
 
       } else if (mod.id === 5) {
-        // 法規防禦金鐘
-        const baseFort = new THREE.Mesh(
-          new THREE.CylinderGeometry(13, 15, 8, 8),
-          new THREE.MeshStandardMaterial({ color: 0x4c1d95, roughness: 0.6, flatShading: true })
-        );
-        baseFort.position.y = baseTop + 4;
-        baseFort.castShadow = true;
-        bGroup.add(baseFort);
-
-        const shield = new THREE.Mesh(
-          new THREE.SphereGeometry(14, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2),
-          new THREE.MeshStandardMaterial({
-            color: 0x8b5cf6, emissive: 0x7c3aed, emissiveIntensity: 0.5, transparent: true, opacity: 0.38, roughness: 0.1, depthWrite: false
-          })
-        );
-        shield.position.y = baseTop + 8;
-        bGroup.add(shield);
-
-        const shieldCore = new THREE.Mesh(
-          new THREE.OctahedronGeometry(4, 0),
-          new THREE.MeshStandardMaterial({ color: 0xc4b5fd, emissive: 0x8b5cf6, emissiveIntensity: 0.8 })
-        );
-        shieldCore.position.y = baseTop + 14;
-        bGroup.add(shieldCore);
-        rotatingElements.push({ mesh: shieldCore, axis: 'y', speed: 0.03 });
+        // 四大計畫指導與法規諮詢：小型會議。花架下一張會議桌，醫護人員和企業的職安人員、人資主管、職護圍坐，對著攤開的計畫書與檢核表討論；
+        //   桌旁立著四面計畫看板，另一側是圈著臨場日期的行事曆，點它可以打開「臨場次數試算」。（本科不是用辦說明會的方式進行，所以不放講台與聽眾。）
+        const K = makeBuildKit(bGroup, baseTop), FY = 0.14, L = STAGE_LOOKS, TOP = FY + 2.0;
+        K.mesh(rbox(29, 0.14, 20, 0.4), new THREE.MeshStandardMaterial({ color: 0xe9e4f8, roughness: 0.95 }), -1, 0.07, 3.5, false);
+        // 四面計畫看板（立在會議桌後方）
+        [['人因性危害\n預防計畫', '#2563eb'], ['異常工作負荷\n促發疾病預防計畫', '#dc2626'], ['母性健康\n保護計畫', '#db2777'], ['執行職務遭受\n不法侵害預防計畫', '#7c3aed']].forEach(([txt, c], k) => {
+          const x = -9.2 + k * 4.4, hex = parseInt(c.slice(1), 16);
+          K.box(x, FY + 2.9, -7.6, 4.0, 4.6, 0.2, 0xffffff); K.box(x, FY + 4.85, -7.48, 4.0, 0.7, 0.04, hex);
+          K.sign(txt, 3.7, 1.9, x, FY + 3.3, -7.47, '#ffffff', c);
+          [1.1, 1.7].forEach(y => K.box(x - 0.2, FY + y, -7.47, 2.6, 0.18, 0.03, 0xcbd5e1));
+          [-1.6, 1.6].forEach(dx => K.box(x + dx, FY + 0.3, -7.6, 0.24, 0.6, 1.0, 0x94a3b8));
+        });
+        // 會議桌
+        const mx = -2.4, mz = 2.6;
+        // 花架（只有樑和疏疏的格柵，不做實心屋頂，從上方看才不會把會議桌和看板擋住）
+        const PW = 10.4, PD = 8.6, PH = 6.0;
+        [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => K.box(mx + sx * (PW / 2 - 0.2), PH / 2, mz + sz * (PD / 2 - 0.2), 0.3, PH, 0.3, 0xe2e8f0));
+        [-1, 1].forEach(sz => K.box(mx, PH + 0.1, mz + sz * (PD / 2 - 0.2), PW + 0.6, 0.24, 0.3, 0x7c3aed)); [-1, 1].forEach(sx => K.box(mx + sx * (PW / 2 - 0.2), PH + 0.1, mz, 0.3, 0.24, PD + 0.6, 0x7c3aed));
+        for (let k = 1; k < 6; k++) K.box(mx - PW / 2 + k * PW / 6, PH + 0.3, mz, 0.14, 0.16, PD + 0.4, 0xc4b5fd);
+        K.box(mx, TOP - 0.08, mz, 5.2, 0.16, 2.5, 0xf8fafc); [[-2.3, -1], [2.3, -1], [-2.3, 1], [2.3, 1]].forEach(([dx, dz]) => K.box(mx + dx, FY + 0.96, mz + dz, 0.16, 1.92, 0.16, 0x94a3b8));
+        // 桌上：攤開的計畫書、檢核表、四本計畫資料夾
+        K.box(mx, TOP + 0.04, mz - 0.5, 1.3, 0.07, 0.9, 0xffffff); K.box(mx, TOP + 0.09, mz - 0.5, 0.06, 0.03, 0.9, 0x7c3aed);                 // 攤開的計畫書（放在主講者兩手之間）
+        [0, 1, 2].forEach(n => K.box(mx - 0.33, TOP + 0.09, mz - 0.75 + n * 0.22, 0.45, 0.02, 0.07, 0x94a3b8));
+        K.box(mx + 0.6, TOP + 0.03, mz + 0.45, 0.8, 0.04, 0.9, 0xfef9c3); [0, 1, 2].forEach(n => K.box(mx + 0.35, TOP + 0.06, mz + 0.2 + n * 0.24, 0.12, 0.02, 0.12, 0x16a34a));   // 檢核表（放在做筆記的人兩手之間）
+        [0x2563eb, 0xdc2626, 0xdb2777, 0x7c3aed].forEach((c, k) => K.box(mx - 1.7 + k * 0.3, TOP + 0.5, mz + 0.3, 0.24, 0.95, 0.7, c));
+        // 行事曆：立在會議桌右側的畫架上，圈起來的日期是臨場服務日（臨場次數試算的入口）
+        {
+          const cx2 = CALC_PROP.x, cz2 = CALC_PROP.z, ry = -0.3, cs = Math.cos(ry), sn = Math.sin(ry), CY = FY + 3.75;
+          const calTex = cachedTexture('onsite-calendar', () => {
+            const cv = document.createElement('canvas'); cv.width = 512; cv.height = 576; const c2 = cv.getContext('2d');
+            const F = (px, w = 800) => `${w} ${px}px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif`;
+            c2.fillStyle = '#ffffff'; c2.fillRect(0, 0, 512, 576); c2.fillStyle = '#5b21b6'; c2.fillRect(0, 0, 512, 96);
+            c2.fillStyle = '#ffffff'; c2.font = F(46); c2.textAlign = 'center'; c2.textBaseline = 'middle'; c2.fillText('臨場服務行事曆', 256, 50);
+            ['日', '一', '二', '三', '四', '五', '六'].forEach((d2, k) => { c2.fillStyle = k === 0 || k === 6 ? '#dc2626' : '#475569'; c2.font = F(26); c2.fillText(d2, 44 + k * 70.6, 126); });
+            for (let n = 1; n <= 30; n++) {
+              const col = (n + 1) % 7, row = Math.floor((n + 1) / 7), x = 44 + col * 70.6, y = 186 + row * 82;
+              if (n === 9 || n === 23) { c2.strokeStyle = '#dc2626'; c2.lineWidth = 6; c2.beginPath(); c2.arc(x, y, 30, 0, Math.PI * 2); c2.stroke(); c2.fillStyle = '#dc2626'; c2.font = F(18); c2.fillText('臨場', x, y + 44); }
+              c2.fillStyle = col === 0 || col === 6 ? '#dc2626' : '#1f2937'; c2.font = F(30, 700); c2.fillText(String(n), x, y);
+            }
+            return new THREE.CanvasTexture(cv);
+          });
+          K.box(cx2, CY, cz2, 3.5, 3.95, 0.14, 0xf1f5f9, ry);
+          const cal = K.mesh(new THREE.PlaneGeometry(3.3, 3.71), new THREE.MeshStandardMaterial({ map: calTex, roughness: 0.7 }), cx2 + sn * 0.08, CY, cz2 + cs * 0.08, false); cal.rotation.y = ry;
+          [-1.55, 1.55].forEach(o2 => K.beam(cx2 + cs * o2, CY - 1.95, cz2 - sn * o2, cx2 + cs * o2 * 1.15, 0.14, cz2 - sn * o2 * 1.15 + 0.5, 0.16, 0x8b6b4a));
+          K.beam(cx2 - sn * 0.1, CY + 1.2, cz2 - cs * 0.1, cx2 - sn * 1.5, 0.14, cz2 - cs * 1.5, 0.16, 0x8b6b4a);
+          markTool(cal, 'calc'); toolHitBox(bGroup, 'calc', cx2, baseTop + CY - 0.4, cz2, 4.0, 4.9, 2.2);
+        }
+        // 圍坐的四個人：醫護人員（遠側，面向鏡頭）、職安人員（左端）、人資主管（右端）、企業的職護（近側）
+        const seat = (look, x, z, ry) => K.seat(look, x, z, ry);
+        const lead = seat(L.medic, mx, mz - 2.25, 0), sLeft = seat(L.safety, mx - 3.6, mz, Math.PI / 2), sRight = seat(L.staff, mx + 3.6, mz, -Math.PI / 2);
+        const near = seat(L.nurseCorp, mx + 0.6, mz + 2.25, Math.PI);
+        K.flush();
+        const SH = 3.3 - SIT_DROP, rest = restAngle(SH, 2.0);                         // 手放在桌面上的手臂角度
+        LANDMARK_ANIMS.push((t) => {
+          lead.armL.rotation.x = -rest; lead.armR.rotation.x = -rest - 0.12 * (1 + Math.sin(t * 1.6));      // 指著計畫書逐項說明（只往上抬）
+          lead.g.rotation.y = Math.sin(t * 0.35) * 0.3;                                    // 輪流看向兩邊的人
+          [sLeft, sRight, near].forEach((f, k) => { f.armL.rotation.x = -rest; f.armR.rotation.x = -rest - (k === 1 ? 0.25 * (0.5 + 0.5 * Math.sin(t * 1.1)) : 0); });
+          sLeft.g.rotation.y = Math.PI / 2 + Math.sin(t * 0.4 + 1) * 0.15; sRight.g.rotation.y = -Math.PI / 2 + Math.sin(t * 0.45 + 2) * 0.15;
+          near.armR.rotation.x = -rest - 0.05 * (1 + Math.sin(t * 5.5));                     // 做筆記
+        });
 
       } else if (mod.id === 6) {
-        // 公衛天樞數據塔
-        const serverMat = new THREE.MeshStandardMaterial({ color: 0x2a2f45, metalness: 0.4, roughness: 0.35 });
-        const bladeGeo = rbox(4.5, 18, 6, 0.6);
-        for (let i = -1; i <= 1; i++) {
-          const blade = new THREE.Mesh(bladeGeo, serverMat);
-          blade.position.set(i * 6, baseTop + 9, 0);
-          blade.castShadow = true;
-          bGroup.add(blade);
-        }
-
-        const holoGroup = new THREE.Group();
-        holoGroup.position.set(0, baseTop + 22, 0);
-        const ringA = new THREE.Mesh(new THREE.TorusGeometry(8, 0.4, 8, 32), new THREE.MeshBasicMaterial({ color: 0xec4899, wireframe: true }));
-        ringA.rotation.x = Math.PI / 3;
-        holoGroup.add(ringA);
-        const ringB = new THREE.Mesh(new THREE.TorusGeometry(5, 0.35, 8, 24), new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true }));
-        ringB.rotation.x = -Math.PI / 4;
-        holoGroup.add(ringB);
-        bGroup.add(holoGroup);
-        rotatingElements.push({ mesh: holoGroup, axis: 'y', speed: 0.025 });
+        // 健檢分析與健康管理：健康管理站。中央是紅黃綠三色的分級看板；右前方的分析桌有護理人員對照筆電整理健檢報告、做分級；
+        //   （不放量血壓與身高體重計：不是每位同仁臨場都會做，避免企業誤以為是固定的服務內容）
+        //   左側的涼亭裡是一對一的健康會談，桌上放著衛教模型「火山腳下的房子」，點它可以打開「心血管風險」；另有文件推車與檔案櫃
+        const K = makeBuildKit(bGroup, baseTop), FY = 0.14, L = STAGE_LOOKS;
+        K.mesh(rbox(30, 0.14, 20, 0.4), new THREE.MeshStandardMaterial({ color: 0xd3e6f8, roughness: 0.95 }), 0, 0.07, 6, false);
+        const glassM = new THREE.MeshStandardMaterial({ color: 0x2b5f8f, roughness: 0.2, metalness: 0.4, emissive: 0xffe6b8, emissiveIntensity: 0 });
+        K.mesh(rbox(17, 6.4, 6.4, 0.3), new THREE.MeshStandardMaterial({ color: 0xf1f6fb, roughness: 0.75 }), 3, 3.2, -12.6);
+        K.mesh(new THREE.BoxGeometry(14.6, 3.2, 0.12), glassM, 3, 2.2, -9.36, false);
+        [-4, -0.5, 3, 6.5, 10].forEach(x => K.box(x, 2.2, -9.3, 0.22, 3.3, 0.2, 0x1d4ed8));
+        K.box(3, 4.2, -8.4, 17.6, 0.28, 2.2, 0x1d4ed8); K.box(3, 6.55, -12.6, 17.4, 0.3, 6.8, 0xcfdcea);
+        K.sign('健康管理站', 8.4, 1.7, 3, 7.6, -9.6, '#1d4ed8');
+        // 分級看板
+        const boardTex = cachedTexture('hm-grade-board', () => {
+          const cvs = document.createElement('canvas'); cvs.width = 640; cvs.height = 400; const ctx = cvs.getContext('2d');
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 640, 400); ctx.fillStyle = '#1e3a5f'; ctx.fillRect(0, 0, 640, 78);
+          const F = (px) => `800 ${px}px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif`;
+          ctx.fillStyle = '#ffffff'; ctx.font = F(44); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('健檢結果分級管理', 320, 42);
+          [['#22c55e', '正常', '定期健檢'], ['#facc15', '需追蹤', '複查與健康指導'], ['#ef4444', '需就醫', '轉介門診']].forEach(([c, a, b2], k) => {
+            const y = 100 + k * 98; ctx.fillStyle = c; ctx.beginPath(); ctx.arc(70, y + 40, 34, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#e2e8f0'; ctx.fillRect(130, y + 8, 470, 64); ctx.fillStyle = c; ctx.fillRect(130, y + 8, [300, 130, 60][k], 64);
+            ctx.fillStyle = '#0f172a'; ctx.textAlign = 'left'; ctx.font = F(34); ctx.fillText(a, 146, y + 42); ctx.font = F(24); ctx.fillStyle = '#334155'; ctx.textAlign = 'right'; ctx.fillText(b2, 590, y + 42);
+          });
+          return new THREE.CanvasTexture(cvs);
+        });
+        K.mesh(new THREE.PlaneGeometry(9.6, 6), new THREE.MeshStandardMaterial({ map: boardTex, roughness: 0.6, side: THREE.DoubleSide }), 0, 4.6, -4.38, false);
+        K.box(0, 4.6, -4.5, 10, 6.4, 0.2, 0x1e3a5f); [-4.6, 4.6].forEach(x => K.box(x, 0.8, -4.5, 0.3, 1.6, 0.3, 0x64748b));
+        // 健檢報告分析桌：護理人員坐在桌前，對照筆電整理健檢報告、做分級（這座島的核心工作）
+        const dx0 = 8, dz0 = 6.2, TOP = FY + 2.0;
+        K.box(dx0, TOP - 0.08, dz0 + 1.5, 4.8, 0.16, 1.8, 0xf8fafc); [[-2.2, -0.75], [2.2, -0.75], [-2.2, 0.75], [2.2, 0.75]].forEach(([dx, dz]) => K.box(dx0 + dx, FY + 0.96, dz0 + 1.5 + dz, 0.14, 1.92, 0.14, 0x94a3b8));
+        K.box(dx0, TOP + 0.04, dz0 + 1.45, 1.3, 0.08, 0.9, 0x475569);                                     // 筆電底座
+        const lid = K.mesh(new THREE.BoxGeometry(1.3, 0.9, 0.06), new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.4, emissive: 0x7dd3fc, emissiveIntensity: 0.25 }), dx0, TOP + 0.5, dz0 + 1.95, false); lid.rotation.x = 0.25;
+        [0xef4444, 0xfacc15, 0x22c55e].forEach((c, k) => { for (let n = 0; n < 3 - k; n++) K.box(dx0 - 1.75 + k * 0.05, TOP + 0.05 + n * 0.09 + k * 0.27, dz0 + 1.5, 0.95, 0.08, 1.25, n === 2 - k ? c : 0xf1f5f9); });   // 分好級的報告
+        K.box(dx0 + 1.7, TOP + 0.05, dz0 + 1.4, 0.8, 0.05, 1.1, 0xf8fafc); K.box(dx0 + 1.7, TOP + 0.08, dz0 + 1.75, 0.6, 0.02, 0.06, 0xef4444);                 // 正在看的那一份
+        const analyst = K.seat(L.medic, dx0, dz0, 0), SH6 = 3.3 - SIT_DROP;
+        // 會談涼亭：護理人員與勞工一對一會談
+        K.pavilion(-7.4, 0.6, 6.6, 6.6, 5.6, 0x60a5fa);
+        K.roundTable(-7.4, 0.6);
+        // 衛教模型：一座冒著淡煙的小火山，山腳下一間小房子（心血管風險工具的入口）
+        const vx = CVD_PROP.x, vz = CVD_PROP.z, VT = FY + 2.0, model = new THREE.Group();
+        const vm = (geo, color, x, y, z, extra) => { const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.75 }, extra || {}))); m.position.set(x, y, z); m.castShadow = true; model.add(m); return m; };
+        vm(new THREE.CylinderGeometry(0.66, 0.66, 0.06, 20), 0x86c36a, 0, 0.03, 0);
+        vm(new THREE.CylinderGeometry(0.15, 0.44, 0.62, 14), 0x8b5e3c, -0.14, 0.37, -0.06);
+        const lava = vm(new THREE.CylinderGeometry(0.15, 0.15, 0.05, 14), 0xff6b35, -0.14, 0.7, -0.06, { emissive: 0xff4500, emissiveIntensity: 1 });
+        vm(new THREE.BoxGeometry(0.26, 0.2, 0.22), 0xf8fafc, 0.3, 0.16, 0.24);
+        const roofG = new THREE.ConeGeometry(0.22, 0.16, 4); roofG.rotateY(Math.PI / 4); vm(roofG, 0xdc2626, 0.3, 0.34, 0.24);
+        const puffs = [0, 1, 2].map(() => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6), new THREE.MeshBasicMaterial({ color: 0xf1f5f9, transparent: true, opacity: 0.5, depthWrite: false })); model.add(m); return m; });
+        model.position.set(vx, baseTop + VT, vz); bGroup.add(model);
+        markTool(model, 'cvd'); toolHitBox(bGroup, 'cvd', vx, baseTop + VT + 1.0, vz, 2.3, 2.2, 2.3);
+        const nurse2 = K.seat(L.medic, -9.3, 0.6, Math.PI / 2), talkW = K.seat(L.worker2, -5.5, 0.6, -Math.PI / 2);   // 面對面坐著會談
+        // 文件推車（健檢報告）與檔案櫃
+        K.box(2.4, FY + 1.0, 3.2, 2.2, 0.14, 1.3, 0x94a3b8); K.box(2.4, FY + 0.3, 3.2, 2.2, 0.14, 1.3, 0x94a3b8); [[-1, -0.55], [1, -0.55], [-1, 0.55], [1, 0.55]].forEach(([dx, dz]) => K.box(2.4 + dx, FY + 0.65, 3.2 + dz, 0.1, 1.3, 0.1, 0x64748b));
+        [0xef4444, 0xfacc15, 0x22c55e, 0x60a5fa, 0xf8fafc].forEach((c, k) => K.box(1.6 + k * 0.4, FY + 1.5, 3.2, 0.3, 0.9, 1.0, c));
+        [-6.9, -4.9].forEach(x => { K.box(x, FY + 1.7, -8.6, 1.8, 3.4, 1.2, 0xcbd5e1); [0.7, 1.7, 2.7].forEach(y => K.box(x, FY + y, -7.98, 1.5, 0.75, 0.04, 0x94a3b8)); });
+        K.flush();
+        LANDMARK_ANIMS.push((t) => {
+          // 手放在桌面上打字，偶爾轉頭看旁邊的報告
+          const th6 = restAngle(SH6, 2.0);
+          analyst.armL.rotation.x = -th6 + Math.sin(t * 7) * 0.04; analyst.armR.rotation.x = -th6 + Math.sin(t * 7 + 1.7) * 0.04;
+          analyst.g.rotation.y = 0.08 * Math.max(0, Math.sin(t * 0.3)) ** 3;   // 轉動幅度要小，手才不會掃到筆電
+          lava.material.emissiveIntensity = 0.9 + Math.sin(t * 2.1) * 0.4;
+          puffs.forEach((pf, k) => { const u = (t * 0.3 + k / 3) % 1; pf.position.set(-0.14 + Math.sin(t * 0.8 + k) * 0.12 * u, 0.78 + u * 0.95, -0.06); pf.scale.setScalar(0.6 + u * 1.1); pf.material.opacity = 0.5 * (1 - u); });   // 火山口飄出淡煙
+          const r6 = restAngle(SH6, 2.0);                                                 // 手放在桌面上；說明的人一手抬起比手勢（只往上抬，不會壓進桌面）
+          nurse2.armL.rotation.x = -r6; nurse2.armR.rotation.x = -r6 - 0.3 * (0.5 + 0.5 * Math.sin(t * 1.4));
+          talkW.armL.rotation.x = talkW.armR.rotation.x = -r6;
+          nurse2.g.rotation.y = Math.PI / 2 + Math.sin(t * 0.5) * 0.05; talkW.g.rotation.y = -Math.PI / 2 + Math.sin(t * 0.37 + 1) * 0.05;
+        });
+        nightLinked.push({ apply: (n) => { glassM.emissiveIntensity = 0.9 * n; } });
 
       } else if (mod.id === 7) {
-        // 職興市場貨櫃亭
-        const lowerMat = new THREE.MeshStandardMaterial({
-          map: cachedTexture('ctr-lower', () => TextureGen.shippingContainer('#b45309', 'OH SMART', '勞動能力減損鑑定')), roughness: 0.45, metalness: 0.35
+        // 勞動能力減損鑑定：鑑定評估場。後方是有柱廊的鑑定中心；左側的評估亭裡量測關節活動度，右側是握力測試檯，
+        //   前方是有刻度的步行測試道，中央的桌上堆著鑑定的卷宗
+        const K = makeBuildKit(bGroup, baseTop), FY = 0.14, L = STAGE_LOOKS;
+        K.mesh(rbox(30, 0.14, 21, 0.4), new THREE.MeshStandardMaterial({ color: 0xe9e5df, roughness: 0.95 }), 0, 0.07, 4.5, false);
+        const stoneM = new THREE.MeshStandardMaterial({ color: 0xebe5d9, roughness: 0.8 });
+        const glassM = new THREE.MeshStandardMaterial({ color: 0x3b4a5c, roughness: 0.2, metalness: 0.4, emissive: 0xffe6b8, emissiveIntensity: 0 });
+        K.mesh(rbox(16, 6.6, 6, 0.2), stoneM, 0, 3.3, -12.6);
+        K.mesh(new THREE.BoxGeometry(11, 3.4, 0.12), glassM, 0, 2.4, -9.56, false);
+        [-6.6, -3.3, 0, 3.3, 6.6].forEach(x => K.mesh(new THREE.CylinderGeometry(0.42, 0.48, 6.2, 12), stoneM, x, 3.1, -8.4));
+        K.box(0, 6.5, -8.9, 16.6, 0.6, 2.6, 0xd9d1c0); K.box(0, 7.0, -11.2, 17, 0.5, 7.4, 0xd9d1c0);
+        K.sign('勞動能力減損鑑定', 10.5, 1.6, 0, 8.3, -9.6, '#44403c');
+        // 評估亭：量測關節活動度
+        K.pavilion(-8.6, 2.6, 7.4, 6.8, 5.6, 0x78716c);
+        K.box(-10.2, FY + 1.5, 4.6, 4.0, 0.5, 1.6, 0xffffff); K.box(-10.2, FY + 0.65, 4.6, 3.6, 1.3, 1.2, 0xcbd5e1);
+        const rom = K.fig(L.patient, -7.6, 2.0, 0.3), examiner = K.fig(L.medic, -10.2, 1.4, 1.2);
+        examiner.armR.rotation.x = -1.2;
+        const gon = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.3, 0.08), new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.5 })); gon.position.set(0, -1.9, 0.1); examiner.armR.add(gon);
+        // 握力測試檯
+        K.box(8, FY + 2.5, 1.2, 3.6, 0.16, 1.6, 0xf8fafc); [[-1.6, -0.6], [1.6, -0.6], [-1.6, 0.6], [1.6, 0.6]].forEach(([dx, dz]) => K.box(8 + dx, FY + 1.21, 1.2 + dz, 0.14, 2.42, 0.14, 0x94a3b8));
+        K.box(8.9, FY + 2.9, 1.2, 0.5, 0.6, 0.4, 0x1f2937); K.box(8.9, FY + 3.05, 1.42, 0.36, 0.26, 0.02, 0x22d3ee);
+        const gripper = K.fig(L.worker2, 8.2, 3.2, Math.PI), noter = K.fig(L.medic, 8.4, -0.8, 0);
+        noter.armL.rotation.x = -1.27;
+        // 卷宗桌：鑑定報告與待審的資料
+        K.box(0.4, FY + 2.3, -3.6, 4.4, 0.16, 1.8, 0x8b6b4a); [[-2, -0.7], [2, -0.7], [-2, 0.7], [2, 0.7]].forEach(([dx, dz]) => K.box(0.4 + dx, FY + 1.11, -3.6 + dz, 0.16, 2.22, 0.16, 0x6b4f35));
+        [[-1.2, 5], [0.0, 3], [1.3, 6]].forEach(([dx, n]) => { for (let k = 0; k < n; k++) K.box(0.4 + dx + (k % 2) * 0.06, FY + 2.47 + k * 0.17, -3.6, 1.0, 0.15, 1.3, k % 3 === 0 ? 0xd6b98c : 0xe8d9b8); });
+        K.box(2.4, FY + 2.52, -3.2, 0.4, 0.28, 0.4, 0xb91c1c);
+        // 步行測試道：有刻度與起點、終點
+        K.box(0, FY + 0.03, 11.6, 22, 0.05, 2.6, 0xfde68a); for (let k = 0; k <= 10; k++) K.box(-10 + k * 2, FY + 0.06, 11.6, 0.12, 0.02, k % 5 === 0 ? 2.6 : 1.3, 0x44403c);
+        [[-10.6, '起點'], [10.6, '終點']].forEach(([x, txt]) => { K.box(x, FY + 1.3, 9.9, 0.12, 2.6, 0.12, 0x64748b); K.sign(txt, 1.8, 0.8, x, FY + 2.6, 9.96, '#44403c'); });
+        const walkerP = K.fig(L.patient, -9.6, 11.6, Math.PI / 2), timer = K.fig(L.medic, 0, 8.6, 0);
+        timer.armR.rotation.x = -1.3;
+        K.flush();
+        LANDMARK_ANIMS.push((t) => {
+          rom.armR.rotation.set(0, 0, 0.25 + 1.2 * (0.5 + 0.5 * Math.sin(t * 0.8)));           // 手臂慢慢往外舉起，量關節活動度
+          examiner.g.rotation.y = 1.2 + Math.sin(t * 0.4) * 0.08;
+          gripper.armR.rotation.x = -1.3 + Math.sin(t * 3) * 0.04; noter.armL.rotation.x = -1.3 + Math.sin(t * 5) * 0.04;
+          const u = ease(pingPong(t, 0.05)), dir = ((t * 0.05) % 2) < 1 ? 1 : -1;
+          walkerP.g.position.x = -9.6 + 19.2 * u; walkerP.g.rotation.y = dir > 0 ? Math.PI / 2 : -Math.PI / 2; figureWalk(walkerP, t * 3.0, 0.3);
+          timer.g.rotation.y = Math.atan2(walkerP.g.position.x - 0, 3.0);                        // 計時的人看著受測者
         });
-        const lowerContainer = new THREE.Mesh(rbox(22, 7.5, 10, 0.45), lowerMat);
-        lowerContainer.position.set(0, baseTop + 3.75, 0);
-        lowerContainer.castShadow = true;
-        bGroup.add(lowerContainer);
-
-        const upperMat = new THREE.MeshStandardMaterial({
-          map: cachedTexture('ctr-upper', () => TextureGen.shippingContainer('#0d9488', '職興市場', 'OHSMART.BLOG')), roughness: 0.45, metalness: 0.35
-        });
-        const upperContainer = new THREE.Mesh(rbox(18, 7, 9, 0.45), upperMat);
-        upperContainer.position.set(-2, baseTop + 11, -1);
-        upperContainer.rotation.y = 0.12;
-        upperContainer.castShadow = true;
-        bGroup.add(upperContainer);
-
-        const awning = new THREE.Mesh(new THREE.BoxGeometry(16, 0.6, 6), new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5 }));
-        awning.position.set(0, baseTop + 7.5, 7.5);
-        awning.rotation.x = Math.PI / 10;
-        bGroup.add(awning);
-
-        const railing = new THREE.Mesh(new THREE.BoxGeometry(20, 1.2, 0.4), new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.7 }));
-        railing.position.set(0, baseTop + 8, 5.5);
-        bGroup.add(railing);
+        nightLinked.push({ apply: (n) => { glassM.emissiveIntensity = 0.9 * n; } });
 
       } else if (mod.id === 8) {
         // 新莊：新莊棒球場（依空拍照風格化的迷你版）。本壘在前方（+Z），外野朝後。
@@ -6772,7 +7077,8 @@
       regions.forEach(reg => {
         // 找離這座地區島最近、而且那條邊還沒架橋的服務島邊
         let best = null;
-        cores.forEach(c => { for (let e = 0; e < 6; e++) {
+        const linked = reg.linkCore !== undefined ? cores.filter(c => c.id === reg.linkCore) : [];
+        (linked.length ? linked : cores).forEach(c => { for (let e = 0; e < 6; e++) {
           if (usedEdge.has(c.id + ':' + e)) continue;
           const [ux, uz] = HEX_DIR(e), d = Math.hypot(c.gridPos.x + ux * (coreApo + 12) - reg.gridPos.x, c.gridPos.z + uz * (coreApo + 12) - reg.gridPos.z);
           if (!best || d < best.d) best = { c, e, d };
@@ -7067,35 +7373,35 @@
           <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-medblue-400/60 text-medblue-300 text-[11px] font-bold shadow-xl">
             ${svgIcon('calculator')}
             <span>臨場次數試算</span>
-          </div>`, '互動工具：臨場服務頻率試算',
+          </div>`, '臨場次數試算：臨場服務頻率試算工具',
             () => { sound.playClick(); openModal(calcModal); track('island_calc_open', { from: 'pin' }); },
-            new THREE.Vector3(m.gridPos.x + CALC_PROP.x, tileTop(m) + 8.5, m.gridPos.z + CALC_PROP.z), { calc: true });
+            new THREE.Vector3(m.gridPos.x + CALC_PROP.x, tileTop(m) + CALC_PROP.y, m.gridPos.z + CALC_PROP.z), { calc: true });
         }
       }
       // 十年心血管風險小場景的標籤
       {
         const m = modById(CVD_PROP.module);
         if (m) {
-          const [ox, oz] = polar(CVD_PROP.r, CVD_PROP.deg);
+          const ox = CVD_PROP.x, oz = CVD_PROP.z;
           makePin('island-pin', `
           <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-rose-400/60 text-rose-300 text-[11px] font-bold shadow-xl">
             ${svgIcon('heart-pulse')}
             <span>心血管風險</span>
-          </div>`, '互動工具：十年心血管風險（火山腳下的房子）',
-            () => { sound.playClick(); openCvdTool('pin'); }, new THREE.Vector3(m.gridPos.x + ox, tileTop(m) + 6, m.gridPos.z + oz), { cvd: true });
+          </div>`, '心血管風險：十年心血管風險試算（火山腳下的房子）',
+            () => { sound.playClick(); openCvdTool('pin'); }, new THREE.Vector3(m.gridPos.x + ox, tileTop(m) + CVD_PROP.y, m.gridPos.z + oz), { cvd: true });
         }
       }
       // 搬抬演示小場景的標籤
       {
         const m = modById(LIFT_PROP.module);
         if (m) {
-          const [ox, oz] = polar(LIFT_PROP.r, LIFT_PROP.deg);
+          const ox = LIFT_PROP.x, oz = LIFT_PROP.z;
           makePin('island-pin', `
           <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-amber-400/60 text-amber-300 text-[11px] font-bold shadow-xl">
             ${svgIcon('activity')}
             <span>搬抬演示</span>
-          </div>`, '互動演示：搬抬時的腰椎負荷',
-            () => { sound.playClick(); openLiftDemo('pin'); }, new THREE.Vector3(m.gridPos.x + ox, tileTop(m) + 5.5, m.gridPos.z + oz), { lift: true });
+          </div>`, '搬抬演示：搬抬時的腰椎負荷',
+            () => { sound.playClick(); openLiftDemo('pin'); }, new THREE.Vector3(m.gridPos.x + ox, tileTop(m) + LIFT_PROP.y, m.gridPos.z + oz), { lift: true });
         }
       }
 
@@ -7312,6 +7618,14 @@
       const curve = new THREE.CatmullRomCurve3(ribbonPts, loop, 'centripetal');
       const length = curve.getLength();
       const geo = buildRibbonGeometry(curve, loop, 2.4, length);
+      // 有「有需要時轉介」路段時：轉介前是實心色帶，轉介後是虛線
+      let baseGeo = geo, optGeo = null;
+      const oi = scenario.optionalFrom;
+      if (oi !== undefined && stopIdx[oi - 1] !== undefined && !loop) {
+        const cut = stopIdx[oi - 1];
+        const cA = new THREE.CatmullRomCurve3(ribbonPts.slice(0, cut + 1), false, 'centripetal'), cB = new THREE.CatmullRomCurve3(ribbonPts.slice(cut), false, 'centripetal');
+        baseGeo = buildRibbonGeometry(cA, false, 2.4, cA.getLength()); optGeo = buildRibbonGeometry(cB, false, 2.4, cB.getLength());
+      }
 
       // 每個停留站：從步道到門口的岔路也塗上路線顏色
       doorPts.forEach(door => {
@@ -7329,10 +7643,15 @@
       });
 
       // 貼在步道上的彩色帶 + 往前流動的白色箭頭
-      const base = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+      const base = new THREE.Mesh(baseGeo, new THREE.MeshBasicMaterial({
         color: scenario.color, transparent: true, opacity: 0.9, depthWrite: false,
         polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -8
       }));
+      if (optGeo) {
+        const dashTex = cachedTexture('route-dash', () => { const cv = document.createElement('canvas'); cv.width = 32; cv.height = 8; const cx = cv.getContext('2d'); cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, 18, 8); const t = new THREE.CanvasTexture(cv); t.wrapS = THREE.RepeatWrapping; return t; });
+        const opt = new THREE.Mesh(optGeo, new THREE.MeshBasicMaterial({ map: dashTex, color: scenario.color, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -8 }));
+        opt.renderOrder = 2; prepColors(opt); synergyCurveGroup.add(opt);
+      }
       const arrowTex = getArrowTexture().clone();
       arrowTex.needsUpdate = true;
       routeArrowMat = new THREE.MeshBasicMaterial({
@@ -7818,9 +8137,6 @@
         updateWeather(motionTime, dt * MOTION_SCALE);
         if (atmosphereParticles) atmosphereParticles.rotation.y = motionTime * 0.02;
         updateWalkers(md);
-        updateLiftProp(md);
-        updateCvdProp(md);
-        updateCalcProp(md);
         updateDoctors(motionTime);
         if (routeArrowMat) routeArrowMat.map.offset.x -= md * 0.35;
         updatePedestrians(md);
@@ -7869,6 +8185,13 @@
       mouse.set((clientX / viewW()) * 2 - 1, -(clientY / viewH()) * 2 + 1);
       raycaster.setFromCamera(mouse, camera);
       const hits = raycaster.intersectObjects(pickables, false);
+      // 小工具站在島上，射線會先碰到那座島的點選範圍；所以只要前面沒有「別座島」擋著，就算點到小工具
+      for (let i = 0; i < hits.length; i++) {
+        const ud = hits[i].object.userData, flag = ud.lift ? 'lift' : ud.cvd ? 'cvd' : ud.calc ? 'calc' : null;
+        if (flag) { return { [flag]: true }; }
+        const own = [LIFT_PROP, CVD_PROP, CALC_PROP].some(p => ud.module && ud.module.id === p.module);
+        if (!own) break;
+      }
       for (let i = 0; i < hits.length; i++) {
         const ud = hits[i].object.userData;
         if (ud.doctor) return { doctor: ud.doctor };
@@ -7956,6 +8279,7 @@
     }
 
     // [優化] 只對滑鼠做 hover 偵測，且每幀最多一次射線（原本每個 move 事件都做兩次）
+    let hoveredTool = null;
     function onPointerMove(e) {
       if (e.pointerType !== 'mouse' || isPointerDown) return;
       lastHover = e;
@@ -7965,8 +8289,11 @@
         hoverFramePending = false;
         if (!lastHover) return;
         const overCanvas = lastHover.target === canvas;
-        const hit = (overCanvas && CANVAS_PICK) ? pickAt(lastHover.clientX, lastHover.clientY) : null;
-        canvas.style.cursor = (hit || (overCanvas && pickAgent(lastHover.clientX, lastHover.clientY))) ? 'pointer' : '';
+        const any = overCanvas ? pickAt(lastHover.clientX, lastHover.clientY) : null;
+        const tool = any && (any.lift ? 'lift' : any.cvd ? 'cvd' : any.calc ? 'calc' : null);
+        const hit = CANVAS_PICK ? any : null;
+        canvas.style.cursor = (hit || tool || (overCanvas && pickAgent(lastHover.clientX, lastHover.clientY))) ? 'pointer' : '';
+        if (tool !== hoveredTool) { hoveredTool = tool; linkPin(tool ? (p => p[tool]) : null); }   // 滑到小工具上：它的名牌跟著亮起來
         setHoveredModule(hit && hit.module ? hit.module.id : null);
         if (hit) markActive();
       });
@@ -7987,10 +8314,11 @@
       // [人物] 點到人物：開啟人物說明並跟隨
       const person = pickAgent(e.clientX, e.clientY, e.pointerType === 'touch');
       if (person) { selectAgent(person); return; }
-      // [介面] 建築與島本身不再觸發點選：要看詳情請點名牌（避免拖曳、探索時誤觸）
-      if (!CANVAS_PICK) return;
+      // [小工具] 融入造景的三個工具可以直接點：搬紙箱的勞工、行事曆、桌上的衛教模型
       const hit = pickAt(e.clientX, e.clientY);
-      if (!hit) return;
+      const isTool = hit && (hit.lift || hit.cvd || hit.calc);
+      // [介面] 建築與島本身不再觸發點選：要看詳情請點名牌（避免拖曳、探索時誤觸）
+      if (!hit || (!CANVAS_PICK && !isTool)) return;
       lastSelectAt = performance.now();
       if (hit.doctor) {
         focusDoctor(hit.doctor);
@@ -8125,7 +8453,9 @@
       const camHeight = isCenter ? 68 : 54;
 
       const lookTarget = new THREE.Vector3(mod.gridPos.x, lookHeight, mod.gridPos.z);
-      const camTarget = new THREE.Vector3(mod.gridPos.x + camDist * 0.65, camHeight, mod.gridPos.z + camDist * 0.85);
+      // 觀看方位：各島的造景都朝正前方（+Z），從前方 60 度的範圍看最清楚；每座島的最佳方位寫在資料的 viewAz（依可見度量測）
+      const az = (mod.viewAz === undefined ? 53 : mod.viewAz) * Math.PI / 180, camR = camDist * 1.07;
+      const camTarget = new THREE.Vector3(mod.gridPos.x + Math.cos(az) * camR, camHeight, mod.gridPos.z + Math.sin(az) * camR);
       shiftForSidePanel(lookTarget, camTarget, isCenter ? 16 : 14);
       flyCameraTo(camTarget, lookTarget, 1400);
       dirty = true;
@@ -8509,8 +8839,9 @@
         const sp = btn.querySelectorAll('span');
         sp[0].textContent = String(k + 1);
         sp[0].style.background = hex;
-        sp[2].innerHTML = `${svgIcon(m.icon)} ${m.name}`;
+        sp[2].innerHTML = svgIcon(m.icon) + ' '; sp[2].append(st.label || m.name);
         sp[3].textContent = st.text;
+        if (st.cond) { sp[0].style.background = 'transparent'; sp[0].style.color = hex; sp[0].style.border = `1.5px dashed ${hex}`; const tag = document.createElement('span'); tag.className = 'inline-block mb-0.5 px-1.5 py-px rounded text-[10px] font-bold text-amber-300 bg-amber-500/15 border border-amber-400/30'; tag.textContent = sc.optionalTag || '有需要時轉介'; sp[3].before(tag); }
         btn.addEventListener('click', () => { sound.playClick(); selectModule(m); });
         btn.addEventListener('mouseenter', () => linkPin(p => p.module === m));
         btn.addEventListener('mouseleave', () => linkPin(null));
@@ -8531,9 +8862,13 @@
       renderRoutePanel(key);
       clearFlowBtn.classList.toggle('hidden', !key);
       Object.entries(flowButtons).forEach(([k, b]) => b.setAttribute('aria-pressed', String(k === key)));
+      // 左側清單：選到群組裡的路徑時展開那個群組；手機選完就把清單收起來，讓出畫面
+      if (key && SCENARIOS[key].group) setFlowGroupOpen(SCENARIOS[key].group, true);
+      document.getElementById('flowToggleText').textContent = key ? SCENARIOS[key].name : '服務路徑';
+      if (key && viewW() < 768) setFlowListOpen(false);
       if (withToast && key) {
         const sc = SCENARIOS[key];
-        showToast(`${sc.name}：${sc.stops.map(st => modById(st.id).name).join(' → ')}`);
+        showToast(`${sc.name}：${sc.stops.map(stopName).join(' → ')}`);
         track('island_flow', { flow: sc.name });
         // 鏡頭拉近到這條路徑，才看得清楚步道上的小人
         if (camera) {
@@ -8541,37 +8876,51 @@
           const mods = sc.route.map(modById);
           const cx = mods.reduce((a, m) => a + m.gridPos.x, 0) / mods.length;
           const cz = mods.reduce((a, m) => a + m.gridPos.z, 0) / mods.length;
-          // 從路徑所在的那一側看過去，避免被中央醫院大樓擋住
-          const dir = new THREE.Vector2(cx, cz);
-          if (dir.length() < 10) dir.set(0.45, 0.9);
-          dir.normalize();
+          // 各島的造景都朝正前方，所以固定從前方偏右看；距離與高度依這條路徑涵蓋的範圍調整，整條路徑都在畫面裡
+          const dir = new THREE.Vector2(Math.cos(65 * Math.PI / 180), Math.sin(65 * Math.PI / 180));
+          const span = Math.max(...mods.map(m => Math.hypot(m.gridPos.x - cx, m.gridPos.z - cz)));
           // 直式螢幕拉遠；手機的路徑說明在畫面下方，注視點往鏡頭方向移，讓路徑出現在畫面上半部
           const aspect = viewW() / viewH();
           const k = aspect < 1 ? 1 + (1 - aspect) * 1.1 : 1;
           const mobile = viewW() < 768;
           const look = new THREE.Vector3(cx + (mobile ? dir.x * 45 : 0), 18, cz + (mobile ? dir.y * 45 : 0));
-          const cam = new THREE.Vector3(cx + dir.x * 140 * k, 110 * k, cz + dir.y * 140 * k);
+          const cam = new THREE.Vector3(cx + dir.x * (96 + span * 0.85) * k, (78 + span * 0.5) * k, cz + dir.y * (96 + span * 0.85) * k);
           shiftForSidePanel(look, cam, -26); // 左側有路徑說明面板，畫面往右讓一點
           flyCameraTo(cam, look);
         }
       }
     }
 
-    // 依資料產生路徑按鈕
-    Object.entries(SCENARIOS).forEach(([key, sc]) => {
+    // 依資料產生路徑按鈕：垂直排列；沒有 group 的路徑直接列出，有 group 的收在可展開的群組裡
+    const flowList = document.getElementById('flowList'), flowToggle = document.getElementById('flowToggle'), flowGroups = {};
+    const FLOW_CHIP = 'flow-chip w-full text-left whitespace-nowrap glass-morphism px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white transition';
+    const setFlowListOpen = (open) => { flowList.classList.toggle('hidden', !open); flowToggle.setAttribute('aria-expanded', String(open)); };
+    const setFlowGroupOpen = (g, open) => { const G = flowGroups[g]; if (!G) return; G.list.classList.toggle('hidden', !open); G.btn.setAttribute('aria-expanded', String(open)); };
+    const makeFlowBtn = (key, sc, parent, before) => {
       const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'flow-chip shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white transition';
-      btn.setAttribute('aria-pressed', 'false');
+      btn.type = 'button'; btn.className = FLOW_CHIP; btn.setAttribute('aria-pressed', 'false');
       btn.innerHTML = `${svgIcon(sc.icon)} ${sc.name}`;
       btn.style.setProperty('--chip', '#' + sc.color.toString(16).padStart(6, '0'));
-      btn.addEventListener('click', () => {
-        sound.playChime();
-        setActiveFlow(activeFlow === key ? null : key);
-      });
-      clearFlowBtn.before(btn);
+      btn.addEventListener('click', () => { sound.playChime(); setActiveFlow(activeFlow === key ? null : key); });
+      before ? before.before(btn) : parent.appendChild(btn);
       flowButtons[key] = btn;
+    };
+    Object.entries(SCENARIOS).filter(([, sc]) => !sc.group).forEach(([key, sc]) => makeFlowBtn(key, sc, flowList, clearFlowBtn));
+    Object.entries(SCENARIO_GROUPS).forEach(([g, info]) => {
+      const members = Object.entries(SCENARIOS).filter(([, sc]) => sc.group === g);
+      if (!members.length) return;
+      const btn = document.createElement('button'), list = document.createElement('div');
+      btn.type = 'button'; btn.className = 'w-full whitespace-nowrap glass-morphism px-3 py-1.5 rounded-xl text-xs font-bold text-slate-200 hover:text-white transition flex items-center gap-1.5';
+      list.id = `flowGroup-${g}`; list.className = 'hidden flex flex-col items-stretch gap-1.5 ml-2 pl-2 border-l border-white/15';
+      btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', list.id);
+      btn.innerHTML = `${svgIcon(info.icon)} <span class="flex-1 text-left">${info.name}</span><span class="text-[10px] font-medium text-slate-400">${members.length} 項</span><svg class="icon flow-chev" aria-hidden="true" focusable="false"><use href="#i-arrow-down"></use></svg>`;
+      btn.addEventListener('click', () => { sound.playClick(); setFlowGroupOpen(g, btn.getAttribute('aria-expanded') !== 'true'); });
+      clearFlowBtn.before(btn); clearFlowBtn.before(list);
+      flowGroups[g] = { btn, list };
+      members.forEach(([key, sc]) => makeFlowBtn(key, sc, list));
     });
+    flowToggle.addEventListener('click', () => { sound.playClick(); setFlowListOpen(flowToggle.getAttribute('aria-expanded') !== 'true'); });
+    setFlowListOpen(viewW() >= 768);                    // 手機預設收合，點「服務路徑」才展開
     clearFlowBtn.addEventListener('click', () => {
       setActiveFlow(null);
       showToast('已關閉服務路徑');
@@ -8579,8 +8928,8 @@
 
     // ---- 俯瞰 / 歸位 ----
     let isTopDownView = false;
-    const TOPDOWN_CAMERA_POS = { x: 25, y: 740, z: 25.1 };
-    const TOPDOWN_TARGET_POS = { x: 25, y: 0, z: 25 };
+    const TOPDOWN_CAMERA_POS = { x: 50, y: 740, z: 32.1 };
+    const TOPDOWN_TARGET_POS = { x: 50, y: 0, z: 32 };
 
     document.getElementById('btnTopDownView').addEventListener('click', () => {
       sound.playClick();
@@ -8618,7 +8967,7 @@
       bgmVisualizer.classList.toggle('bgm-paused', !playing);
       bgmStateText.textContent = playing ? '音樂播放中' : (state === 'idle' ? '輕觸畫面播放' : '音樂已暫停');
       bgmToggleBtn.setAttribute('aria-pressed', String(playing));
-      bgmToggleBtn.setAttribute('aria-label', playing ? '暫停背景音樂' : '播放背景音樂');
+      bgmToggleBtn.querySelector('.bgm-sr').textContent = playing ? '，按一下暫停背景音樂' : '，按一下播放背景音樂';
     }
 
     function disarmAutoUnlock() {

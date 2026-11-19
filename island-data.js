@@ -48,7 +48,7 @@
       id: 0, type: 'core', name: '臺北醫院職業醫學科',
       officialName: '衛生福利部臺北醫院 職業醫學科',
       role: 'both', icon: 'hospital', badge: '科室介紹', color: '#0284c7',
-      gridPos: { x: 0, z: 0 },
+      gridPos: { x: 0, z: 0 }, viewAz: 60,
       desc: '職業醫學是預防醫學的一個專科，著重於維護工作場所的健康，預防與治療職業疾病和職業傷害。本科於民國90年12月4日成立（行政院衛生署公告），由蔡旻翰主任帶領，服務對象包括企業（雇主、人資與職安主管）與勞工。',
       keypoints: [
         '六項服務：工作環境危害評估、員工工作適應性評估、職業病與傷害診治、職能復健與重返職場、四大計畫指導與法規諮詢、健檢分析與健康管理',
@@ -65,7 +65,7 @@
       id: 1, type: 'core', name: '工作環境危害評估',
       officialName: '服務一｜工作環境潛在危害評估',
       role: 'employer', icon: 'radar', badge: '服務一・企業', color: '#f59e0b',
-      gridPos: { x: -65.88, z: -38.04 },
+      gridPos: { x: 131.76, z: 0 }, viewAz: 90,
       desc: '醫師到事業單位的作業現場訪視，評估材料毒性、高溫、噪音、人因性肌肉骨骼危害或傳染病等健康風險，並提供安全衛生教育與法規諮詢。',
       keypoints: [
         '現場訪視：辨識物理性、化學性、生物性與人因性危害',
@@ -81,7 +81,7 @@
       id: 2, type: 'core', name: '員工工作適應性評估',
       officialName: '服務二｜員工工作適應性評估',
       role: 'both', icon: 'scale', badge: '服務二・企業與勞工', color: '#06b6d4',
-      gridPos: { x: 131.76, z: 0 },
+      gridPos: { x: 65.88, z: 38.04 }, viewAz: 60,
       desc: '針對一般員工，以及曾經受傷或生病的勞工，評估身體狀況是否適合目前或預定的工作，協助雇主把勞工安排在適當的工作。',
       keypoints: [
         '健康檢查結果異常者的面談與健康指導',
@@ -97,7 +97,7 @@
       id: 3, type: 'core', name: '職業病與傷害診治',
       officialName: '服務三｜職業病與職業傷害診治（門診）',
       role: 'worker', icon: 'stethoscope', badge: '服務三・民眾', color: '#3b82f6',
-      gridPos: { x: 65.88, z: 38.04 },
+      gridPos: { x: 65.88, z: -38.04 }, viewAz: 90,
       desc: '本院為勞動部職業傷病診治網絡醫院（由國立臺灣大學醫學院附設醫院輔導）。由職業醫學專科醫師門診看診，評估疾病或傷害與工作之間的因果關係；符合條件者，開立職業病診斷書。',
       keypoints: [
         '依工作內容、暴露時序與流行病學證據，評估疾病與工作的因果關係',
@@ -114,7 +114,7 @@
       id: 4, type: 'core', name: '職能復健與重返職場',
       officialName: '服務四｜復健與重返職場',
       role: 'worker', icon: 'accessibility', badge: '服務四・民眾', color: '#10b981',
-      gridPos: { x: 65.88, z: -38.04 },
+      gridPos: { x: 0, z: 76.07 }, viewAz: 60,
       desc: '本院為職業災害勞工職能復健專業機構，提供功能性能力評估、工作能力強化訓練與職務再設計，協助職災勞工回到工作崗位。',
       keypoints: [
         '功能性能力評估（FCE）：了解目前可以負荷的工作能力',
@@ -130,7 +130,7 @@
       id: 5, type: 'core', name: '四大計畫指導與法規諮詢',
       officialName: '服務五｜健康促進與法規教育（四大預防計畫指導）',
       role: 'employer', icon: 'clipboard-list', badge: '服務五・企業', color: '#8b5cf6',
-      gridPos: { x: 0, z: 76.07 },
+      gridPos: { x: 131.76, z: 76.07 }, viewAz: 90,
       desc: '依《職業安全衛生法》與《勞工健康保護規則》，與事業單位的職護、職安人員合作推動四大預防計畫，並提供職業安全衛生法規諮詢。計畫由事業單位主導訂定，本科醫師提供專業評估與醫學建議，一起完成計畫中需要醫學判斷的部分。',
       keypoints: [
         '合作方式：計畫由事業單位主導訂定與執行，本科醫師負責需要醫學判斷的部分（風險評估、醫師面談、工作調整建議），並協助檢視執行成效',
@@ -148,7 +148,7 @@
       id: 6, type: 'core', name: '健檢分析與健康管理',
       officialName: '服務六｜公衛分析與計畫擬定',
       role: 'employer', icon: 'chart-column', badge: '服務六・企業', color: '#ec4899',
-      gridPos: { x: -65.88, z: 38.04 },
+      gridPos: { x: 65.88, z: 114.11 }, viewAz: 60,
       desc: '彙整並分析勞工健康檢查結果，規劃分級管理與追蹤，並依事業單位的作業特性，提出長期健康管理的規劃建議。',
       keypoints: [
         '一般與特殊健康檢查結果的統計與趨勢分析',
@@ -166,7 +166,7 @@
       id: 7, type: 'core', name: '勞動能力減損鑑定',
       officialName: '勞動能力減損評估（車禍、職業災害）',
       role: 'both', icon: 'ruler', badge: '鑑定・民眾與企業', color: '#d97706',
-      gridPos: { x: 0, z: -76.07 },
+      gridPos: { x: -65.88, z: 38.04 }, viewAz: 90,
       desc: '因車禍或職業災害造成身體功能永久性損失時，由職業醫學專科醫師評估勞動能力減損的程度，可作為和解或訴訟的參考。由林義哲醫師負責，林醫師另經營「職興市場」網站，撰寫職業醫學與臨場服務相關文章。',
       keypoints: [
         '法院民事訴訟囑託鑑定',
@@ -184,13 +184,13 @@
     // ========= 服務地區（新北市、臺北市）=========
     //   bearing／distanceKm：相對本院的方位與直線距離，請以地圖核對
     { id: 8, type: 'region', name: '新莊區', bearing: '本院所在地', distanceKm: '—',
-      transit: '本院位於新莊區思源路127號。', code: 'NEW TAIPEI · XINZHUANG', icon: 'factory', color: '#64748b', gridPos: { x: -165, z: 95 } },
+      transit: '本院位於新莊區思源路127號。', code: 'NEW TAIPEI · XINZHUANG', icon: 'factory', color: '#64748b', gridPos: { x: -129.9, z: -75 }, linkCore: 0 },
     { id: 9, type: 'region', name: '五股區', bearing: '北北西方 (NNW)', distanceKm: '直線 3.8 km',
-      transit: '區內有新北產業園區（五股工業區）。', code: 'NEW TAIPEI · WUGU', icon: 'cog', color: '#64748b', gridPos: { x: -85, z: -240 } },
+      transit: '區內有新北產業園區（五股工業區）。', code: 'NEW TAIPEI · WUGU', icon: 'cog', color: '#64748b', gridPos: { x: -85, z: -240 }, linkCore: 0 },
     { id: 10, type: 'region', name: '三重區', bearing: '東北方 (NE)', distanceKm: '直線 3.5 km',
       transit: '與新莊區相鄰。', code: 'NEW TAIPEI · SANCHONG', icon: 'wrench', color: '#64748b', gridPos: { x: 208, z: -128 } },
     { id: 11, type: 'region', name: '板橋區', bearing: '正南方 (S)', distanceKm: '直線 2.5 km',
-      transit: '新北市政府所在地，可經大漢橋往返新莊。', code: 'NEW TAIPEI · BANQIAO', icon: 'building-2', color: '#64748b', gridPos: { x: 22, z: 214 } },
+      transit: '新北市政府所在地，可經大漢橋往返新莊。', code: 'NEW TAIPEI · BANQIAO', icon: 'building-2', color: '#64748b', gridPos: { x: 12, z: 240 } },
     { id: 12, type: 'region', name: '中和區', bearing: '東南方 (SE)', distanceKm: '直線 5.5 km',
       transit: '可搭乘捷運環狀線往返新莊。', code: 'NEW TAIPEI · ZHONGHE', icon: 'microscope', color: '#64748b', gridPos: { x: 195, z: 208 } },
     { id: 13, type: 'region', name: '臺北市', bearing: '正東方 (E)', distanceKm: '直線 7.0 km',
@@ -223,28 +223,29 @@
   // 故事巡航：依序飛到每一站，每站停 6.5 秒
   // ----------------------------------------------------------------
   const TOUR_STOPS = [
-    // module：這一站看的是哪座島；lookY：注視點的高度；cam：鏡頭相對於島中心的位置。實際座標在下方依島的位置算出
+    // module：這一站看的是哪座島；lookY：注視點的高度；camDist、camY：鏡頭離島中心的水平距離與高度。方位用那座島的 viewAz，實際座標在下方算出
     { step: '01', title: '臺北醫院職業醫學科',
       subtitle: '職業醫學著重於預防與治療職業疾病和職業傷害，服務對象包括企業與勞工。',
-      module: 0, lookY: 30, cam: { x: 78, y: 62, z: 95 } },
+      module: 0, lookY: 30, camDist: 122, camY: 62 },
     { step: '02', title: '職業病與傷害診治',
       subtitle: '門診評估疾病或傷害與工作的因果關係，符合條件者開立職業病診斷書。',
-      module: 3, lookY: 32, cam: { x: 50, y: 62, z: 57.6 } },
+      module: 3, lookY: 24, camDist: 82, camY: 58 },
     { step: '03', title: '職能復健與重返職場',
       subtitle: '提供功能性能力評估、工作能力強化訓練與職務再設計，協助職災勞工復工。',
-      module: 4, lookY: 26, cam: { x: 58, y: 56, z: 46 } },
+      module: 4, lookY: 24, camDist: 82, camY: 56 },
     { step: '04', title: '勞動能力減損鑑定',
       subtitle: '評估車禍或職業災害造成的勞動能力減損程度，提供門診自費與法院囑託鑑定。',
-      module: 7, lookY: 28, cam: { x: 56, y: 58, z: -42 } },
+      module: 7, lookY: 24, camDist: 82, camY: 58 },
     { step: '05', title: '臨場服務範圍',
       subtitle: '企業特約臨場健康服務的範圍為新北市與臺北市。',
-      camPos: { x: 318, y: 333, z: 400 }, lookAt: { x: 25, y: 0, z: 20 } }
+      camPos: { x: 418, y: 333, z: 340 }, lookAt: { x: 50, y: 0, z: 32 } }
   ];
   TOUR_STOPS.forEach(st => {
     const m = st.module === undefined ? null : ISLAND_MODULES.find(x => x.id === st.module);
     if (!m) return;
+    const az = (m.viewAz === undefined ? 53 : m.viewAz) * Math.PI / 180;
     st.lookAt = { x: m.gridPos.x, y: st.lookY, z: m.gridPos.z };
-    st.camPos = { x: m.gridPos.x + st.cam.x, y: st.cam.y, z: m.gridPos.z + st.cam.z };
+    st.camPos = { x: m.gridPos.x + Math.cos(az) * st.camDist, y: st.camY, z: m.gridPos.z + Math.sin(az) * st.camDist };
   });
 
   // ----------------------------------------------------------------
@@ -255,36 +256,87 @@
   //   carries：每兩站之間小人搬的東西，寫成 { icon: '圖示名稱', text: '文字' }；一般路徑為 stops 數減 1，循環路徑與 stops 數相同（最後一段走回起點）
   //   新增路徑時，頁面上會自動多一顆按鈕
   // ----------------------------------------------------------------
+  // 服務路徑。route：依序經過的島（相鄰的島才有橋，所以前後兩座必須相鄰）；stops：會停留並說明的站；
+  //   group：'onsite' 的路徑收在左側「臨場服務」的折疊群組裡；
+  //   optionalFrom：從第幾站（從 0 算）開始是「有需要才會走到」的路段——路線帶畫成虛線，走動的人物只有少數會繼續走；
+  //     optionalTag：面板上標示的文字（預設「有需要時轉介」）；optionalEnd：沒有繼續走的人，說明裡的理由（預設「評估後不需要轉介」）
+  //   carries：站與站之間帶著的資料，數量＝站數－1
+  //   站的 label：面板與說明上顯示的站名（沒寫就用那座島的名稱）。例如轉介到各專科門診時，終點是醫院而不是職業醫學科門診
+  //   ※ 各站的說明文字為初稿，需由本科醫師核對
+  const SCENARIO_GROUPS = { onsite: { name: '臨場服務', icon: 'building-2' } };
   const SCENARIOS = {
-    checkup: {
-      name: '健檢異常追蹤', icon: 'chart-column', audience: '企業與勞工', color: 0x14b8a6,
-      route: [6, 0, 3, 2],   // 健檢分析 →（到臺北醫院）→ 門診複查 → 工作適應性評估；0 是經過的島，不是停留站
-      stops: [
-        { id: 6, text: '分析健康檢查結果，進行分級管理，找出需要追蹤的勞工。' },
-        { id: 3, text: '健檢異常者到職業醫學科門診複查；疑似與工作有關時進一步調查。' },
-        { id: 2, text: '依複查與評估結果，判斷是否適合原工作，提出工作調整的建議。' }
-      ],
-      carries: [{ icon: 'chart-column', text: '需追蹤名單與健檢結果' }, { icon: 'file-check', text: '複查與評估結果' }]
-    },
     rtw: {
       name: '職災勞工復工', icon: 'accessibility', audience: '勞工', color: 0xf59e0b,
-      route: [0, 3, 4, 2],   // 先到臺北醫院就醫 → 門診 → 復健 → 復工評估
+      route: [0, 3, 2, 4],      // 職災勞工到臺北醫院 → 門診 → 適性評估 → 復健
       stops: [
         { id: 3, text: '門診評估傷病與工作的關係，符合條件者開立職業病診斷書，供申請勞保給付。' },
-        { id: 4, text: '進行功能性能力評估與工作強化訓練，逐步恢復工作能力。' },
-        { id: 2, text: '復工前評估身體狀況與工作負荷，提出復工與配工建議。' }
+        { id: 2, text: '評估目前的身體功能和原本工作的差距，擬定復工計畫，提出復工與配工建議。' },
+        { id: 4, text: '進行功能性能力評估與工作強化訓練，逐步恢復工作能力，回到職場。' }
       ],
-      carries: [{ icon: 'file-text', text: '病情摘要與復健需求' }, { icon: 'activity', text: '功能性能力評估結果' }]
+      carries: [{ icon: 'file-text', text: '病情摘要' }, { icon: 'clipboard-list', text: '復工計畫與復健需求' }]
     },
-    annual: {
-      name: '臨場服務年度循環', icon: 'repeat', audience: '企業', color: 0x38bdf8,
-      route: [0, 1, 6, 5, 0],   // 醫院特約的醫護從臺北醫院出發 → 現場訪視 → 健檢分析 → 四大計畫 → 回到醫院，隔年再出發
+    occ: {
+      name: '職業病認定', icon: 'microscope', audience: '勞工', color: 0xa855f7,
+      route: [0, 3, 1],         // 勞工到臺北醫院 → 門診 → 危害評估（兩站都是必經的）
       stops: [
-        { id: 1, text: '醫護人員會同職安人員訪視作業現場，辨識健康危害並提出改善建議。' },
-        { id: 6, text: '彙整年度健康檢查結果，掌握需要優先關注的族群與作業。' },
-        { id: 5, text: '依訪視與健檢結果，與事業單位的職護、職安人員一起推動四大預防計畫；每年評估成效後進入下一輪（第12條）。' }
+        { id: 3, text: '勞工到門診就醫，醫師問診並了解工作內容、職業史與暴露史，判斷疾病與工作的因果關係；符合條件者開立職業病診斷書。' },
+        { id: 1, text: '必要時了解作業現場的暴露情形，作為判斷的依據。' }
       ],
-      carries: [{ icon: 'clipboard-check', text: '現場訪視紀錄' }, { icon: 'chart-column', text: '健檢分析報告' }, { icon: 'repeat', text: '計畫執行檢討' }]
+      carries: [{ icon: 'file-text', text: '病歷與職業史' }]
+    },
+    ergo: {
+      name: '人因性危害預防', icon: 'activity', audience: '企業與勞工', color: 0x06b6d4, group: 'onsite', optionalFrom: 4,
+      route: [6, 5, 1, 2, 0, 3],
+      stops: [
+        { id: 6, text: '從健康檢查與肌肉骨骼症狀調查，找出有痠痛不適的勞工。' },
+        { id: 5, text: '依人因性危害預防計畫，排定需要優先評估的作業與對象。' },
+        { id: 1, text: '到作業現場了解搬運、重複動作與不良姿勢等人因危害。' },
+        { id: 2, text: '醫師評估症狀與工作的關係，提出作業改善與工作調整的建議。' },
+        { id: 3, cond: true, text: '有需要進一步診治者，轉介到臺北醫院門診；經評估與工作有關者，進行職業病認定。' }
+      ],
+      carries: [{ icon: 'chart-column', text: '症狀調查結果' }, { icon: 'clipboard-list', text: '優先評估名單' }, { icon: 'clipboard-check', text: '現場評估結果' }, { icon: 'file-text', text: '轉介單與評估意見' }]
+    },
+    maternal: {
+      name: '母性健康保護', icon: 'heart-pulse', audience: '企業與勞工', color: 0xf472b6, group: 'onsite',
+      route: [5, 1, 2],
+      stops: [
+        { id: 5, text: '依母性健康保護計畫，確認妊娠中、分娩後未滿一年及哺乳中的女性勞工。' },
+        { id: 1, text: '了解工作環境與作業內容中，可能影響母體、胎兒或哺乳的危害。' },
+        { id: 2, text: '醫師面談並進行風險分級，提出工作調整或更換工作的建議。' }
+      ],
+      carries: [{ icon: 'clipboard-list', text: '保護對象名單' }, { icon: 'clipboard-check', text: '作業危害的評估結果' }]
+    },
+    overload: {
+      name: '異常工作負荷預防', icon: 'clock', audience: '企業與勞工', color: 0x6366f1, group: 'onsite', optionalFrom: 4,
+      route: [6, 5, 1, 2, 0],
+      stops: [
+        { id: 6, text: '從健康檢查結果找出心血管疾病風險較高的勞工。' },
+        { id: 5, text: '依異常工作負荷促發疾病預防計畫，結合工時、輪班等資料辨識高風險族群。' },
+        { id: 1, text: '了解實際的工作型態與負荷來源。' },
+        { id: 2, text: '醫師面談，依風險等級提出縮短工時、調整作業等建議。' },
+        { id: 0, cond: true, label: '醫院（各專科門診）', text: '健康有疑慮或已有症狀者，建議回到心臟科等專科門診進一步檢查與治療。' }
+      ],
+      carries: [{ icon: 'chart-column', text: '心血管風險評估結果' }, { icon: 'clipboard-list', text: '高風險名單' }, { icon: 'clipboard-check', text: '工作負荷的評估結果' }, { icon: 'file-text', text: '轉介單與面談紀錄' }]
+    },
+    mgmt: {
+      name: '在職勞工健康檢查管理', icon: 'chart-column', audience: '企業與勞工', color: 0x14b8a6, group: 'onsite', optionalFrom: 2,
+      route: [6, 2, 0],
+      stops: [
+        { id: 6, text: '彙整在職勞工的定期健康檢查結果，進行分級管理，找出需要關注的對象。' },
+        { id: 2, text: '醫師依健檢結果與工作內容，評估是否適合原工作，提出健康指導與工作調整的建議。' },
+        { id: 0, cond: true, label: '醫院（各專科門診）', text: '健檢結果有異常、健康有疑慮者，建議回到各專科門診追蹤治療。' }
+      ],
+      carries: [{ icon: 'chart-column', text: '健檢結果與分級名單' }, { icon: 'file-text', text: '轉介單與評估意見' }]
+    },
+    newhire: {
+      name: '新進勞工體格檢查管理', icon: 'clipboard-check', audience: '企業與勞工', color: 0x84cc16, group: 'onsite', optionalFrom: 2,
+      route: [6, 2, 0],
+      stops: [
+        { id: 6, text: '檢視新進勞工的體格檢查結果，確認有沒有不適合從事的作業。' },
+        { id: 2, text: '醫師依體格檢查結果與預定的工作內容，提出選工、配工的建議。' },
+        { id: 0, cond: true, label: '醫院（各專科門診）', text: '發現需要進一步診治的健康問題時，建議到各專科門診就醫追蹤。' }
+      ],
+      carries: [{ icon: 'file-check', text: '體格檢查結果' }, { icon: 'file-text', text: '轉介單與評估意見' }]
     }
   };
 
@@ -440,6 +492,7 @@
     doctors: DOCTORS,
     tourStops: TOUR_STOPS,
     scenarios: SCENARIOS,
+    scenarioGroups: SCENARIO_GROUPS,
     calcRules: CALC_RULES,
     introSteps: INTRO_STEPS,
     tips: TIPS,
