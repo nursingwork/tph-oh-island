@@ -434,6 +434,19 @@
         transition-duration: 0.01ms !important;
       }
     }
+  
+    /* [介面] 名牌縮小，不擋住島嶼的操作；不隨鏡頭遠近消失（只有彼此重疊時，次要的那個會暫時讓位） */
+    .island-pin > div, .region-pin > div { transform: scale(calc(0.82 * var(--pin-s, 1))); transform-origin: 50% 100%; }
+    @media (max-width: 767px) { .island-pin > div, .region-pin > div { transform: scale(calc(0.78 * var(--pin-s, 1))); } }
+  
+    /* [人物] 人物說明：桌機從右側滑出，手機從底部升起（不擋住正在跟隨的人物） */
+    #personDrawer { position: absolute; top: 0; right: 0; height: 100%; width: 340px; max-width: 100%; z-index: 30; display: flex; flex-direction: column;
+      border-left: 1px solid rgba(255,255,255,0.1); transform: translateX(100%); transition: transform 0.45s ease; }
+    #personDrawer.open { transform: none; }
+    @media (max-width: 639px) {
+      #personDrawer { top: auto; bottom: 0; width: 100%; height: 46%; border-left: 0; border-top: 1px solid rgba(255,255,255,0.14); border-radius: 20px 20px 0 0; transform: translateY(100%); }
+    }
+    @media (prefers-reduced-motion: reduce) { #personDrawer { transition: none; } }
   </style>
 </head>
 <body class="text-slate-100 transition-colors duration-700">
@@ -1677,6 +1690,33 @@
   </div>
 
   <!-- ================= [新增] 服務清單側欄：3D 島嶼的文字版，可搜尋 ================= -->
+  <!-- [人物] 點選島上的人物（本人或名牌）時，從右側滑出的人物說明 -->
+  <aside id="personDrawer" aria-labelledby="personTitle" inert class="glass-morphism">
+    <div class="p-4 sm:p-5 flex items-start gap-3 border-b border-white/10">
+      <div id="personIcon" class="w-11 h-11 shrink-0 rounded-2xl flex items-center justify-center bg-slate-800/80 text-brand-300"></div>
+      <div class="min-w-0 flex-1">
+        <div id="personBadge" class="text-[11px] font-bold text-brand-300"></div>
+        <h2 id="personTitle" class="text-lg font-bold text-white leading-snug"></h2>
+        <div id="personSub" class="text-xs text-slate-400"></div>
+      </div>
+      <button id="personClose" type="button" aria-label="關閉人物說明" class="w-9 h-9 shrink-0 rounded-xl glass-morphism flex items-center justify-center text-slate-300 hover:text-white"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
+    </div>
+    <div class="p-4 sm:p-5 space-y-4 overflow-y-auto text-sm text-slate-200">
+      <p id="personDesc" class="leading-relaxed"></p>
+      <div>
+        <div class="text-[11px] font-bold text-slate-400 mb-1">現在正在做什麼</div>
+        <p id="personDoing" class="text-white font-medium leading-relaxed"></p>
+        <p id="personCarry" class="text-slate-300 mt-1 leading-relaxed"></p>
+      </div>
+      <ol id="personRoute" class="space-y-1.5 text-[13px]"></ol>
+      <div id="personTraitBlock">
+        <div class="text-[11px] font-bold text-slate-400 mb-1">怎麼認出這類人物</div>
+        <p id="personTrait" class="text-slate-300 leading-relaxed"></p>
+      </div>
+      <button id="personDoctorsBtn" type="button" class="hidden w-full px-4 py-2.5 rounded-xl bg-brand-500/90 hover:bg-brand-400 text-slate-950 font-bold text-sm">查看醫師陣容</button>
+    </div>
+  </aside>
+
   <aside id="indexPanel" aria-labelledby="indexTitle" inert class="absolute top-0 left-0 h-full w-full sm:w-[360px] glass-morphism z-30 transform -translate-x-full transition-transform duration-500 flex flex-col border-r border-white/10">
     <div class="p-5 border-b border-white/10">
       <div class="flex items-start justify-between gap-3">
@@ -1808,7 +1848,7 @@
         route.forEach(id => { if (!ids.has(id)) problems.push(`${where}：route 裡的島 ${id} 不存在`); });
         for (let i = 1; i < route.length; i++) {
           const a = ISLAND_MODULES.find(m => m.id === route[i - 1]), b = ISLAND_MODULES.find(m => m.id === route[i]);
-          if (a && b && Math.abs(Math.hypot(a.gridPos.x - b.gridPos.x, a.gridPos.z - b.gridPos.z) - 62.35) > 3)
+          if (a && b && Math.abs(Math.hypot(a.gridPos.x - b.gridPos.x, a.gridPos.z - b.gridPos.z) - CORE_SPACING) > 3)
             problems.push(`${where}：島 ${a.id} 和島 ${b.id} 不相鄰，中間請加上經過的島（例如中央的 0）`);
         }
         (sc.stops || []).forEach(st => { if (!route.includes(st.id)) problems.push(`${where}：停留站 ${st.id} 不在 route 裡`); });
@@ -3065,7 +3105,8 @@
     let activeRole = 'all';
     let activeFlow = null;
 
-    const OVERVIEW_CAMERA_POS = { x: 280, y: 290, z: 350 };
+    const CORE_SPACING = 76.07;   // 相鄰服務島的中心距離：六角島外接半徑 36（邊心距 31.18）時，62.35 為邊貼邊；目前拉開成島與島之間約 13.7 寬的水道，用橋連接
+    const OVERVIEW_CAMERA_POS = { x: 318, y: 333, z: 400 };   // 島群拉開後，全景鏡頭退後約 15%
     const OVERVIEW_TARGET_POS = { x: 25, y: 0, z: 20 };
     const HOSPITAL_CAM = { pos: { x: 78, y: 68, z: 95 }, look: { x: 0, y: 36, z: 0 } };
 
@@ -3178,7 +3219,7 @@
       controls.dampingFactor = 0.06;
       controls.maxPolarAngle = Math.PI / 2 - 0.05;
       controls.minDistance = CAM_MIN_DIST;   // [探索] 可以湊近看細節（原本是 60）
-      controls.maxDistance = 1100;
+      controls.maxDistance = CAM_MAX_DIST;
       controls.target.set(OVERVIEW_TARGET_POS.x, OVERVIEW_TARGET_POS.y, OVERVIEW_TARGET_POS.z);
       // [修正] 使用者自己拖曳時，停止進行中的運鏡並中斷巡航，避免鏡頭被搶走
       controls.addEventListener('change', () => { dirty = true; });
@@ -3194,11 +3235,11 @@
       buildSolitaryArchipelagoWorld();
       buildAtmosphereParticles();
       buildBirds();
-      buildBoats();
+      buildTransport();
       buildWeather();
       setupIslandPins();
       setupTipCloud();
-      buildRegionalVectors();
+      // buildRegionalVectors();   // [交通] 原本從醫院中心拋向各區的弧形虛線，已由交通船與長橋取代
 
       prepColors(scene);
       applyTimeMode(timeMode, false, false);
@@ -3690,6 +3731,7 @@
 
       buildMountainForests();
       buildArchipelago();
+      buildBridges();
       // [效能] 雲朵不影響第一眼的畫面，延後到瀏覽器空檔再建，縮短首次載入的主執行緒占用
       (window.requestIdleCallback || ((fn) => setTimeout(fn, 1200)))(() => { buildClouds(); if (lastEnvState) tintClouds(lastEnvState); dirty = true; }, { timeout: 2500 });
     }
@@ -3804,7 +3846,7 @@
       nightLinked.push({ apply: (n) => { mat.opacity = 0.2 * (1 - n * 0.7); } });
       const geo = new THREE.PlaneGeometry(1, 1);
       geo.rotateX(-Math.PI / 2);
-      const spots = [{ x: 0, z: 0, r: 175 }].concat(ISLAND_MODULES.filter(m => m.type === 'region').map(m => ({ x: m.gridPos.x, z: m.gridPos.z, r: m.id === 13 ? 120 : 82 })));
+      const spots = [{ x: 16, z: 0, r: 215 }].concat(ISLAND_MODULES.filter(m => m.type === 'region').map(m => ({ x: m.gridPos.x, z: m.gridPos.z, r: m.id === 13 ? 120 : 82 })));
       spots.forEach(sp => {
         const mesh = new THREE.Mesh(geo, mat);
         mesh.scale.set(sp.r * 2, 1, sp.r * 2);
@@ -4071,52 +4113,51 @@
     //   載入 20 秒後第一次出現，之後每 2 分鐘一次、每次 16 秒；鏡頭靠近醫師時才顯示
     //   內容在 island-data.js 的 tips
     // =============================================================
-    const TIP_FIRST = 20, TIP_EVERY = 120, TIP_FOR = 16; // 秒
-    let tipT0 = performance.now(); // 測試時可在主控台改這個值，立即觸發小叮嚀
-    let tipEl = null;
-    const tipState = { cycle: -1, on: false };
-
+    //   [改版] 醫師改為走在路上：每到一座島停下來時，頭上冒出一段小叮嚀，說完繼續走。每位醫師輪流說自己的那幾則
+    let tipEl = null;                      // 保留給舊程式參照（第一位醫師的泡泡）
+    const tipEls = new Map();              // 醫師 id → 泡泡元素
     function setupTipCloud() {
       if (!TIPS.length) return;
-      tipEl = document.createElement('div');
-      tipEl.className = 'tip-cloud';
-      tipEl.setAttribute('aria-hidden', 'true');
-      tipEl.innerHTML = '<div class="tip-bubble"><div class="tip-head"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-stethoscope"></use></svg> 職醫小叮嚀</div><div class="tip-text"></div><div class="tip-by"></div></div>';
-      document.getElementById('pins-container').appendChild(tipEl);
+      DOCTORS.forEach(doc => {
+        const el = document.createElement('div');
+        el.className = 'tip-cloud';
+        el.setAttribute('aria-hidden', 'true');
+        el.innerHTML = '<div class="tip-bubble"><div class="tip-head"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-stethoscope"></use></svg> 職醫小叮嚀</div><div class="tip-text"></div><div class="tip-by"></div></div>';
+        document.getElementById('pins-container').appendChild(el);
+        tipEls.set(doc.id, { el, on: false, shownIdx: -1 });
+        if (!tipEl) tipEl = el;
+      });
     }
 
     function updateTipCloud() {
-      if (!tipEl || !camera) return;
-      const t = (performance.now() - tipT0) / 1000 - TIP_FIRST;
-      const cycle = Math.floor(t / TIP_EVERY);
-      const inWindow = t >= 0 && (t - cycle * TIP_EVERY) < TIP_FOR;
-      const tip = TIPS[((cycle % TIPS.length) + TIPS.length) % TIPS.length];
-      const pin = tip && pinElements.find(p => p.doctor && p.doctor.id === tip.doctor);
+      if (!tipEls.size || !camera || !agents) return;
       const blocked = tourActive || isIntroOpen() || ALL_MODALS.some(m => !m.classList.contains('hidden'));
-      const show = !!(inWindow && pin && pin.visible && !blocked &&
-        camera.position.distanceTo(pin.pos) < 340);
-
-      if (show && tipState.cycle !== cycle) {
-        tipState.cycle = cycle;
-        const doc = DOCTORS.find(d => d.id === tip.doctor);
-        tipEl.querySelector('.tip-text').textContent = tip.text;
-        tipEl.querySelector('.tip-by').textContent = doc ? `— ${doc.name}` : '';
-      }
-      if (show) {
-        // 上方空間不夠（會被標頭擋住）時，改放在醫師名牌下方
-        const above = pin.sy - (pin.h || 26) - 18;
-        const below = above - (tipEl.firstChild.offsetHeight || 80) < 130;
-        tipEl.classList.toggle('below', below);
-        const y = below ? pin.sy + 26 : above;
-        tipEl.style.transform = `translate3d(${pin.sx.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-      }
-      if (show !== tipState.on) {
-        tipState.on = show;
-        tipEl.classList.toggle('show', show);
-        if (show) track('island_tip_shown', { doctor: tip.doctor });
-      }
+      const maxDist = viewW() < 768 ? 420 : 640;       // 鏡頭離得太遠時不顯示，避免全景時泡泡蓋住島
+      agents.list.forEach(a => {
+        if (a.type !== 'doctor') return;
+        const st = tipEls.get(a.doc.id), pin = a.pin;
+        if (!st) return;
+        const mine = TIPS.filter(t => t.doctor === a.doc.id), pool = mine.length ? mine : TIPS;
+        const show = !!(a.talking && pin && pin.visible && !blocked && camera.position.distanceTo(pin.pos) < maxDist);
+        if (show && st.shownIdx !== a.tipIdx) {
+          st.shownIdx = a.tipIdx;
+          const tip = pool[((a.tipIdx % pool.length) + pool.length) % pool.length];
+          st.el.querySelector('.tip-text').textContent = tip.text;
+          const by = st.el.querySelector('.tip-by'); if (by) by.textContent = `— ${a.doc.name}`;
+          track('island_tip_shown', { doctor: a.doc.id });
+        }
+        if (show) {
+          // 上方空間不夠（會被標頭擋住）時，改放在名牌下方
+          const above = pin.sy - (pin.h || 22) - 16;
+          const below = above - (st.el.firstChild.offsetHeight || 80) < 130;
+          st.el.classList.toggle('below', below);
+          const y = below ? pin.sy + 24 : above;
+          st.el.style.transform = `translate3d(${pin.sx.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+        }
+        if (show !== st.on) { st.on = show; st.el.classList.toggle('show', show); }
+      });
     }
-    setInterval(updateTipCloud, 300);
+    setInterval(updateTipCloud, 120);
 
     // [畫質] 海面網格：座標以冪次分布，中央（島群）密、外圍疏
     const OCEAN_WAVE_AMP = 0.42;
@@ -4472,7 +4513,7 @@
         glowbox: (x, y, z, w, h, d, color) => kitAdd('glowbox', tx(x, z), topY + y + h / 2, tz(x, z), w, h, d, color, rot),
         bush: (x, z, s = 1) => {
           const bx = tx(x, z), bz = tz(x, z);
-          if (DOCTORS.some(d => Math.hypot(d.pos.x - bx, d.pos.z - bz) < 4.8)) return;   // 不長在醫師公仔的底座旁
+          if (onBridgeApproach(bx, bz, 3.0)) return;                                       // 也不擋住橋的引道
           bushPlacements.push({ x: bx, y: topY, z: bz, s, rot: Math.random() * 6.28 });
         },
         at: (x, z, r = 0) => islandCtx(cx, cz, topY, ox + x * cos + z * sin, oz - x * sin + z * cos, rot + r)
@@ -4646,6 +4687,58 @@
     // 島嶼的步道環：小人沿著這圈散步
     const islandWalkways = [];
     let WALK_MAT = null;
+    // [島群] 服務島的邊緣道路：沿六邊形邊緣一圈（中心線邊心距 ROAD_R，寬 3.2），橋接在每條邊的中央
+    const ROAD_R = 28.9, ROAD_HALF_W = 1.6;
+    // 各島邊緣道路中心線的邊心距：服務島與臺北市島較大（28.9），其餘地區島較小
+    const roadRadius = (m) => (m.type === 'region' && m.id !== 13) ? 22 * Math.cos(Math.PI / 6) - 2.28 : ROAD_R;
+    function addHexRoad(cx, cz, topY, R = ROAD_R) {
+      if (!WALK_MAT) WALK_MAT = new THREE.MeshStandardMaterial({
+          color: 0xf1ebe1, roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4
+        });
+      const c30 = Math.cos(Math.PI / 6), rin = (R - ROAD_HALF_W) / c30, rout = (R + ROAD_HALF_W) / c30;
+      const pos = [], idx = [];
+      for (let k = 0; k < 6; k++) {
+        const a = k * Math.PI / 3;
+        pos.push(Math.cos(a) * rin, 0, Math.sin(a) * rin, Math.cos(a) * rout, 0, Math.sin(a) * rout);
+        const i0 = k * 2, i1 = i0 + 1, j0 = ((k + 1) % 6) * 2, j1 = j0 + 1;
+        idx.push(i0, j0, i1, i1, j0, j1);
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      g.setIndex(idx);
+      g.computeVertexNormals();
+      const road = new THREE.Mesh(g, WALK_MAT);
+      road.position.set(cx, topY + 0.03, cz);
+      road.receiveShadow = true;
+      scene.add(road);
+    }
+    // 邊緣道路上的 12 個節點：偶數是各邊的中央（n = 0 朝 +x 偏 30°，之後每 60° 一個），奇數是六個角
+    function roadNode(m, n, y) {
+      n = ((n % 12) + 12) % 12;
+      const R = roadRadius(m), ang = (30 + 30 * n) * Math.PI / 180, r = n % 2 === 0 ? R : R / Math.cos(Math.PI / 6);
+      return new THREE.Vector3(m.gridPos.x + Math.cos(ang) * r, y, m.gridPos.z + Math.sin(ang) * r);
+    }
+    // 從 a 島看向相鄰的 b 島，是哪一條邊（回傳該邊中央的節點編號）
+    function edgeNodeToward(a, b) {
+      const ang = Math.atan2(b.gridPos.z - a.gridPos.z, b.gridPos.x - a.gridPos.x) * 180 / Math.PI;
+      return ((Math.round((ang - 30) / 60) % 6) + 6) % 6 * 2;
+    }
+    // 沿道路從 from 節點走到 to 節點（預設走近的那一邊；longWay 為 true 時繞遠路）
+    function perimeterNodes(from, to, longWay = false) {
+      const cw = ((to - from) % 12 + 12) % 12;
+      if (cw === 0) return [from];
+      const dir = ((cw <= 12 - cw) !== longWay) ? 1 : -1, count = dir > 0 ? cw : 12 - cw, out = [];
+      for (let k = 0; k <= count; k++) out.push(((from + dir * k) % 12 + 12) % 12);
+      return out;
+    }
+    // 過橋的路徑點（a → b），高度跟著拱橋橋面起伏
+    function bridgeWalkPoints(a, b, lift = 0.08) {
+      const dx = b.gridPos.x - a.gridPos.x, dz = b.gridPos.z - a.gridPos.z, dist = Math.hypot(dx, dz), ux = dx / dist, uz = dz / dist;
+      const ax = a.gridPos.x + ux * BRIDGE_END_R, az = a.gridPos.z + uz * BRIDGE_END_R, bx = b.gridPos.x - ux * BRIDGE_END_R, bz = b.gridPos.z - uz * BRIDGE_END_R;
+      const top = tileTop(a);
+      return [0, 0.2, 0.4, 0.6, 0.8, 1].map(u => new THREE.Vector3(ax + (bx - ax) * u, top + 0.22 + 1.5 * Math.sin(Math.PI * u) + lift, az + (bz - az) * u));
+    }
+
     function addWalkway(cx, cz, topY, r) {
       if (!WALK_MAT) {
         WALK_MAT = new THREE.MeshStandardMaterial({
@@ -4669,12 +4762,17 @@
       mod._hexR = radius; mod._hexH = height;
       const rand = seededRandom(900 + mod.id * 17);
       const topY = height + 2.5, isRegion = mod.type === 'region';
-      const inner = radius >= 36 ? 30 : (isRegion ? 9 : 19.5), outer = radius * 0.8;
-      const count = isRegion ? 16 : (radius >= 36 ? 46 : 30);
+      const count = (isRegion && radius < 36) ? 0 : 38;                   // 小的地區島中央是地標，不撒花草
       for (let k = 0; k < count; k++) {
-        const a = rand() * Math.PI * 2, r = inner + rand() * Math.max(1, outer - inner);
+        const a = rand() * Math.PI * 2;
+        let r;
+        if (isRegion && radius < 36) r = 8 + rand() * 5.6;                    // 小的地區島：花草在道路內側
+        else {
+          // 服務島：花草沿著邊緣道路的內側排成一圈花帶（六邊形，邊心距約 26）
+          const d = ((a * 180 / Math.PI - 30) % 60 + 60) % 60 - 30;
+          r = (25.4 + rand() * 1.1) / Math.cos(d * Math.PI / 180);
+        }
         const fx = mod.gridPos.x + Math.cos(a) * r, fz = mod.gridPos.z + Math.sin(a) * r;
-        if (DOCTORS.some(dc => Math.hypot(dc.pos.x - fx, dc.pos.z - fz) < 4.4)) continue;   // 不長在醫師公仔的底座上
         flowerPlacements.push({ x: mod.gridPos.x + Math.cos(a) * r, y: topY, z: mod.gridPos.z + Math.sin(a) * r, s: 0.75 + rand() * 0.7, rot: rand() * 6.28, flower: rand() < 0.62, ci: Math.floor(rand() * 5) });
       }
     }
@@ -4709,24 +4807,15 @@
       const isRegion = mod.type === 'region';
       const big = radius >= 36;
       const pathR = big ? 26 : 16;
-      addWalkway(cx, cz, topY, pathR);
+      addHexRoad(cx, cz, topY, roadRadius(mod));   // 地區島也和服務島一樣，沿六邊形邊緣鋪道路
       const put = (r, deg, fn, face = 0) => { const [x, z] = polar(r, deg); fn(C.at(x, z, face)); };
-      const lampsAt = (degs) => degs.forEach(d => put(pathR + 2.2, d, Props.lamp));
+      const lampsAt = (degs) => degs.forEach(d => put(roadRadius(mod) - 3.5, d, Props.lamp));   // 路燈立在道路內側
 
-      // 建築入口：門、門墊與通往步道的岔路（服務路徑的小人會從這裡進出）
-      if (!isRegion && ENTRANCES[mod.id]) {
-        const dz = ENTRANCES[mod.id].doorZ, ex = ENTRANCES[mod.id].doorX || 0;
-        C.hbox(ex, 0, dz + 0.1, 2.4, 3.2, 0.18, '#1f2937');            // 門
-        C.hbox(ex, 2.9, dz + 0.12, 2.8, 0.3, 0.1, '#e2e8f0');           // 門楣
-        C.glowbox(ex, 3.3, dz + 0.14, 1.0, 0.22, 0.06, '#fde68a');      // 門上的小燈
-        C.box(ex, 0, dz + 1.2, 3.2, 0.12, 1.6, '#e7d7c1');              // 門墊
-        C.hbox(ex, 0.05, (dz + 1.8 + pathR + 0.6) / 2, 2.6, 0.08, pathR + 0.6 - dz - 1.8, '#f1ebe1'); // 岔路步道
-      }
       switch (mod.id) {
         case 0: // 部立臺北醫院：救護車、候診長椅、旗桿、花台
           put(0, 0, (c) => Props.ambulance(c.at(-7, 21)));
           put(0, 0, (c) => { Props.bench(c.at(5, -16)); Props.bench(c.at(-5, -16)); });
-          [[20.5, 20], [22.6, 18.4], [24.6, 16.6]].forEach(([x, z], i) => put(0, 0, (c) => Props.flag(c.at(x, z), ['#0ea5e9', '#14b8a6', '#f8fafc'][i])));
+          [[11.5, 20.5], [14, 19.3], [16.3, 17.8]].forEach(([x, z], i) => put(0, 0, (c) => Props.flag(c.at(x, z), ['#0ea5e9', '#14b8a6', '#f8fafc'][i])));
           [[17, -16], [-17, -16], [-20, 12.5]].forEach(([x, z]) => put(0, 0, (c) => Props.planter(c.at(x, z))));
           lampsAt([60, 120, 240, 300]);
           break;
@@ -4780,27 +4869,30 @@
           put(14, 60, (c) => { Props.crate(c); Props.crate(c.at(1.3, 0)); Props.crate(c.at(0.6, 0, 0), 1.0); });
           lampsAt([170, 290]);
           break;
-        case 8: case 9: case 10: // 新莊、五股、三重：工廠聚落
+        case 8: break;            // 新莊：整座島中央是棒球場
+        case 9: case 10: break;   // 五股、三重：地標在 buildBuildingForModule
+        case 99: // （保留原本的工廠聚落寫法，未使用）
           put(10, 30, Props.factory, -Math.PI / 6);
           put(10, 150, (c) => Props.factory(c, '#e7d7c1', '#42771a'), Math.PI / 6);
           put(10, 270, Props.warehouse, Math.PI / 2);
           break;
-        case 11: case 12: // 板橋、中和：辦公大樓與園區
+        case 11: case 12: break;  // 板橋、中和：地標在 buildBuildingForModule
+        case 98: // （保留原本的辦公大樓寫法，未使用）
           put(10, 40, (c) => Props.office(c, 9, '#93c5fd'));
           put(10, 160, (c) => Props.office(c, 6.5, '#c7d2fe'));
           put(10, 280, Props.warehouse, Math.PI / 2);
           break;
         case 13: // 台北市：高樓群
-          [[16, 20, 14], [17, 80, 10], [16, 140, 12], [17, 200, 9], [16, 260, 16], [17, 320, 11]].forEach(([r, d, h], i) =>
+          [[18.5, 25, 13], [19, 85, 9], [18.5, 150, 11], [19, 205, 8], [18.5, 265, 14], [19, 325, 10]].forEach(([r, d, h], i) =>
             put(r, d, (c) => Props.office(c, h, ['#93c5fd', '#c7d2fe', '#a5f3fc', '#e0e7ff'][i % 4])));
           break;
       }
 
       // 樹種在六角的角落（步道外側），灌木點綴在步道內側空位
-      const cornerR = radius * (isRegion && !big ? 0.86 : 0.84);
+      const cornerR = radius * (isRegion && !big ? 0.68 : 0.84);   // 小的地區島：樹種在道路內側的角落
       for (let i = 0; i < 6; i++) {
+        if (mod.id === 8) continue;                                       // 新莊：球場占滿島中央，角落不種樹
         if (mod.id !== 0 && i % 2 === (mod.id % 2)) continue;
-        if (mod.id === 0 && i === 5) continue;   // 中央島左前方的角落不種樹，以免擋住站在左塔前的醫師公仔
         const t = i * Math.PI / 3 + Math.PI / 6;
         const x = cornerR * Math.sin(t), z = cornerR * Math.cos(t);
         treePlacements.push({ x: cx + x, y: topY, z: cz + z, s: (big ? 0.85 : 0.6) + Math.random() * 0.2, rot: Math.random() * 6.28 });
@@ -4840,7 +4932,7 @@
             shirt: medic ? '#ffffff' : shirts[(wi * 3 + k) % shirts.length],
             pants: pants[(wi + k) % pants.length],
             cap: worker ? '#facc15' : hair[(wi + k * 2) % hair.length],
-            scale: 0.95 + Math.random() * 0.15
+            scale: 1
           });
         }
       });
@@ -4854,6 +4946,7 @@
         cap: new THREE.SphereGeometry(0.82, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2),
         legL: legGeo, legR: legGeo
       };
+      Object.assign(geos, personLimbGeos());
       const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7 });
       mat.userData.linear = true;
       const col = new THREE.Color();
@@ -4861,7 +4954,7 @@
       Object.entries(geos).forEach(([part, geo]) => {
         const mesh = new THREE.InstancedMesh(geo, mat, pedestrians.length);
         pedestrians.forEach((pd, i) => {
-          const c = part === 'body' ? pd.shirt : part === 'head' ? '#f3cfae' : part === 'cap' ? pd.cap : pd.pants;
+          const c = personPartColor(part, pd.shirt, pd.pants, pd.cap);
           mesh.setColorAt(i, col.set(c).convertSRGBToLinear());
         });
         mesh.instanceColor.needsUpdate = true;
@@ -4874,7 +4967,28 @@
     }
 
     const _ped = { base: new THREE.Matrix4(), local: new THREE.Matrix4(), out: new THREE.Matrix4(), q: new THREE.Quaternion(), p: new THREE.Vector3(), s: new THREE.Vector3(), up: new THREE.Vector3(0, 1, 0) };
-    const PED_PARTS = { body: [0, 2.35, 0], head: [0, 3.95, 0], cap: [0, 4.1, 0], legL: [-0.3, 1.35, 0], legR: [0.3, 1.35, 0] };
+    // [人物] 所有人物共用的五官與四肢：眼睛兩顆、手臂（袖子同上衣顏色）、手掌（膚色）
+    const FACE_LIMBS = { eyeL: [-0.27, 4.02, 0.71], eyeR: [0.27, 4.02, 0.71], armL: [-0.92, 3.3, 0], armR: [0.92, 3.3, 0], handL: [-0.92, 3.3, 0], handR: [0.92, 3.3, 0] };
+    const PED_PARTS = Object.assign({ body: [0, 2.35, 0], head: [0, 3.95, 0], cap: [0, 4.1, 0], legL: [-0.3, 1.35, 0], legR: [0.3, 1.35, 0] }, FACE_LIMBS);
+    function personLimbGeos() {
+      const arm = new THREE.BoxGeometry(0.3, 1.5, 0.3); arm.translate(0, -0.75, 0);     // 以肩膀為軸
+      const eye = new THREE.SphereGeometry(0.1, 8, 6), hand = new THREE.SphereGeometry(0.2, 8, 6);
+      return { eyeL: eye, eyeR: eye, armL: arm, armR: arm, handL: hand, handR: hand };
+    }
+    const personPartColor = (part, shirt, pants, cap) => part === 'body' || part === 'armL' || part === 'armR' ? shirt : (part === 'head' || part === 'handL' || part === 'handR') ? '#f3cfae'
+      : (part === 'eyeL' || part === 'eyeR') ? '#1f2937' : part === 'cap' ? cap : pants;
+    // 腿與手臂的擺動、手掌的位置；carry 為 true 時雙手往前抱著東西。回傳 true 表示這個部位已處理
+    function personLimbLocal(T, part, off, swing, carry) {
+      if (part === 'legL' || part === 'legR') { T.local.makeRotationX(part === 'legL' ? swing : -swing); T.local.setPosition(off[0], off[1], off[2]); return true; }
+      if (part === 'armL' || part === 'armR' || part === 'handL' || part === 'handR') {
+        const left = part === 'armL' || part === 'handL';
+        const th = carry ? -1.05 : (left ? -swing : swing) * 0.8;                 // 手臂和同側的腿反向擺動
+        if (part === 'armL' || part === 'armR') { T.local.makeRotationX(th); T.local.setPosition(off[0], off[1], off[2]); }
+        else { T.local.identity(); T.local.setPosition(off[0], off[1] - 1.55 * Math.cos(th), off[2] - 1.55 * Math.sin(th)); }
+        return true;
+      }
+      return false;
+    }
 
     function updatePedestrians(dt) {
       if (!pedMeshes) return;
@@ -4892,14 +5006,520 @@
         T.base.compose(T.p, T.q, T.s);
         const swing = Math.sin(pd.phase) * 0.55;
         Object.entries(PED_PARTS).forEach(([part, off]) => {
-          if (part === 'legL' || part === 'legR') T.local.makeRotationX(part === 'legL' ? swing : -swing);
-          else T.local.identity();
-          T.local.setPosition(off[0], off[1], off[2]);
+          if (!personLimbLocal(T, part, off, swing, false)) { T.local.identity(); T.local.setPosition(off[0], off[1], off[2]); }
           pedMeshes[part].setMatrixAt(i, T.out.multiplyMatrices(T.base, T.local));
         });
       });
       Object.values(pedMeshes).forEach(m => { m.instanceMatrix.needsUpdate = true; });
     }
+
+    // =============================================================
+    // [島群] 島上的居民：每個人都有自己的任務
+    //   遊蕩的人：沿著邊緣道路走，過橋到隔壁島，一座接一座逛下去（不會馬上折返）
+    //   跑服務路徑的人：手上抱著一個路徑顏色的箱子，從該路徑的起點走到終點、每一站停一下；完成後換下一趟任務
+    // =============================================================
+    let agents = null;
+    function buildAgents() {
+      const cores = ISLAND_MODULES.filter(m => m.type !== 'region'), links = coreLinks();
+      const keys = Object.keys(SCENARIOS).filter(k => k !== 'annual');   // 臨場服務不再由走服務島的人呈現，改由搭船（或過橋）到各地區的護理人員呈現
+      if (!links.length) return;
+      const nb = new Map(cores.map(m => [m.id, []]));
+      links.forEach(k => { nb.get(k.a.id).push(k.b); nb.get(k.b.id).push(k.a); });
+      const NW = IS_COARSE_POINTER ? 9 : 15, NR = keys.length ? (IS_COARSE_POINTER ? 4 : 7) : 0;
+      // 醫師的巡迴順序：沿著相鄰的島繞一圈，八座服務島都會走到。資料若改到不相鄰，醫師改成一般遊蕩
+      const ROUNDS = [0, 1, 6, 5, 3, 2, 4, 7];
+      const roundsOk = ROUNDS.every((id, k) => nb.has(id) && nb.get(id).some(m => m.id === ROUNDS[(k + 1) % ROUNDS.length]));
+      const rand = seededRandom(2025);
+      const shirts = ['#f8fafc', '#5eead4', '#93c5fd', '#fda4af', '#fcd34d', '#a7f3d0', '#c4b5fd', '#fdba74'];
+      const pants = ['#334155', '#1f2937', '#475569', '#6b7280'], hair = ['#1f1d22', '#4a3426', '#6b4a33', '#d9d4cc'];
+      const list = [];
+      for (let k = 0; k < NW + NR; k++) {
+        const runner = k >= NW;
+        list.push({
+          type: runner ? 'route' : 'wander', mod: cores[k % cores.length], prev: null, node: Math.floor(rand() * 12),
+          key: runner ? keys[(k - NW) % keys.length] : null, path: [], seg: 0, d: 0, stops: [],
+          wait: runner ? (k - NW) * 2.2 : 0, grow: runner ? 0 : 1, leaving: false,
+          speed: 3.4 + rand() * 1.8, phase: rand() * 6.28, scale: 1, yaw: 0,                       // 所有人物大小一致
+          role: runner ? null : (k % 2 === 0 ? 'worker' : 'visitor'),                                  // 遊蕩的人：勞工與來訪民眾各半
+          shirt: shirts[k % shirts.length], pants: pants[k % pants.length], cap: (!runner && k % 2 === 0) ? '#facc15' : hair[k % hair.length],
+          pos: new THREE.Vector3()
+        });
+      }
+      // 固定路線的角色：沿著相鄰的島依序走、每座停一下，走完再從頭
+      //   醫院特約的護理人員不在這裡：他們跑的就是「臨場服務年度循環」這條服務路徑（從臺北醫院出發、做完回醫院）
+      //   島主（彩蛋）：每次進站約一成機率出現，巡視全島
+      const adjacent = (order) => order.every((id, k) => nb.has(id) && nb.get(id).some(m => m.id === order[(k + 1) % order.length]));
+      const PATROLS = [
+        // 職安人員：只在企業端活動，危害評估 ↔ 健檢分析 ↔ 四大計畫 來回
+        { role: 'safety', order: [1, 6, 5, 6], n: IS_COARSE_POINTER ? 2 : 3, shirt: '#a3e635', cap: '#2563eb', pants: '#334155', speed: 4.0, dwell: 2.6 },
+        // 事業單位聘僱的護理人員：平常在健檢分析與四大計畫之間；陪同仁就醫時經過臺北醫院到門診、再到配工評估，原路回來
+        { role: 'nurseCorp', order: [6, 5, 6, 0, 3, 2, 3, 0], n: IS_COARSE_POINTER ? 1 : 2, shirt: '#6ee7b7', cap: '#4a3426', pants: '#f8fafc', speed: 3.8, dwell: 3.2 }
+      ];
+      let ownerForced = false;
+      try { ownerForced = /[?&]owner=1/.test(location.search) || readPref('tph-ohs-owner') === 'always'; } catch (e) {}
+      if (ownerForced || Math.random() < 0.1) PATROLS.push({ role: 'owner', order: ROUNDS.slice().reverse(), n: 1, shirt: '#9ca3af', cap: '#f3cfae', pants: '#111827', speed: 3.2, dwell: 4 });
+      PATROLS.forEach(pt => {
+        const ok = adjacent(pt.order);
+        for (let k = 0; k < pt.n; k++) {
+          const order = k % 2 === 0 ? pt.order : pt.order.slice().reverse();     // 同一種角色的第二位反方向走
+          const startIdx = (k * 2) % order.length, mod = cores.find(m => m.id === order[startIdx]) || cores[0];
+          list.push({
+            type: 'patrol', role: pt.role, order, idx: startIdx, roundsOk: ok, dwell: pt.dwell, mod, prev: null, node: (list.length * 5) % 12, key: null, path: [], seg: 0, d: 0, stops: [],
+            wait: 0, grow: 1, leaving: false, talking: false, hold: false,
+            speed: pt.speed, phase: rand() * 6.28, scale: 1, yaw: 0, shirt: pt.shirt, pants: pt.pants, cap: pt.cap, pos: new THREE.Vector3()
+          });
+        }
+      });
+      // 臨場服務的護理人員：從臺北醫院出發，走到碼頭搭船（新莊是過長橋），到地區島繞一圈做臨場服務，再原路回醫院
+      const regions = ISLAND_MODULES.filter(m => m.type === 'region');
+      for (let k = 0; k < (IS_COARSE_POINTER ? 2 : 4); k++) {
+        list.push({
+          type: 'onsite', role: 'onsite', mod: cores.find(m => m.id === 0) || cores[0], prev: null, node: (k * 3 + 2) % 12, key: null, path: [], seg: 0, d: 0, stops: [],
+          destIdx: (k * 2) % regions.length, stages: null, stageIdx: 0, phase2: '', slot: k,
+          wait: k * 7, grow: 1, leaving: false, talking: false, hold: false,
+          speed: 4.1, phase: rand() * 6.28, scale: 1, yaw: 0, shirt: '#f9a8d4', pants: '#f8fafc', cap: '#ffffff', pos: new THREE.Vector3()
+        });
+      }
+      // 地區島上的在地行人：沿著自己島上的道路繞圈
+      regions.forEach((reg, ri) => {
+        for (let k = 0; k < (IS_COARSE_POINTER ? 1 : (reg.id === 13 ? 3 : 2)); k++) {   // 手機每座地區島 1 位
+          const helmet = (ri + k) % 2 === 0;
+          list.push({
+            type: 'local', role: helmet ? 'worker' : 'visitor', mod: reg, prev: null, node: (k * 5 + ri) % 12, lapDir: k % 2 ? -1 : 1, key: null, path: [], seg: 0, d: 0, stops: [],
+            wait: 0, grow: 1, leaving: false, talking: false, hold: false,
+            speed: 3.2 + rand() * 1.4, phase: rand() * 6.28, scale: 1, yaw: 0,
+            shirt: shirts[(ri * 3 + k) % shirts.length], pants: pants[(ri + k) % pants.length], cap: helmet ? '#facc15' : hair[(ri + k) % hair.length], pos: new THREE.Vector3()
+          });
+        }
+      });
+      DOCTORS.forEach((doc, k) => {
+        const order = k % 2 === 0 ? ROUNDS : ROUNDS.slice().reverse();          // 兩位醫師反方向巡迴
+        const startIdx = Math.max(0, order.indexOf(doc.island !== undefined ? doc.island : 0));
+        const mod = cores.find(m => m.id === order[startIdx]) || cores[0];
+        list.push({
+          type: 'doctor', role: 'doctor', doc, order, idx: startIdx, roundsOk, mod, prev: null, node: (k * 5 + 1) % 12, key: null, path: [], seg: 0, d: 0, stops: [],
+          wait: 0, grow: 1, leaving: false, talking: false, hold: false, tipIdx: -1,
+          speed: 3.8, phase: k * 2.1, scale: 1, yaw: 0,
+          shirt: '#ffffff', pants: '#334155', cap: k % 2 === 0 ? '#1f1d22' : '#4a3426',     // 白袍，和路人同樣大小
+          pos: new THREE.Vector3()
+        });
+      });
+      const legGeo = new THREE.BoxGeometry(0.42, 1.3, 0.42); legGeo.translate(0, -0.65, 0);
+      const geos = { body: new THREE.CylinderGeometry(0.7, 0.85, 2.1, 10), head: new THREE.SphereGeometry(0.78, 12, 10),
+                     cap: new THREE.SphereGeometry(0.82, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), legL: legGeo, legR: legGeo, box: new THREE.BoxGeometry(1.25, 0.95, 0.95),
+                     band: new THREE.CylinderGeometry(0.8, 0.86, 0.3, 10), pack: new THREE.BoxGeometry(1.0, 1.25, 0.55) };   // 反光條（職災勞工）、背包（來訪民眾）
+      Object.assign(geos, personLimbGeos());
+      const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7 });
+      mat.userData.linear = true;
+      const col = new THREE.Color(), meshes = {};
+      Object.entries(geos).forEach(([part, geo]) => {
+        const mesh = new THREE.InstancedMesh(geo, mat, list.length);
+        list.forEach((a, n) => mesh.setColorAt(n, col.set(part === 'box' ? (a.type === 'onsite' ? '#38bdf8' : '#ffffff') : part === 'band' ? '#fde047' : part === 'pack' ? '#64748b' : personPartColor(part, a.shirt, a.pants, a.cap)).convertSRGBToLinear()));
+        mesh.instanceColor.needsUpdate = true; mesh.frustumCulled = false; mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        mesh.raycast = () => {};
+        scene.add(mesh); meshes[part] = mesh;
+      });
+      // 檢查：島主的特徵組合（灰色上衣＋黑色褲子）不可被其他角色用到
+      if (list.some(a => a.role !== 'owner' && a.shirt === '#9ca3af' && a.pants === '#111827')) console.warn('[人物] 有角色用到島主專用的特徵組合（灰色上衣＋黑色褲子），請改用其他配色');
+      agents = { list, nb, meshes, keys, rand };
+      list.forEach((a, n) => {
+        if (a.type === 'route') { planRouteTask(a, n); return; }
+        a.pos.copy(roadNode(a.mod, a.node, tileTop(a.mod)));
+        if (a.type === 'onsite') return;                                   // 等交通船與碼頭建好後再排行程（見 updateAgents）
+        if (a.type === 'local') { planLocalLap(a); return; }
+        if ((a.type === 'doctor' || a.type === 'patrol') && a.roundsOk) planDoctorLeg(a); else planWander(a);
+      });
+      updateAgents(0);
+    }
+    // 遊蕩：選一座相鄰的島（盡量不走回頭路），沿道路走到通往那座島的橋，過橋
+    function planWander(a) {
+      const all = agents.nb.get(a.mod.id), opts = all.filter(m => !a.prev || m.id !== a.prev.id);
+      const pool = opts.length ? opts : all, next = pool[Math.floor(agents.rand() * pool.length)];
+      const y = tileTop(a.mod), exit = edgeNodeToward(a.mod, next);
+      const nodes = perimeterNodes(a.node, exit, agents.rand() < 0.22);         // 偶爾繞遠路多逛一下
+      a.path = [a.pos.clone()].concat(nodes.slice(1).map(k => roadNode(a.mod, k, y)), bridgeWalkPoints(a.mod, next), [roadNode(next, edgeNodeToward(next, a.mod), tileTop(next))]);
+      a.stops = []; a.seg = 0; a.d = 0;
+      a.prev = a.mod; a.mod = next; a.node = edgeNodeToward(next, a.prev);
+    }
+    // 在地行人：沿著所在的島繞一圈，繞完再繞
+    function planLocalLap(a) {
+      const y = tileTop(a.mod), pts = [a.pos.clone()];
+      for (let k = 1; k <= 12; k++) pts.push(roadNode(a.mod, a.node + a.lapDir * k, y));
+      a.path = pts; a.stops = []; a.seg = 0; a.d = 0;
+    }
+    // 臨場服務的一趟行程：一連串的階段（走路／搭船），依序執行
+    function coreRoute(fromId, toId) {                 // 服務島之間的最短路線（經過哪些島）
+      const prev = new Map([[fromId, null]]), q = [fromId];
+      while (q.length) { const id = q.shift(); if (id === toId) break; agents.nb.get(id).forEach(m => { if (!prev.has(m.id)) { prev.set(m.id, id); q.push(m.id); } }); }
+      const out = []; for (let id = toId; id !== null && id !== undefined; id = prev.get(id)) out.unshift(id);
+      return out.map(modById);
+    }
+    function planOnsiteTrip(a) {
+      const regions = ISLAND_MODULES.filter(m => m.type === 'region');
+      const reg = regions[a.destIdx % regions.length]; a.destIdx++;
+      const f = ferries.list.find(x => x.to.id === reg.id), lb = longBridge && longBridge.reg.id === reg.id ? longBridge : null;
+      if (!f && !lb) { a.wait = 2; return; }
+      const home = modById(0), dockCore = f ? f.from : lb.core, dockEdge = (f ? f.e : lb.e) * 2;
+      // 去程：沿道路與橋走到碼頭（或長橋）所在的那條邊
+      const mods = coreRoute(home.id, dockCore.id), out = [a.pos.clone()];
+      let node = a.node;
+      for (let k = 0; k < mods.length; k++) {
+        const m = mods[k], y = tileTop(m), exit = k < mods.length - 1 ? edgeNodeToward(m, mods[k + 1]) : dockEdge;
+        perimeterNodes(node, exit).slice(k === 0 ? 1 : 0).forEach(n => out.push(roadNode(m, n, y)));
+        if (k < mods.length - 1) { bridgeWalkPoints(m, mods[k + 1]).forEach(p => out.push(p)); node = edgeNodeToward(mods[k + 1], m); }
+      }
+      const back = (pts) => pts.slice().reverse().map(p => p.clone());
+      const ry = tileTop(reg), rNode = (f ? f.re : lb.re) * 2, lap = [];
+      for (let k = 0; k <= 12; k++) lap.push(roadNode(reg, rNode + k, ry));     // 在地區島繞一圈
+      const lapStops = [4, 8];                                                    // 途中停兩次，代表訪視與諮詢
+      let stages;
+      if (f) {
+        const A = f.dockA, B = f.dockB;
+        stages = [
+          { kind: 'walk', label: 'toDock', path: out.concat([A.top.clone(), A.bottom.clone(), A.pierEnd.clone()]) },
+          { kind: 'ferry', f, end: 1, label: 'sailOut' },
+          { kind: 'walk', label: 'serve', path: [B.pierEnd.clone(), B.bottom.clone(), B.top.clone()].concat(lap, [B.top.clone(), B.bottom.clone(), B.pierEnd.clone()]), stops: lapStops.map(k => k + 3) },
+          { kind: 'ferry', f, end: 0, label: 'sailBack' },
+          { kind: 'walk', label: 'home', path: [A.pierEnd.clone(), A.bottom.clone(), A.top.clone()].concat(back(out)) }
+        ];
+      } else {
+        const n = out.length + lb.walk.length;
+        stages = [
+          { kind: 'walk', label: 'toBridge', path: out.concat(lb.walk.map(p => p.clone())) },
+          { kind: 'walk', label: 'serve', path: lap, stops: lapStops },
+          { kind: 'walk', label: 'home', path: back(lb.walk).concat(back(out)) }
+        ];
+      }
+      a.stages = stages; a.stageIdx = 0; a.dest = reg; a.homeNode = a.node;
+      startOnsiteStage(a);
+    }
+    function startOnsiteStage(a) {
+      const st = a.stages[a.stageIdx];
+      a.phase2 = st.label;
+      if (st.kind === 'walk') { a.path = st.path; a.stops = st.stops || []; a.seg = 0; a.d = 0; a.pos.copy(st.path[0]); a.riding = null; }
+      else { a.path = []; a.riding = null; a.boardState = 'waiting'; }
+    }
+    function nextOnsiteStage(a) {
+      a.stageIdx++;
+      if (a.stageIdx >= a.stages.length) { a.stages = null; a.wait = 5 + agents.rand() * 6; a.phase2 = 'rest'; a.node = a.homeNode; return; }   // 回到醫院，休息一下再出發
+      startOnsiteStage(a);
+    }
+    // 搭船階段：在棧橋尾端等船靠站 → 上船 → 跟著船走 → 到對岸靠站後下船
+    function updateOnsiteFerry(a, dt) {
+      const st = a.stages[a.stageIdx], f = st.f, nearEnd = st.end === 1 ? 0 : 1, farEnd = st.end;
+      const docked = (end) => f.wait > 0 && Math.abs(f.u - end) < 0.001;
+      if (a.boardState === 'waiting') {
+        if (docked(nearEnd) && f.wait > 1.2) a.boardState = 'riding';
+        a.yaw = Math.atan2((nearEnd === 0 ? f.dockA : f.dockB).dirX, (nearEnd === 0 ? f.dockA : f.dockB).dirZ);
+        return false;
+      }
+      // 站在甲板上，位置跟著船
+      const off = (a.slot % 2 ? 1 : -1) * (3.5 + (Math.floor(a.slot / 2) % 2) * 0.95), sn = Math.sin(f.yaw), cs = Math.cos(f.yaw);   // 站在船頭或船尾的甲板上，不站進船艙
+      a.pos.set(f.g.position.x + sn * off, f.g.position.y + 1.45, f.g.position.z + cs * off);
+      a.yaw = f.yaw + (f.dir > 0 ? 0 : Math.PI);
+      if (docked(farEnd) && f.dir === (farEnd === 1 ? -1 : 1)) nextOnsiteStage(a);
+      return false;
+    }
+
+    // 醫師巡迴：在目前這座島沿道路走到通往下一座島的橋，途中在這座島的路段中點停下來說一段小叮嚀，再過橋
+    const DOCTOR_TALK_SECONDS = 8;
+    function planDoctorLeg(a) {
+      const cores = ISLAND_MODULES, cur = a.mod, nextId = a.order[(a.idx + 1) % a.order.length], next = cores.find(m => m.id === nextId);
+      const y = tileTop(cur), exit = edgeNodeToward(cur, next);
+      let nodes = perimeterNodes(a.node, exit);
+      if (nodes.length < 4) nodes = perimeterNodes(a.node, exit, true);            // 路段太短就繞遠的那一邊，才有地方停下來
+      a.path = [a.pos.clone()].concat(nodes.slice(1).map(k => roadNode(cur, k, y)), bridgeWalkPoints(cur, next), [roadNode(next, edgeNodeToward(next, cur), tileTop(next))]);
+      a.stops = [Math.max(1, Math.floor((nodes.length - 1) / 2))];
+      a.seg = 0; a.d = 0;
+      a.prev = cur; a.mod = next; a.node = edgeNodeToward(next, cur); a.idx = (a.idx + 1) % a.order.length;
+    }
+    // 跑服務路徑：從起點出現，沿路走到終點（循環路徑則繞回起點），之後換下一條路徑
+    function planRouteTask(a, n) {
+      const sc = SCENARIOS[a.key], r = buildRoutePoints(sc);
+      a.path = r.pts.map(p => p.clone().setY(p.y - 0.3));
+      if (r.loop) a.path.push(a.path[0].clone());
+      a.stops = r.stopIdx.filter(k => k > 0 && k < a.path.length - 1);
+      a.seg = 0; a.d = 0; a.pos.copy(a.path[0]); a.leaving = false;
+      a.stopsAll = r.stopIdx.slice(); a.loop = r.loop;
+      // 外觀跟著任務換：健檢異常追蹤＝藍衣黃帽；職災勞工＝橘色背心加反光條、白色繃帶；臨場服務年度循環＝醫院特約的護理人員（粉紅上衣、白色護士帽與長褲）
+      const idx = n === undefined ? agents.list.indexOf(a) : n, M = agents.meshes, c = new THREE.Color();
+      a.role = a.key;
+      const look = { checkup: ['#3b82f6', '#facc15'], rtw: ['#f97316', '#f8fafc'], annual: ['#f9a8d4', '#ffffff', '#f8fafc'] }[a.key] || ['#94a3b8', '#facc15'];
+      M.body.setColorAt(idx, c.set(look[0]).convertSRGBToLinear()); M.cap.setColorAt(idx, c.set(look[1]).convertSRGBToLinear());
+      M.armL.setColorAt(idx, c.set(look[0]).convertSRGBToLinear()); M.armR.setColorAt(idx, c);          // 袖子跟著上衣換色
+      M.box.setColorAt(idx, c.set(sc.color).convertSRGBToLinear());
+      M.legL.setColorAt(idx, c.set(look[2] || a.pants).convertSRGBToLinear()); M.legR.setColorAt(idx, c);
+      [M.body, M.cap, M.box, M.armL, M.armR, M.legL, M.legR].forEach(m => { m.instanceColor.needsUpdate = true; });
+    }
+    const AGENT_PARTS = Object.assign({ body: [0, 2.35, 0], head: [0, 3.95, 0], cap: [0, 4.1, 0], legL: [-0.3, 1.35, 0], legR: [0.3, 1.35, 0], box: [0, 2.55, 1.0], band: [0, 2.5, 0], pack: [0, 2.55, -0.95] }, FACE_LIMBS);
+    function updateAgents(dt) {
+      if (!agents) return;
+      const T = _ped;
+      agents.list.forEach((a, n) => {
+        let moving = false;
+        if (a.type === 'doctor' && a.hold) {
+          if (doctorsModal.classList.contains('hidden')) a.hold = false;
+          else if (camera) a.yaw = Math.atan2(camera.position.x - a.pos.x, camera.position.z - a.pos.z);   // 轉向鏡頭
+        }
+        if (a.type === 'doctor' && a.hold) { /* 被點選：原地等候 */ }
+        else if (a.wait > 0) { a.wait -= dt; if (a.wait <= 0 && a.talking) a.talking = false; }
+        else if (a.type === 'onsite' && !a.stages) { if (ferries) planOnsiteTrip(a); }
+        else if (a.type === 'onsite' && a.stages[a.stageIdx].kind === 'ferry') { updateOnsiteFerry(a, dt); }
+        else if (a.leaving) {                                 // 任務完成：縮小消失，換下一趟
+          a.grow -= dt * 1.8;
+          if (a.grow <= 0) { a.grow = 0; a.key = agents.keys[Math.floor(agents.rand() * agents.keys.length)]; planRouteTask(a, n); a.wait = 1 + agents.rand() * 4; }
+        } else {
+          if (a.grow < 1) a.grow = Math.min(1, a.grow + dt * 1.8);
+          let step = a.speed * dt;
+          while (step > 0 && a.seg < a.path.length - 1) {
+            const p0 = a.path[a.seg], p1 = a.path[a.seg + 1], len = p0.distanceTo(p1) || 1e-6;
+            if (a.d + step < len) { a.d += step; step = 0; }
+            else {
+              step -= len - a.d; a.seg++; a.d = 0;
+              if (a.stops.indexOf(a.seg) >= 0) {                              // 到站：停一下；醫師會說一段小叮嚀
+                step = 0;
+                if (a.type === 'doctor') { a.wait = DOCTOR_TALK_SECONDS; a.talking = true; a.tipIdx++; } else a.wait = a.type === 'patrol' ? a.dwell : (a.type === 'onsite' ? 3.5 : 1.6);
+              }
+            }
+            const q0 = a.path[Math.min(a.seg, a.path.length - 2)], q1 = a.path[Math.min(a.seg + 1, a.path.length - 1)], ql = q0.distanceTo(q1) || 1e-6;
+            a.pos.lerpVectors(q0, q1, Math.min(1, a.d / ql));
+            a.yaw = Math.atan2(q1.x - q0.x, q1.z - q0.z);
+            moving = true;
+          }
+          if (a.seg >= a.path.length - 1) {
+            a.pos.copy(a.path[a.path.length - 1]);
+            if (a.type === 'onsite') nextOnsiteStage(a);
+            else if (a.type === 'local') { a.node = ((a.node + a.lapDir * 12) % 12 + 12) % 12; planLocalLap(a); }
+            else if ((a.type === 'doctor' || a.type === 'patrol') && a.roundsOk) planDoctorLeg(a); else if (a.type !== 'route') planWander(a); else { a.leaving = true; a.wait = 1.2; }
+          }
+        }
+        if (moving) a.phase += dt * 7;
+        if (a.type === 'doctor') {                              // 名牌與「醫師介紹」的鏡頭都跟著人走
+          a.doc.pos.x = a.pos.x; a.doc.pos.y = a.pos.y; a.doc.pos.z = a.pos.z;
+          if (!a.pin) a.pin = pinElements.find(p => p.doctor === a.doc);
+        }
+        if (a.pin) a.pin.pos.set(a.pos.x, a.pos.y + 6.4, a.pos.z);
+        const sc = a.scale * a.grow;
+        T.p.set(a.pos.x, a.pos.y + (moving ? Math.abs(Math.sin(a.phase)) * 0.12 : 0), a.pos.z);
+        T.q.setFromAxisAngle(T.up, a.yaw);
+        T.s.setScalar(Math.max(sc, 0.0001));
+        T.base.compose(T.p, T.q, T.s);
+        const swing = moving ? Math.sin(a.phase) * 0.55 : 0;
+        const carrying = a.type === 'route' || a.type === 'onsite';             // 手上有資料箱的人，雙手往前抱著
+        Object.entries(AGENT_PARTS).forEach(([part, off]) => {
+          if (personLimbLocal(T, part, off, swing, carrying)) { agents.meshes[part].setMatrixAt(n, T.out.multiplyMatrices(T.base, T.local)); return; }
+          if ((part === 'box' && a.type !== 'route' && a.type !== 'onsite') || (part === 'band' && a.role !== 'rtw' && a.role !== 'safety') || (part === 'pack' && a.role !== 'visitor') || (part === 'cap' && a.role === 'owner')) T.local.makeScale(0, 0, 0);
+          else T.local.identity();
+          T.local.setPosition(off[0], off[1], off[2]);
+          agents.meshes[part].setMatrixAt(n, T.out.multiplyMatrices(T.base, T.local));
+        });
+      });
+      Object.values(agents.meshes).forEach(m => { m.instanceMatrix.needsUpdate = true; });
+    }
+
+    // =============================================================
+    // [人物] 角色分類、點選人物的說明抽屜、鏡頭跟隨、腳下光圈
+    // =============================================================
+    // 角色設計規則：「光頭＋灰色上衣＋黑色褲子」是彩蛋角色島主專用的特徵組合，之後新增任何角色都不要採用這個組合
+    const ROLES = {
+      doctor:  { badge: '醫師', icon: 'stethoscope', color: 0x4ade80, trait: '白色醫師袍、深色頭髮，頭上有姓名的名牌。' },
+      checkup: { label: '勞工（健檢異常追蹤中）', badge: '勞工', icon: 'chart-column', color: 0x14b8a6,
+                 trait: '藍色上衣、黃色安全帽，手上抱著青綠色的資料箱。', desc: '健康檢查有異常項目的勞工，正依照「健檢異常追蹤」的流程，到各個服務單位。' },
+      rtw:     { label: '職災勞工（復工中）', badge: '職災勞工', icon: 'accessibility', color: 0xf59e0b,
+                 trait: '橘色背心加黃色反光條、頭上纏著白色繃帶，手上抱著橘黃色的資料箱。', desc: '因工作受傷或生病的勞工，正依照「職災勞工復工」的流程，從診治、復健走到復工評估。' },
+      annual:  { label: '勞工健康服務護理人員（醫院特約）', badge: '護理人員', icon: 'hospital', color: 0x38bdf8,
+                 trait: '粉紅色上衣、白色護士帽與長褲，手上抱著淺藍色的資料箱。', desc: '臺北醫院職業醫學科的護理人員，依特約到事業單位提供臨場健康服務。每一輪都從臺北醫院出發，做完現場訪視、健檢分析與四大計畫的指導後回到醫院，隔年再出發。' },
+      onsite:  { label: '勞工健康服務護理人員（醫院特約）', badge: '臨場服務', icon: 'hospital', color: 0x38bdf8,
+                 trait: '粉紅色上衣、白色護士帽與長褲，手上抱著淺藍色的臨場服務資料箱。',
+                 desc: '臺北醫院職業醫學科的護理人員，依特約到各地區的事業單位提供臨場健康服務。每一趟都從臺北醫院出發，搭交通船（新莊是走長橋）到當地，做完訪視與諮詢後回到醫院，再前往下一區。' },
+      worker:  { label: '勞工', badge: '勞工', icon: 'wrench', color: 0xfacc15,
+                 trait: '各種顏色的上衣、黃色安全帽，手上沒有拿東西。', desc: '在各服務島之間走動的勞工，還沒有進入特定的服務流程。' },
+      visitor: { label: '來訪民眾', badge: '民眾', icon: 'user-round', color: 0xc4b5fd,
+                 trait: '各種顏色的上衣、背著灰色背包，沒有戴帽子。', desc: '到職業醫學科洽詢或就診的民眾，正在島上四處看看。' },
+      safety:  { label: '職業安全衛生人員', badge: '事業單位', icon: 'radar', color: 0xa3e635, sub: '事業單位的職安人員',
+                 trait: '螢光黃綠色背心加反光條、藍色安全帽。', desc: '事業單位的職業安全衛生人員，負責辨識與改善作業現場的危害，並和醫護人員一起推動各項預防計畫。',
+                 carry: '只在企業端活動：在危害評估、健檢分析、四大預防計畫三座島之間來回。' },
+      nurseCorp: { label: '勞工健康服務護理人員（事業單位聘僱）', badge: '護理人員', icon: 'clipboard-list', color: 0x6ee7b7, sub: '事業單位自己聘僱的職護',
+                 trait: '薄荷綠色上衣、白色長褲，沒有戴帽子，手上沒有拿東西。', desc: '事業單位依規定聘僱的勞工健康服務護理人員，長期在公司內做健康管理：整理健檢結果、執行預防計畫，需要時協助同仁轉介門診與配工評估。',
+                 carry: '平常在健檢分析與四大計畫之間；有同仁需要時，陪同經過臺北醫院到門診，再到工作適應性評估，然後原路回到公司。' },
+      owner:   { label: '島主', badge: '彩蛋', icon: 'sparkles', color: 0xfde047, sub: '每次進站大約只有一成的機率出現',
+                 trait: '光頭、灰色上衣、黑色褲子，頭上有「島主」的名牌。', desc: '恭喜你遇見島主！每次進入守護島，島主大約只有十分之一的機率出現，下次來不一定遇得到。',
+                 carry: '謝謝你來逛守護島，祝你工作平安、身體健康。' }
+    };
+    let selectedAgent = null, personRing = null, personTimer = null;
+    const personDrawer = document.getElementById('personDrawer');
+    // 跑服務路徑的人目前走在第幾段（從哪一站到哪一站、手上搬的是什麼）
+    function agentLeg(a) {
+      const sc = SCENARIOS[a.key], n = sc.stops.length;
+      const passed = (a.stopsAll || []).filter(k => k <= a.seg).length;
+      const leg = Math.min(sc.carries.length - 1, Math.max(0, passed - 1));
+      const from = modById(sc.stops[leg % n].id), to = modById(sc.stops[(leg + 1) % n].id);
+      const first = modById(sc.route[0]), last = modById(sc.route[sc.route.length - 1]);
+      const pre = passed === 0 && first.id !== sc.stops[0].id;                       // 還沒到第一站（從起點的島出發中）
+      const post = passed >= n && last.id !== sc.stops[n - 1].id;                    // 最後一站已完成，正在回到終點的島
+      return { sc, leg, from, to, carry: sc.carries[leg], pre, post, first, last };
+    }
+    function renderPerson() {
+      const a = selectedAgent;
+      if (!a) return;
+      const R = ROLES[a.role] || ROLES.worker, $ = (id) => document.getElementById(id);
+      $('personIcon').innerHTML = svgIcon(R.icon, 'icon-lg');
+      $('personBadge').textContent = R.badge;
+      $('personTrait').textContent = R.trait;
+      $('personTraitBlock').classList.toggle('hidden', a.role === 'owner');     // 島主是彩蛋，不公開辨認方式
+      const ol = $('personRoute'); ol.replaceChildren();
+      $('personDoctorsBtn').classList.toggle('hidden', a.type !== 'doctor');
+      if (a.type === 'doctor') {
+        $('personTitle').textContent = a.doc.name;
+        $('personSub').textContent = `${a.doc.title}｜${a.doc.badge}`;
+        $('personDesc').textContent = a.doc.desc;
+        $('personDoing').textContent = a.talking ? `正在「${a.prev ? a.prev.name : ''}」停留，提醒大家一則小叮嚀。` : `正在巡迴各服務島，下一站：${a.mod.name}。`;
+        $('personCarry').textContent = '兩位醫師都能提供本科所有的服務，所以每一座服務島都會走到。';
+      } else if (a.type === 'route') {
+        const L = agentLeg(a);
+        $('personTitle').textContent = R.label;
+        $('personSub').textContent = `服務路徑：${L.sc.name}（對象：${L.sc.audience}）`;
+        $('personDesc').textContent = R.desc;
+        $('personDoing').textContent = a.leaving || a.grow < 1 ? `剛完成一趟「${L.sc.name}」，準備開始下一趟。`
+          : L.pre ? `剛從「${L.first.name}」出發，正前往第一站「${L.from.name}」。`
+          : L.post ? `各站都完成了，正回到「${L.last.name}」。`
+          : `正從「${L.from.name}」前往「${L.to.name}」。`;
+        $('personCarry').textContent = `手上搬的是：${L.carry.text}`;
+        L.sc.stops.forEach((st, k) => {
+          const li = document.createElement('li');
+          const here = L.pre ? k === 0 : L.post ? k === L.sc.stops.length - 1 : (k === L.leg || k === (L.leg + 1) % L.sc.stops.length);
+          li.className = 'flex gap-2 ' + (here ? 'text-white' : 'text-slate-400');
+          li.innerHTML = `<span class="shrink-0 w-5 h-5 rounded-full text-[11px] font-bold flex items-center justify-center ${here ? 'bg-brand-400 text-slate-950' : 'bg-slate-700 text-slate-300'}">${k + 1}</span><span></span>`;
+          li.lastChild.textContent = `${modById(st.id).name}：${st.text}`;
+          ol.appendChild(li);
+        });
+      } else if (a.type === 'onsite') {
+        const d = a.dest ? a.dest.name : '';
+        $('personTitle').textContent = R.label;
+        $('personSub').textContent = a.dest ? `臨場服務：臺北醫院 ⇄ ${d}` : '臨場服務';
+        $('personDesc').textContent = R.desc;
+        $('personDoing').textContent = ({
+          toDock: `正從臺北醫院走向碼頭，準備搭船到${d}。`, toBridge: `正從臺北醫院出發，走長橋到${d}。`,
+          sailOut: a.boardState === 'waiting' ? `在碼頭等船，要去${d}。` : `正搭船前往${d}。`,
+          serve: `正在${d}做臨場服務：訪視作業現場、提供健康諮詢。`,
+          sailBack: a.boardState === 'waiting' ? `${d}的服務做完了，在碼頭等船回程。` : `正搭船從${d}回來。`,
+          home: `${d}的服務做完了，正走回臺北醫院。`, rest: '剛回到臺北醫院，整理紀錄後前往下一區。'
+        })[a.phase2] || '正在臺北醫院準備出發。';
+        $('personCarry').textContent = '手上搬的是：臨場服務的訪視紀錄與資料。';
+      } else if (a.type === 'local') {
+        $('personTitle').textContent = R.label;
+        $('personSub').textContent = `${a.mod.name}`;
+        $('personDesc').textContent = a.role === 'worker' ? `在${a.mod.name}工作的勞工。本科的臨場服務會到這一區的事業單位。` : `住在${a.mod.name}的民眾。`;
+        $('personDoing').textContent = `正在${a.mod.name}的道路上走動。`;
+        $('personCarry').textContent = '';
+      } else if (a.type === 'patrol') {
+        $('personTitle').textContent = R.label;
+        $('personSub').textContent = R.sub;
+        $('personDesc').textContent = R.desc;
+        $('personDoing').textContent = a.role === 'owner' ? `正在巡視全島，下一站：${a.mod.name}。` : `正從「${a.prev ? a.prev.name : a.mod.name}」前往「${a.mod.name}」。`;
+        $('personCarry').textContent = R.carry;
+        if (a.role !== 'owner') {
+          const seen = new Set();
+          a.order.forEach(id => {
+            if (seen.has(id)) return; seen.add(id);
+            const m = modById(id), here = (a.prev && a.prev.id === id) || a.mod.id === id;
+            const li = document.createElement('li');
+            li.className = 'flex gap-2 ' + (here ? 'text-white' : 'text-slate-400');
+            li.innerHTML = `<span class="shrink-0 w-5 h-5 rounded-full text-[11px] font-bold flex items-center justify-center ${here ? 'bg-brand-400 text-slate-950' : 'bg-slate-700 text-slate-300'}">${seen.size}</span><span></span>`;
+            li.lastChild.textContent = m.name;
+            ol.appendChild(li);
+          });
+        }
+      } else {
+        $('personTitle').textContent = R.label;
+        $('personSub').textContent = '沒有固定路線，逐島走動';
+        $('personDesc').textContent = R.desc;
+        $('personDoing').textContent = `正要過橋前往「${a.mod.name}」。`;
+        $('personCarry').textContent = '';
+      }
+    }
+    function selectAgent(a) {
+      if (!a || !camera) return;
+      if (tourActive) endNarrativeTour(true, false);
+      closeDrawer(); closeRegionHud();
+      selectedAgent = a;
+      sound.playClick();
+      renderPerson();
+      personDrawer.inert = false; personDrawer.classList.add('open');
+      clearInterval(personTimer); personTimer = setInterval(renderPerson, 600);
+      if (!personRing) {
+        const g = new THREE.RingGeometry(1.45, 1.95, 40); g.rotateX(-Math.PI / 2);
+        personRing = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, depthWrite: false, side: THREE.DoubleSide }));
+        personRing.material.userData.linear = true; personRing.raycast = () => {}; personRing.renderOrder = 4;
+        scene.add(personRing);
+      }
+      personRing.material.color.copy(lin((ROLES[a.role] || ROLES.worker).color));
+      personRing.visible = true;
+      // 鏡頭拉近到這個人，之後每一幀跟著他移動（仍可自由旋轉與縮放）
+      const dir = _camV.subVectors(camera.position, controls.target).normalize();
+      if (dir.y < 0.45) { dir.y = 0.45; dir.normalize(); }
+      const target = new THREE.Vector3(a.pos.x, a.pos.y + 2.6, a.pos.z);
+      isTopDownView = false;
+      personFlight = true;
+      flyCameraTo(target.clone().addScaledVector(dir, 52), target, 800);
+      personFlight = false;
+      track('island_select', { item_type: 'person', item_id: a.type === 'doctor' ? a.doc.id : a.role });
+      if (a.role === 'owner') track('island_easter_egg', { egg: 'owner' });
+      dirty = true;
+    }
+    function closePersonDrawer() {
+      if (!selectedAgent) return false;
+      selectedAgent = null;
+      clearInterval(personTimer); personTimer = null;
+      personDrawer.classList.remove('open'); personDrawer.inert = true;
+      if (personRing) personRing.visible = false;
+      dirty = true;
+      return true;
+    }
+    // 每幀：鏡頭跟著被選取的人、光圈貼在他腳下
+    const _followP = new THREE.Vector3(), _followAx = new THREE.Vector3();
+    function updatePersonFollow() {
+      const a = selectedAgent;
+      if (!a) return;
+      if (a.type === 'route' && a.grow <= 0.02) { /* 剛完成任務、正在換下一趟：先留在原地 */ }
+      if (personRing) {
+        personRing.position.set(a.pos.x, a.pos.y + 0.14, a.pos.z);
+        const k = (1 + 0.1 * Math.sin(performance.now() * 0.006)) * Math.max(0.2, a.grow);
+        personRing.scale.set(k, 1, k);
+      }
+      if (TWEEN.getAll().length) return;                 // 飛過去的途中不干涉
+      // 說明面板會蓋住一部分畫面：桌機在右側、手機在下方，所以把注視點往反方向偏一點，讓人物落在看得見的區域中央
+      const dist = camera.position.distanceTo(controls.target);
+      const fp = _followP.set(a.pos.x, a.pos.y + 2.6, a.pos.z);
+      if (viewW() < 640) fp.addScaledVector(_followAx.set(0, 1, 0).applyQuaternion(camera.quaternion), -dist * 0.2);
+      else fp.addScaledVector(_followAx.set(1, 0, 0).applyQuaternion(camera.quaternion), dist * 0.13);
+      const dx = fp.x - controls.target.x, dy = fp.y - controls.target.y, dz = fp.z - controls.target.z;
+      if (Math.abs(dx) + Math.abs(dy) + Math.abs(dz) < 0.01) return;
+      const f = 0.18;
+      controls.target.x += dx * f; controls.target.y += dy * f; controls.target.z += dz * f;
+      camera.position.x += dx * f; camera.position.y += dy * f; camera.position.z += dz * f;
+      dirty = true;
+    }
+    // 在畫面上點到哪個人：以每個人投影到螢幕上的位置與大小判斷（觸控的容許範圍大一些）
+    const _pk = new THREE.Vector3();
+    function pickAgent(clientX, clientY, touch = false) {
+      if (!agents || !camera) return null;
+      const w = viewW(), h = viewH(), pad = touch ? 16 : 7;
+      let best = null, bestZ = Infinity;
+      for (const a of agents.list) {
+        if (a.grow < 0.6) continue;
+        _pk.set(a.pos.x, a.pos.y, a.pos.z).project(camera);
+        if (_pk.z > 1 || _pk.z < -1) continue;
+        const fx = (_pk.x * 0.5 + 0.5) * w, fy = (-_pk.y * 0.5 + 0.5) * h, z = _pk.z;
+        _pk.set(a.pos.x, a.pos.y + 4.9, a.pos.z).project(camera);
+        const hy = (-_pk.y * 0.5 + 0.5) * h, ht = Math.max(6, fy - hy);
+        if (Math.abs(clientX - fx) <= ht * 0.32 + pad && clientY >= hy - pad && clientY <= fy + pad && z < bestZ) { best = a; bestZ = z; }
+      }
+      return best;
+    }
+    document.getElementById('personClose').addEventListener('click', () => { sound.playClick(); closePersonDrawer(); });
+    document.getElementById('personDoctorsBtn').addEventListener('click', () => { sound.playClick(); closePersonDrawer(); openModal(doctorsModal); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && selectedAgent) closePersonDrawer(); });
 
     // 懸停光環：滑鼠移到島上時，島緣亮起一圈光，標籤同時浮起
     const hoverRings = [];
@@ -4982,6 +5602,90 @@
       return { group, topMesh: tile, baseMesh: tile, height };
     }
 
+    // =============================================================
+    // [島群] 服務島之間的橋：相鄰的服務島兩兩以低拱人行橋相連（表示服務範圍的地區島不架橋）
+    // =============================================================
+    const GLOW_LAMPS = [];                           // 橋頭與碼頭的燈：之後統一加上一圈微光
+    const BRIDGE_END_R = 30.5;                       // 橋頭在島上的位置（離島中心；島緣邊心距 31.18）
+    let _coreLinks = null;
+    function coreLinks() {
+      if (_coreLinks) return _coreLinks;
+      const cores = ISLAND_MODULES.filter(m => m.type !== 'region');
+      _coreLinks = [];
+      for (let a = 0; a < cores.length; a++) for (let b = a + 1; b < cores.length; b++) {
+        const dx = cores[b].gridPos.x - cores[a].gridPos.x, dz = cores[b].gridPos.z - cores[a].gridPos.z, dist = Math.hypot(dx, dz);
+        if (Math.abs(dist - CORE_SPACING) < 4) _coreLinks.push({ a: cores[a], b: cores[b], dx: dx / dist, dz: dz / dist, dist });
+      }
+      return _coreLinks;
+    }
+    // 某個點是否落在橋的引道上（步道環到橋頭之間）；花草與灌木要讓開
+    function onBridgeApproach(x, z, margin = 2.6) {
+      return coreLinks().some(k => [[k.a, 1], [k.b, -1]].some(([m, sg]) => {
+        const px = x - m.gridPos.x, pz = z - m.gridPos.z, ux = k.dx * sg, uz = k.dz * sg;
+        const t = px * ux + pz * uz;
+        return t > 23.5 && t < 33 && Math.abs(px * uz - pz * ux) < margin;
+      }));
+    }
+    function buildBridges() {
+      const links = coreLinks();
+      if (!links.length) return;
+      const topY = 16 + 2.5, pathR = 26, SEG = 6, W = 3.6;
+      const boxes = [], lamps = [];
+      const M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), UP = new THREE.Vector3(0, 1, 0), P0 = new THREE.Vector3(), P1 = new THREE.Vector3(), MID = new THREE.Vector3(), SC = new THREE.Vector3(), LOOK = new THREE.Matrix4();
+      // 沿 p0→p1 放一個方塊（長邊對齊這段線），寬 w、厚 h；side 為左右偏移
+      const beam = (p0, p1, w, h, color, side = 0, lift = 0, extra = 0) => {
+        const len = p0.distanceTo(p1) + extra;
+        Q.setFromRotationMatrix(LOOK.lookAt(p0, p1, UP));
+        MID.addVectors(p0, p1).multiplyScalar(0.5);
+        const nx = (p1.z - p0.z), nz = -(p1.x - p0.x), nl = Math.hypot(nx, nz) || 1;
+        MID.x += nx / nl * side; MID.z += nz / nl * side; MID.y += lift;
+        boxes.push({ m: new THREE.Matrix4().compose(MID.clone(), Q.clone(), SC.set(w, h, len).clone()), color });
+      };
+      const post = (x, y, z, w, h, color) => boxes.push({ m: new THREE.Matrix4().compose(new THREE.Vector3(x, y + h / 2, z), new THREE.Quaternion(), new THREE.Vector3(w, h, w)), color });
+      links.forEach(k => {
+        const ax = k.a.gridPos.x + k.dx * BRIDGE_END_R, az = k.a.gridPos.z + k.dz * BRIDGE_END_R;
+        const bx = k.b.gridPos.x - k.dx * BRIDGE_END_R, bz = k.b.gridPos.z - k.dz * BRIDGE_END_R;
+        const arch = (u) => topY + 0.22 + 1.5 * Math.sin(Math.PI * u);
+        const pt = (u, v) => v.set(ax + (bx - ax) * u, arch(u), az + (bz - az) * u);
+        const sx = k.dz, sz = -k.dx;                                            // 橋面的橫向
+        for (let n = 0; n < SEG; n++) {
+          pt(n / SEG, P0); pt((n + 1) / SEG, P1);
+          beam(P0, P1, W, 0.38, 0xc9a57b, 0, -0.19, 0.12);                      // 橋面（木色）
+          [-1, 1].forEach(sd => beam(P0, P1, 0.16, 0.16, 0xf4efe6, sd * (W / 2 - 0.12), 1.05, 0.06));   // 扶手
+        }
+        for (let n = 0; n <= SEG; n++) {
+          pt(n / SEG, P0);
+          [-1, 1].forEach(sd => post(P0.x + sx * sd * (W / 2 - 0.12), P0.y, P0.z + sz * sd * (W / 2 - 0.12), 0.18, 1.1, 0xf4efe6));   // 欄杆柱
+        }
+        // 兩端：石造橋台（直接接在島的邊緣道路上）、橋頭燈
+        [[k.a, 1, ax, az], [k.b, -1, bx, bz]].forEach(([m, sg, ex, ez], endIdx) => {
+          const ux = k.dx * sg, uz = k.dz * sg;
+          P0.set(ex - ux * 0.9, topY, ez - uz * 0.9); P1.set(ex + ux * 0.9, topY, ez + uz * 0.9);
+          beam(P0, P1, W + 0.7, 0.5, 0xd9d4c8, 0, 0.05);
+          [-1, 1].forEach(lsd => {                                              // 橋頭兩側各一盞燈，成對
+            const lx = ex + ux * 0.45 + sx * lsd * (W / 2 + 0.6), lz = ez + uz * 0.45 + sz * lsd * (W / 2 + 0.6);
+            post(lx, topY, lz, 0.2, 3.1, 0x475569);
+            lamps.push(new THREE.Vector3(lx, topY + 3.3, lz));
+          });
+        });
+      });
+      const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
+      mat.userData.linear = true;
+      const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mat, boxes.length);
+      const col = new THREE.Color();
+      boxes.forEach((b, n) => { mesh.setMatrixAt(n, b.m); mesh.setColorAt(n, col.setHex(b.color).convertSRGBToLinear()); });
+      mesh.instanceMatrix.needsUpdate = true; mesh.instanceColor.needsUpdate = true;
+      mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
+      scene.add(mesh);
+      const lampMat = new THREE.MeshStandardMaterial({ color: 0xfff3d6, emissive: 0xffc46b, emissiveIntensity: 0.15, roughness: 0.4 });
+      const lampMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.42, 10, 8), lampMat, lamps.length);
+      lamps.forEach((p, n) => lampMesh.setMatrixAt(n, M4.makeTranslation(p.x, p.y, p.z)));
+      lampMesh.instanceMatrix.needsUpdate = true; lampMesh.frustumCulled = false;
+      scene.add(lampMesh);
+      nightLinked.push({ apply: (n) => { lampMat.emissiveIntensity = 0.35 + 2.4 * n; } });
+      lamps.forEach(p => GLOW_LAMPS.push(p));
+    }
+
     function buildArchipelago() {
       islandGroup = new THREE.Group();
       scene.add(islandGroup);
@@ -4996,7 +5700,8 @@
         const isTaipei = mod.id === 13;
         const isRegion = mod.type === 'region';
         const radius = (!isRegion || isTaipei) ? 36 : 22;
-        const height = isCenter ? 22 : (isTaipei ? 14 : (isRegion ? 12 : 16));
+        const height = isTaipei ? 14 : (isRegion ? 12 : 16);   // 八座服務島同高（中央島原本高出 6），才能用平橋相連
+        DOCTORS.forEach(dc => { if (dc.island === mod.id && dc.offset) dc.pos = { x: mod.gridPos.x + dc.offset.x, y: height + 2.5, z: mod.gridPos.z + dc.offset.z }; });
         const baseHexColor = isCenter ? '#0369a1' : (mod.id === 7 ? '#92400e' : (isRegion ? '#1e293b' : (mod.color || '#42771a')));
 
         const accentHex = isCenter ? '#5fb4ea' : (mod.id === 7 ? '#fbbf24' : (isRegion ? '#93cdf1' : '#9fd56b'));
@@ -5021,16 +5726,13 @@
       flushFlowers();
       flushKit();
       buildPedestrians();
+      buildAgents();
 
       buildLiftProp();
       buildCvdProp();
       buildCalcProp();
 
-      DOCTORS.forEach(doc => {
-        const docMesh = buildDoctorCharacter(doc);
-        scene.add(docMesh);
-        docMesh.traverse(child => { if (child.isMesh) pickables.push(child); });
-      });
+      // 醫師不再是站在底座上的公仔，而是和居民一樣走在路上（見 buildAgents 的 doctor 類型）
     }
 
     // =============================================================
@@ -5038,6 +5740,53 @@
     // =============================================================
     // 臺北醫院院徽（去背後內嵌，大樓招牌使用）
     const TPH_LOGO_DATA = 'data:image/png;base64,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';
+    // [地標] 蓋地標用的小工具：mesh 放單一物件；box 收集成一個實例化的方塊網格（最後呼叫 flush）
+    const LANDMARK_ANIMS = [];                         // 地標上會動的東西（例如高架上的列車），每幀呼叫
+    function makeBuildKit(bGroup, baseTop) {
+      const boxes = [], UP = new THREE.Vector3(0, 1, 0);
+      return {
+        mesh(geo, mat, x, y, z, cast = true) { const m = new THREE.Mesh(geo, mat); m.position.set(x, baseTop + y, z); m.castShadow = cast; m.receiveShadow = true; bGroup.add(m); return m; },
+        box(x, y, z, w, h, d, color, yaw = 0) { boxes.push({ m: new THREE.Matrix4().compose(new THREE.Vector3(x, baseTop + y, z), new THREE.Quaternion().setFromAxisAngle(UP, yaw), new THREE.Vector3(w, h, d)), color }); },
+        flush() {
+          if (!boxes.length) return;
+          const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 }); mat.userData.linear = true;
+          const im = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mat, boxes.length), c = new THREE.Color();
+          boxes.forEach((b, n) => { im.setMatrixAt(n, b.m); im.setColorAt(n, c.setHex(b.color).convertSRGBToLinear()); });
+          im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; im.castShadow = true; im.receiveShadow = true; im.frustumCulled = false;
+          bGroup.add(im);
+        }
+      };
+    }
+    // 大樓立面的貼圖：stone = 石材牆面上一格一格的小窗；band = 一層一層的橫向帶狀窗。回傳 [顏色貼圖, 夜間發光貼圖]
+    function facadeTextures(key, kind, cols, rows, wall, glass) {
+      const make = (lit) => cachedTexture(`facade-${key}-${lit ? 'e' : 'c'}`, () => {
+        const W = 128, H = 256, cvs = document.createElement('canvas'); cvs.width = W; cvs.height = H;
+        const ctx = cvs.getContext('2d'), rnd = seededRandom(key.length * 131 + rows * 7 + cols);
+        ctx.fillStyle = lit ? '#000000' : wall; ctx.fillRect(0, 0, W, H);
+        const fh = H / rows;
+        for (let r = 0; r < rows; r++) {
+          if (kind === 'band') {
+            if (!lit) { ctx.fillStyle = glass; ctx.fillRect(0, r * fh + fh * 0.22, W, fh * 0.5); ctx.fillStyle = 'rgba(255,255,255,0.18)'; for (let c = 1; c < cols; c++) ctx.fillRect(c * W / cols - 0.6, r * fh + fh * 0.22, 1.2, fh * 0.5); }
+            else for (let c = 0; c < cols; c++) if (rnd() < 0.42) { ctx.fillStyle = rnd() < 0.7 ? '#ffe2a8' : '#cfe8ff'; ctx.fillRect(c * W / cols + 1, r * fh + fh * 0.24, W / cols - 2, fh * 0.46); }
+          } else {
+            for (let c = 0; c < cols; c++) {
+              const x = (c + 0.5) * W / cols - 6, y = r * fh + fh * 0.3;
+              if (!lit) { ctx.fillStyle = glass; ctx.fillRect(x, y, 12, fh * 0.42); }
+              else if (rnd() < 0.4) { ctx.fillStyle = '#ffe2a8'; ctx.fillRect(x, y, 12, fh * 0.42); }
+            }
+          }
+        }
+        return new THREE.CanvasTexture(cvs);
+      });
+      return [make(false), make(true)];
+    }
+    function facadeMaterial(key, kind, cols, rows, wall, glass) {
+      const [map, emap] = facadeTextures(key, kind, cols, rows, wall, glass);
+      const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.6, metalness: 0.1, emissive: 0xffffff, emissiveMap: emap, emissiveIntensity: 0 });
+      nightLinked.push({ apply: (n) => { mat.emissiveIntensity = 0.95 * n; } });
+      return mat;
+    }
+
     function buildBuildingForModule(mod, islandHeight) {
       const bGroup = new THREE.Group();
       const baseTop = islandHeight + 2.5;
@@ -5445,6 +6194,257 @@
         railing.position.set(0, baseTop + 8, 5.5);
         bGroup.add(railing);
 
+      } else if (mod.id === 8) {
+        // 新莊：新莊棒球場（依空拍照風格化的迷你版）。本壘在前方（+Z），外野朝後。
+        //   照片有廣角變形，球場形狀以標準的四分之一圓扇形為準；白色連續拱形的薄膜屋頂是最主要的特徵
+        const hx = 0, hz = 8.2, R = 16.4, B = 4.7, c45 = Math.SQRT1_2;
+        const fL = [-c45, -c45], fR = [c45, -c45];                    // 左、右外野邊線的方向
+        const fieldTex = cachedTexture('xz-ballfield', () => {
+          const cvs = document.createElement('canvas'); cvs.width = cvs.height = 512;
+          const ctx = cvs.getContext('2d'), S = 512 / 28, X = (x) => 256 + x * S, Z = (z) => 256 + z * S;
+          const sector = (r, ox = hx, oz = hz, pad = 0) => { ctx.beginPath(); ctx.moveTo(X(ox), Z(oz)); ctx.arc(X(ox), Z(oz), r * S, -Math.PI * 0.75 - pad, -Math.PI * 0.25 + pad); ctx.closePath(); };
+          ctx.fillStyle = '#b9743f'; sector(R + 2.3, hx, hz + 2.3, 0.07); ctx.fill();                   // 界外區與警戒區的紅土
+          ctx.fillStyle = '#3f9c46'; sector(R - 1.0); ctx.fill();                                       // 草地
+          ctx.save(); sector(R - 1.0); ctx.clip(); ctx.fillStyle = 'rgba(255,255,255,0.11)';
+          for (let x = -14; x < 14; x += 2.2) ctx.fillRect(X(x), 0, 1.1 * S, 512);                        // 割草的條紋
+          ctx.restore();
+          ctx.fillStyle = '#b9743f'; sector(7.5); ctx.fill();                                           // 內野紅土
+          const pt = (a, b) => [hx + B * (fR[0] * a + fL[0] * b), hz + B * (fR[1] * a + fL[1] * b)];    // 以壘間距離為單位
+          const ctr = pt(0.5, 0.5), dia = [pt(0, 0), pt(1, 0), pt(1, 1), pt(0, 1)];
+          ctx.fillStyle = '#3f9c46'; ctx.beginPath();
+          dia.forEach(([x, z], k) => { const gx = ctr[0] + (x - ctr[0]) * 0.74, gz = ctr[1] + (z - ctr[1]) * 0.74; k ? ctx.lineTo(X(gx), Z(gz)) : ctx.moveTo(X(gx), Z(gz)); });
+          ctx.closePath(); ctx.fill();                                                                  // 內野草地（菱形）
+          ctx.fillStyle = '#b9743f';
+          ctx.beginPath(); ctx.arc(X(ctr[0]), Z(ctr[1] + 0.25), 0.8 * S, 0, Math.PI * 2); ctx.fill();   // 投手丘
+          ctx.beginPath(); ctx.arc(X(hx), Z(hz), 1.5 * S, 0, Math.PI * 2); ctx.fill();                  // 本壘區
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+          [fL, fR].forEach(f => { ctx.beginPath(); ctx.moveTo(X(hx), Z(hz)); ctx.lineTo(X(hx + f[0] * (R - 1)), Z(hz + f[1] * (R - 1))); ctx.stroke(); });   // 邊線
+          ctx.fillStyle = '#ffffff';
+          dia.forEach(([x, z]) => ctx.fillRect(X(x) - 3.5, Z(z) - 3.5, 7, 7));                          // 壘包與本壘板
+          return new THREE.CanvasTexture(cvs);
+        });
+        const fieldGeo = new THREE.PlaneGeometry(28, 28); fieldGeo.rotateX(-Math.PI / 2);
+        const field = new THREE.Mesh(fieldGeo, new THREE.MeshStandardMaterial({ map: fieldTex, transparent: true, alphaTest: 0.4, roughness: 0.95 }));
+        field.position.set(0, baseTop + 0.09, 0); field.receiveShadow = true; bGroup.add(field);
+
+        const boxes = [], vaults = [], UP = new THREE.Vector3(0, 1, 0);
+        const bx = (x, y, z, w, h, d, yaw, color) => boxes.push({ m: new THREE.Matrix4().compose(new THREE.Vector3(x, baseTop + y, z), new THREE.Quaternion().setFromAxisAngle(UP, yaw), new THREE.Vector3(w, h, d)), color });
+        // 主看台：本壘後方一段、沿兩條邊線各一段，圍成 U 形。每段有三階藍色座位、後牆與白色拱頂
+        const stand = (cx, cz, ux, uz, nx, nz, L) => {
+          const yaw = Math.atan2(ux, uz);                                 // 方塊的長邊（Z）對齊看台走向
+          for (let k = 0; k < 3; k++) bx(cx + nx * (0.5 + k * 0.95), 0.45 + k * 0.7, cz + nz * (0.5 + k * 0.95), 0.95, 0.9 + k * 1.4, L, yaw, 0x2a6fb5);
+          bx(cx + nx * 3.25, 2.0, cz + nz * 3.25, 0.45, 4.0, L + 0.3, yaw, 0xd9dde2);               // 後牆
+          const n = Math.max(3, Math.round(L / 1.9)), step = L / n;
+          for (let k = 0; k < n; k++) {
+            const t = -L / 2 + step * (k + 0.5);
+            vaults.push({ x: cx + ux * t + nx * 1.55, y: baseTop + 4.35, z: cz + uz * t + nz * 1.55, yaw: Math.atan2(-nz, nx), len: 3.9, r: step / 2 });
+            bx(cx + ux * (t - step / 2) + nx * 0.1, 2.2, cz + uz * (t - step / 2) + nz * 0.1, 0.14, 4.4, 0.14, 0, 0xe5e7eb);   // 屋頂前緣的支柱
+          }
+        };
+        stand(hx, hz + 2.3, 1, 0, 0, 1, 9.4);
+        stand(hx + fL[0] * 7.4 - c45 * 2.5, hz + fL[1] * 7.4 + c45 * 2.5, fL[0], fL[1], -c45, c45, 9.6);
+        stand(hx + fR[0] * 7.4 + c45 * 2.5, hz + fR[1] * 7.4 + c45 * 2.5, fR[0], fR[1], c45, c45, 9.6);
+        bx(hx, 1.3, hz + 6.3, 9.6, 2.6, 1.5, 0, 0xcfd4da);                                             // 本壘後方的行政棟（淺灰）
+        bx(hx, 0.9, hz + 7.25, 6.4, 0.18, 0.9, 0, 0xf2c94c);                                           // 入口的黃色雨遮
+        // 外野：全壘打牆、沒有屋頂的綠色看台、中外野的計分板
+        for (let k = 0; k < 15; k++) {
+          const a = -Math.PI * 0.75 + (k + 0.5) / 15 * Math.PI * 0.5, cx = hx + Math.cos(a) * (R - 0.75), cz = hz + Math.sin(a) * (R - 0.75), yaw = Math.atan2(-Math.sin(a), Math.cos(a)) + Math.PI / 2;
+          bx(cx, 0.6, cz, (R - 0.75) * Math.PI * 0.5 / 15 + 0.12, 1.2, 0.25, -a + Math.PI / 2, 0x1f3f8f);
+          if (k >= 2 && k <= 12 && k !== 7) {
+            const ox = Math.cos(a), oz = Math.sin(a), w = (R + 1.2) * Math.PI * 0.5 / 15 - 0.12;
+            bx(hx + ox * (R + 0.55), 0.55, hz + oz * (R + 0.55), w, 1.1, 0.9, -a + Math.PI / 2, 0x2f9486);
+            bx(hx + ox * (R + 1.4), 0.95, hz + oz * (R + 1.4), w, 1.9, 0.9, -a + Math.PI / 2, 0x2f9486);
+          }
+        }
+        bx(hx, 1.7, hz - R - 1.5, 0.3, 3.4, 0.3, 0, 0x4b5563);
+        // 照明燈塔與黃色的界外標竿
+        const lightPos = [[-11.0, 7.2], [11.0, 7.2], [-12.6, -4.4], [12.6, -4.4], [-5.4, -12.3], [5.4, -12.3]];
+        lightPos.forEach(([x, z]) => bx(x, 5.2, z, 0.26, 10.4, 0.26, 0, 0xf1f5f9));
+        [fL, fR].forEach(f => bx(hx + f[0] * (R - 0.6), 2.4, hz + f[1] * (R - 0.6), 0.16, 4.8, 0.16, 0, 0xfacc15));
+        const sMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 }); sMat.userData.linear = true;
+        const sMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), sMat, boxes.length), sc = new THREE.Color();
+        boxes.forEach((b, n) => { sMesh.setMatrixAt(n, b.m); sMesh.setColorAt(n, sc.setHex(b.color).convertSRGBToLinear()); });
+        sMesh.instanceMatrix.needsUpdate = true; sMesh.instanceColor.needsUpdate = true; sMesh.castShadow = true; sMesh.receiveShadow = true; sMesh.frustumCulled = false;
+        bGroup.add(sMesh);
+        // 白色薄膜拱頂：一格一格的半圓筒
+        const vGeo = new THREE.CylinderGeometry(1, 1, 1, 12, 1, true, 0, Math.PI); vGeo.rotateZ(Math.PI / 2);
+        const vMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55, side: THREE.DoubleSide, emissive: 0xfff4d6, emissiveIntensity: 0 });
+        const vMesh = new THREE.InstancedMesh(vGeo, vMat, vaults.length), M4 = new THREE.Matrix4(), Q = new THREE.Quaternion();
+        vaults.forEach((v, n) => vMesh.setMatrixAt(n, M4.compose(new THREE.Vector3(v.x, v.y, v.z), Q.setFromAxisAngle(UP, v.yaw), new THREE.Vector3(v.len, v.r * 1.15, v.r))));
+        vMesh.instanceMatrix.needsUpdate = true; vMesh.castShadow = true; vMesh.frustumCulled = false; bGroup.add(vMesh);
+        // 計分板與燈具（夜晚發光）
+        const boardMat = new THREE.MeshStandardMaterial({ color: 0x14532d, roughness: 0.6, emissive: 0x86efac, emissiveIntensity: 0 });
+        const board = new THREE.Mesh(rbox(5.2, 2.5, 0.5, 0.08), boardMat); board.position.set(hx, baseTop + 4.4, hz - R - 1.5); board.castShadow = true; bGroup.add(board);
+        const lampMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4, emissive: 0xfff3c4, emissiveIntensity: 0.1 });
+        const lampGeo = new THREE.BoxGeometry(1.7, 0.95, 0.3);
+        lightPos.forEach(([x, z]) => { const m = new THREE.Mesh(lampGeo, lampMat); m.position.set(x, baseTop + 10.6, z); m.lookAt(hx, baseTop + 2, hz - 5); bGroup.add(m); });
+        nightLinked.push({ apply: (n) => { lampMat.emissiveIntensity = 0.1 + 2.6 * n; boardMat.emissiveIntensity = 0.5 * n; vMat.emissiveIntensity = 0.22 * n; } });
+
+      } else if (mod.id === 13) {
+        // 臺北市：臺北 101（風格化）。基座之上疊八節向外斜張的塔身，頂端是塔冠與尖塔；藍綠色玻璃，夜晚透出燈光
+        const glass = new THREE.MeshStandardMaterial({ color: 0x4f9f9a, roughness: 0.22, metalness: 0.45, flatShading: true, emissive: 0xbff5e6, emissiveIntensity: 0 });
+        const trim = new THREE.MeshStandardMaterial({ color: 0x9aa5ad, roughness: 0.4, metalness: 0.6 });
+        const stoneM = new THREE.MeshStandardMaterial({ color: 0xb8c2c4, roughness: 0.8 });
+        const addM = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, baseTop + y, z); m.castShadow = true; m.receiveShadow = true; bGroup.add(m); return m; };
+        const frustum = (rb, rt, h, y, mat = glass) => { const g = new THREE.CylinderGeometry(rt, rb, h, 4, 1); g.rotateY(Math.PI / 4); return addM(g, mat, 0, y + h / 2, 0); };
+        addM(rbox(13, 4.4, 11, 0.3), stoneM, 0, 2.2, 1.6);                // 裙樓
+        addM(rbox(13.4, 0.3, 11.4, 0.1), trim, 0, 4.5, 1.6);
+        addM(rbox(6, 2.6, 4, 0.2), stoneM, 7.5, 1.3, -4.5);              // 裙樓旁的附屬建築
+        let y = 0;
+        frustum(5.3, 4.5, 14, y); y += 14;                                // 塔基：往上略收
+        frustum(4.7, 4.7, 0.35, y, trim); y += 0.35;
+        for (let k = 0; k < 8; k++) {                                     // 八節塔身：每一節下窄上寬
+          frustum(3.75, 4.55, 3.5, y); y += 3.5;
+          frustum(4.7, 4.7, 0.22, y, trim); y += 0.22;
+        }
+        frustum(3.2, 3.6, 2.4, y); y += 2.4;                              // 塔冠
+        frustum(3.7, 3.7, 0.2, y, trim); y += 0.2;
+        frustum(2.3, 2.0, 2.4, y); y += 2.4;
+        frustum(1.3, 1.0, 1.8, y, trim); y += 1.8;
+        const spireMat = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.3, metalness: 0.7, emissive: 0xfff3c4, emissiveIntensity: 0 });
+        addM(new THREE.CylinderGeometry(0.14, 0.5, 9, 8), spireMat, 0, y + 4.5, 0);
+        // 塔基四面的圓形裝飾
+        const coin = new THREE.MeshStandardMaterial({ color: 0xcbb26a, roughness: 0.35, metalness: 0.7 });
+        [[0, 3.55, 0], [0, -3.55, Math.PI], [3.55, 0, Math.PI / 2], [-3.55, 0, -Math.PI / 2]].forEach(([x, z, ry]) => { const m = addM(new THREE.CylinderGeometry(0.85, 0.85, 0.16, 20), coin, x, 11.6, z); m.rotation.x = Math.PI / 2; m.rotation.z = -ry; m.castShadow = false; });
+        nightLinked.push({ apply: (n) => { glass.emissiveIntensity = 0.5 * n; spireMat.emissiveIntensity = 1.6 * n; } });
+
+      } else if (mod.id === 9) {
+        // 五股：工業區的廠房群。鋸齒屋頂的主廠房、紅白相間的煙囪、儲槽、倉庫，前方是卸貨區的貨車、堆高機與棧板
+        const K = makeBuildKit(bGroup, baseTop);
+        const wallM = new THREE.MeshStandardMaterial({ color: 0xcdd5df, roughness: 0.8 }), roofM = new THREE.MeshStandardMaterial({ color: 0x8b98a8, roughness: 0.6, metalness: 0.3 });
+        const skyGlass = new THREE.MeshStandardMaterial({ color: 0x2f4f6f, roughness: 0.25, metalness: 0.4, emissive: 0xffe2a8, emissiveIntensity: 0 });
+        K.mesh(rbox(13, 4.2, 7, 0.15), wallM, -1.2, 2.1, -3.2);                       // 主廠房
+        const tooth = new THREE.Shape(); tooth.moveTo(0, 0); tooth.lineTo(3.25, 0); tooth.lineTo(0, 1.7); tooth.closePath();
+        const toothGeo = new THREE.ExtrudeGeometry(tooth, { depth: 7, bevelEnabled: false }); toothGeo.translate(0, 0, -3.5);
+        for (let k = 0; k < 4; k++) {                                                   // 鋸齒屋頂：直立面是採光窗
+          K.mesh(toothGeo, roofM, -7.7 + k * 3.25, 4.2, -3.2);
+          K.mesh(new THREE.BoxGeometry(0.1, 1.25, 6.4), skyGlass, -7.72 + k * 3.25, 4.95, -3.2, false);
+        }
+        K.box(-1.2, 1.3, 0.35, 2.6, 2.6, 0.12, 0x475569);                              // 主廠房的大門
+        [-5.5, 3.2].forEach(x => K.box(x, 2.6, 0.35, 2.4, 0.9, 0.1, 0x2f4f6f));         // 橫窗
+        // 煙囪：紅白相間
+        const stackX = 7.6, stackZ = -5.2;
+        ['#e5e7eb', '#dc2626', '#e5e7eb', '#dc2626', '#e5e7eb'].forEach((c, k) => K.mesh(new THREE.CylinderGeometry(0.62 - k * 0.03, 0.66 - k * 0.03, 2.7, 12), new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 }), stackX, 1.35 + k * 2.7, stackZ));
+        // 儲槽
+        const tankM = new THREE.MeshStandardMaterial({ color: 0xdfe5ec, roughness: 0.35, metalness: 0.6 });
+        [[8.0, -0.6], [8.0, 2.9]].forEach(([x, z]) => { K.mesh(new THREE.CylinderGeometry(1.45, 1.45, 4, 16), tankM, x, 2, z); K.mesh(new THREE.SphereGeometry(1.45, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), tankM, x, 4, z).scale.y = 0.45; });
+        K.box(8.0, 2.6, 1.15, 0.2, 0.2, 3.5, 0x94a3b8);
+        // 倉庫與鐵捲門
+        K.mesh(rbox(6.2, 3.2, 5, 0.12), new THREE.MeshStandardMaterial({ color: 0xe7d7c1, roughness: 0.85 }), -6.4, 1.6, 5.6);
+        K.box(-6.4, 3.3, 5.6, 6.5, 0.25, 5.3, 0x8b98a8);
+        [-7.9, -4.9].forEach(x => K.box(x, 1.25, 8.13, 2.2, 2.5, 0.1, 0x64748b));
+        // 卸貨區：貨車、堆高機、棧板
+        K.box(2.2, 1.55, 6.6, 2.3, 2.5, 5.2, 0xf8fafc); K.box(2.2, 1.05, 9.95, 2.2, 1.7, 1.5, 0x2563eb); K.box(2.2, 1.45, 10.4, 1.9, 0.6, 0.12, 0x93c5fd);
+        [[1.25, 4.9], [3.15, 4.9], [1.25, 8.3], [3.15, 8.3], [1.25, 10.1], [3.15, 10.1]].forEach(([x, z]) => K.box(x, 0.4, z, 0.3, 0.8, 0.8, 0x1f2937));
+        K.box(5.6, 0.6, 7.6, 1.2, 0.9, 1.9, 0xf59e0b); K.box(5.6, 1.5, 7.3, 1.1, 0.9, 0.1, 0x1f2937); K.box(5.6, 0.95, 8.75, 0.14, 1.9, 0.14, 0x475569); K.box(5.6, 0.25, 9.3, 0.9, 0.1, 1.0, 0x475569);
+        [[-1.6, 6.2, 2], [-1.6, 7.8, 3], [4.9, 4.4, 2]].forEach(([x, z, n]) => { for (let k = 0; k < n; k++) { K.box(x, 0.12 + k * 0.72, z, 1.4, 0.16, 1.4, 0xb98a5e); K.box(x, 0.48 + k * 0.72, z, 1.25, 0.55, 1.25, 0xd9c7a3); } });
+        K.flush();
+        nightLinked.push({ apply: (n) => { skyGlass.emissiveIntensity = 1.1 * n; } });
+
+      } else if (mod.id === 10) {
+        // 三重：大臺北都會公園的幸運草地景溜滑梯。堤防斜坡上彩色的遊戲場與溜滑梯，坡上有白色的園名大字，後方是高架的捷運與列車
+        const K = makeBuildKit(bGroup, baseTop);
+        const grassM = new THREE.MeshStandardMaterial({ color: 0x7fb85a, roughness: 0.95 });
+        const prof = new THREE.Shape(); prof.moveTo(7, 0); prof.lineTo(-2, 5.2); prof.lineTo(-6.4, 5.2); prof.lineTo(-6.4, 0); prof.closePath();   // (z, y) 的剖面
+        const moundGeo = new THREE.ExtrudeGeometry(prof, { depth: 22, bevelEnabled: false }); moundGeo.rotateY(-Math.PI / 2); moundGeo.translate(11, 0, 0);
+        K.mesh(moundGeo, grassM, 0, 0, 0);
+        const slopeTex = cachedTexture('sanchong-slope', () => {
+          const cvs = document.createElement('canvas'); cvs.width = 1024; cvs.height = 480;
+          const ctx = cvs.getContext('2d'); ctx.fillStyle = '#7fb85a'; ctx.fillRect(0, 0, 1024, 480);
+          const blob = (pts, col) => { ctx.fillStyle = col; ctx.beginPath(); pts.forEach(([x, y], k) => k ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill(); };
+          // 彩色的遊戲場鋪面（左側約六成）：上方紅、橘、黃，中間綠，下方藍與紫
+          blob([[60, 40], [600, 30], [640, 200], [600, 440], [330, 450], [150, 400], [50, 300]], '#3aa76d');
+          blob([[60, 40], [230, 36], [250, 210], [150, 300], [50, 300]], '#ef4444');
+          blob([[230, 36], [380, 32], [360, 180], [250, 210]], '#f59e0b');
+          blob([[380, 32], [600, 30], [620, 150], [470, 170], [360, 180]], '#fde047');
+          blob([[150, 300], [330, 270], [520, 320], [600, 440], [330, 450], [150, 400]], '#38bdf8');
+          blob([[300, 380], [520, 320], [640, 300], [600, 440], [330, 450]], '#8b5cf6');
+          ctx.fillStyle = '#d9f2ea'; ctx.beginPath(); ctx.ellipse(500, 300, 70, 46, 0, 0, Math.PI * 2); ctx.fill();
+          ['#fb923c', '#fb923c', '#fb923c', '#f97316'].forEach((c, k) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(560 + (k % 2) * 34, 120 + Math.floor(k / 2) * 34, 11, 0, Math.PI * 2); ctx.fill(); });
+          ctx.fillStyle = '#ffffff'; ctx.font = '800 62px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif'; ctx.textBaseline = 'middle';
+          const txt = '大臺北都會公園', tw = ctx.measureText(txt).width, scale = Math.min(1, 340 / tw);
+          ctx.save(); ctx.translate(668, 200); ctx.scale(scale, 1); ctx.fillText(txt, 0, 0); ctx.restore();
+          return new THREE.CanvasTexture(cvs);
+        });
+        const slopeLen = Math.hypot(9, 5.2), ang = Math.atan2(5.2, 9);
+        const slopeGeo = new THREE.PlaneGeometry(21.6, slopeLen - 0.3); slopeGeo.rotateX(-Math.PI / 2 + ang);
+        const slope = K.mesh(slopeGeo, new THREE.MeshStandardMaterial({ map: slopeTex, color: 0xd9d9d9, roughness: 0.9 }), 0, 2.6 + 0.06, 2.5, false);
+        // 溜滑梯：沿著斜坡的彩色滑道（含兩側護欄）、綠色的管狀滑梯、階梯
+        const onSlope = (x, t, w, len, color, lift = 0.16) => {       // t：沿斜坡由下（0）到上（1）的中心位置
+          const z = 7 - 9 * t, y = 5.2 * t + lift;
+          const m = K.mesh(new THREE.BoxGeometry(w, 0.14, len), new THREE.MeshStandardMaterial({ color, roughness: 0.5 }), x, y, z, false); m.rotation.x = ang; return m;
+        };
+        [[-7.6, 0xf97316], [-6.4, 0xf97316], [-2.4, 0xfacc15], [0.4, 0xfb923c], [1.5, 0xfb923c]].forEach(([x, c]) => { onSlope(x, 0.55, 0.75, 7.6, c); [-0.42, 0.42].forEach(dx => onSlope(x + dx, 0.55, 0.1, 7.6, 0x64748b, 0.3)); });
+        onSlope(-4.4, 0.52, 1.5, 7.2, 0xcbd5e1, 0.12);
+        const tube = K.mesh(new THREE.CylinderGeometry(0.55, 0.55, 9.6, 10), new THREE.MeshStandardMaterial({ color: 0x22c55e, roughness: 0.5 }), -10.1, 2.9, 2.2); tube.rotation.x = Math.PI / 2 - ang;
+        [[-3.2, 9.4, 0xfacc15], [-0.2, 9.6, 0x38bdf8]].forEach(([x, z, c]) => K.mesh(new THREE.SphereGeometry(0.9, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, wireframe: false }), x, 0, z).scale.y = 0.7);
+        // 前方草地上的綠色遮陽棚
+        [-7.2, -4.4, 3.4, 6.2].forEach(x => { K.mesh(new THREE.ConeGeometry(1.5, 1.1, 4), new THREE.MeshStandardMaterial({ color: 0x2f9e6b, roughness: 0.7, flatShading: true }), x, 2.75, 10.4).rotation.y = Math.PI / 4; [[-0.9, -0.9], [0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]].forEach(([dx, dz]) => K.box(x + dx, 1.1, 10.4 + dz, 0.1, 2.2, 0.1, 0xe5e7eb)); });
+        // 後方的高架捷運與列車
+        const conc = 0xb8bfc7;
+        K.box(0, 11.2, -4.6, 25, 1.1, 3.4, conc); [-1.55, 1.55].forEach(dz => K.box(0, 12.1, -4.6 + dz, 25, 0.7, 0.25, 0xcbd2d9));
+        [-7, 7].forEach(x => { K.box(x, 7.9, -4.6, 1.9, 5.5, 2.4, conc); K.box(x, 10.4, -4.6, 3.4, 0.9, 3.0, conc); });
+        K.flush();
+        const train = new THREE.Group(), carM = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.5 }), stripeM = new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.5 });
+        const winM = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.3, emissive: 0xffe2a8, emissiveIntensity: 0 });
+        [-3.25, 0, 3.25].forEach(x => { const car = new THREE.Mesh(rbox(3.1, 1.5, 1.7, 0.25), carM); car.position.set(x, 0.75, 0); const st = new THREE.Mesh(new THREE.BoxGeometry(3.12, 0.3, 1.72), stripeM); st.position.set(x, 0.42, 0); const wn = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.45, 1.74), winM); wn.position.set(x, 1.0, 0); train.add(car, st, wn); });
+        train.position.set(0, baseTop + 11.75, -4.6); bGroup.add(train);
+        LANDMARK_ANIMS.push((t) => { train.position.x = Math.sin(t * 0.22) * 7.2; });       // 列車在高架上慢慢來回
+        nightLinked.push({ apply: (n) => { winM.emissiveIntensity = 1.2 * n; } });
+
+      } else if (mod.id === 11) {
+        // 板橋：新北市政府大樓。兩座灰色石材的塔樓夾著藍色玻璃帷幕；左塔較高、頂端是圓盤狀的塔頂，前方較矮的玻璃量體頂端有一排白色立板；
+        //   下方是裙樓與兩側的矮翼，正門前有白色的帳篷式遮棚
+        const K = makeBuildKit(bGroup, baseTop);
+        const stoneF = facadeMaterial('ntpc-tower2', 'stone', 3, 14, '#c9cdd3', '#4b5868');
+        const glassD = new THREE.MeshStandardMaterial({ color: 0x1f4a86, roughness: 0.18, metalness: 0.55, emissive: 0x9cc8ff, emissiveIntensity: 0 });
+        const glassF = facadeMaterial('ntpc-front', 'band', 5, 12, '#9fb9cf', '#2f6fa6');
+        const podM = new THREE.MeshStandardMaterial({ color: 0xc3ccd6, roughness: 0.7 }), white = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
+        K.mesh(rbox(15, 3.6, 8.5, 0.2), podM, 0, 1.8, 0.4);                             // 裙樓
+        K.mesh(rbox(4.4, 2.3, 4.6, 0.2), podM, -8.6, 1.15, 2.4); K.mesh(rbox(4.4, 2.3, 4.6, 0.2), podM, 8.6, 1.15, 2.4);   // 兩側矮翼
+        K.box(0, 2.3, 4.68, 14.6, 1.7, 0.14, 0x2f6fa6); K.box(-8.6, 1.5, 4.72, 3.6, 1.0, 0.1, 0x2f6fa6); K.box(8.6, 1.5, 4.72, 3.6, 1.0, 0.1, 0x2f6fa6);
+        K.mesh(new THREE.BoxGeometry(3.7, 30, 5.2), stoneF, -3.75, 15, -0.7);            // 左塔（較高）
+        K.mesh(new THREE.BoxGeometry(3.7, 27, 5.2), stoneF, 3.75, 13.5, -0.7);           // 右塔
+        K.mesh(new THREE.BoxGeometry(3.9, 25, 3.6), glassD, 0, 12.5, -1.3);              // 兩塔之間內縮的深藍玻璃
+        K.mesh(new THREE.BoxGeometry(4.6, 17, 2.4), glassF, 0, 8.5, 1.5);                // 前方較矮的玻璃量體
+        [-1.7, -0.85, 0, 0.85, 1.7].forEach(x => K.box(x, 18.3, 2.3, 0.34, 2.6, 0.6, 0xf1f5f9));   // 頂端的白色立板
+        [-5.68, 5.68].forEach(x => K.box(x, 13, -0.7, 0.16, 20, 2.4, 0x1f4a86));           // 塔樓外側的直條玻璃
+        K.box(3.75, 27.2, -0.7, 3.9, 0.4, 5.4, 0xb8c0c9); K.box(-3.75, 30.2, -0.7, 3.9, 0.4, 5.4, 0xb8c0c9);
+        // 左塔頂的圓盤
+        K.mesh(new THREE.CylinderGeometry(2.55, 1.35, 2.3, 24), new THREE.MeshStandardMaterial({ color: 0xe5ebf1, roughness: 0.35, metalness: 0.4 }), -3.75, 31.55, -0.7);
+        K.mesh(new THREE.CylinderGeometry(2.62, 2.5, 0.75, 24), glassD, -3.75, 32.5, -0.7);
+        K.mesh(new THREE.CylinderGeometry(2.75, 2.75, 0.3, 24), white, -3.75, 33.05, -0.7);
+        // 正門前的白色帳篷式遮棚與廣場
+        K.box(0, 0.07, 7.6, 12.5, 0.14, 5.2, 0xe9d8b8);
+        [-3.6, -1.2, 1.2, 3.6].forEach(x => { K.mesh(new THREE.ConeGeometry(1.55, 1.35, 4), white, x, 3.55, 7.0).rotation.y = Math.PI / 4; [[-1, -0.9], [1, -0.9], [-1, 0.9], [1, 0.9]].forEach(([dx, dz]) => K.box(x + dx, 1.45, 7.0 + dz, 0.16, 2.9, 0.16, 0xd9b98a)); });
+        [-5.6, 5.6].forEach(x => { K.box(x, 2.2, 9.4, 0.1, 4.4, 0.1, 0x94a3b8); K.box(x + 0.55, 4.0, 9.4, 1.0, 0.65, 0.05, x < 0 ? 0xd8232a : 0x1f6fb5); });
+        K.flush();
+        nightLinked.push({ apply: (n) => { glassD.emissiveIntensity = 0.35 * n; } });
+
+      } else if (mod.id === 12) {
+        // 中和：科技園區的廠辦大樓。兩棟帶狀窗的玻璃金屬大樓以空橋相連，屋頂有冷卻水塔與排氣管，旁邊是液氮槽、卸貨碼頭與警衛亭
+        const K = makeBuildKit(bGroup, baseTop);
+        const fa = facadeMaterial('zh-a', 'band', 6, 11, '#d5dde6', '#1f4f7a'), fb = facadeMaterial('zh-b', 'band', 5, 8, '#e3e7ec', '#256a8f');
+        const metalM = new THREE.MeshStandardMaterial({ color: 0xaab4bf, roughness: 0.45, metalness: 0.5 });
+        K.mesh(new THREE.BoxGeometry(8, 16, 6.6), fa, -4.3, 8, -1.8);                    // A 棟（較高）
+        K.mesh(new THREE.BoxGeometry(7.2, 11.5, 6), fb, 4.7, 5.75, 1.2);                 // B 棟
+        K.box(-4.3, 16.15, -1.8, 8.3, 0.3, 6.9, 0x94a3b8); K.box(4.7, 11.65, 1.2, 7.5, 0.3, 6.3, 0x94a3b8);
+        K.mesh(new THREE.BoxGeometry(2.2, 1.5, 1.8), new THREE.MeshStandardMaterial({ color: 0x3d86b8, roughness: 0.2, metalness: 0.5 }), 0.2, 7.2, -0.2);   // 空橋
+        // 屋頂：機房、冷卻水塔、排氣管
+        K.box(-5.6, 17.3, -2.6, 3.4, 2.0, 2.8, 0xb8c0c9);
+        [[-2.6, -3.3], [-2.6, -0.4], [-0.9, -1.9]].forEach(([x, z]) => { K.mesh(new THREE.CylinderGeometry(0.85, 0.7, 1.5, 12), metalM, x, 17.05, z); K.mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.12, 12), new THREE.MeshStandardMaterial({ color: 0x334155 }), x, 17.85, z, false); });
+        [0, 1, 2, 3].forEach(k => K.mesh(new THREE.CylinderGeometry(0.22, 0.22, 3.2, 8), metalM, 2.4 + k * 1.1, 13.4, 3.2));
+        K.box(6.4, 12.5, -0.4, 2.6, 1.4, 2.2, 0xb8c0c9);
+        // 液氮槽、卸貨碼頭、警衛亭、停車的車
+        const tank = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3, metalness: 0.4 });
+        K.mesh(new THREE.CylinderGeometry(0.95, 0.95, 6.4, 14), tank, 10.2, 3.8, -2.6); K.mesh(new THREE.SphereGeometry(0.95, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), tank, 10.2, 7.0, -2.6);
+        K.box(10.2, 0.3, -2.6, 2.4, 0.6, 2.4, 0x94a3b8);
+        K.box(4.7, 3.0, 4.75, 6.4, 0.25, 1.9, 0x64748b); [2.9, 4.7, 6.5].forEach(x => K.box(x, 1.3, 4.22, 1.5, 2.6, 0.1, 0x475569)); K.box(4.7, 0.5, 4.9, 6.6, 1.0, 1.2, 0xcbd5e1);
+        K.box(-9.6, 1.1, 6.6, 1.8, 2.2, 1.8, 0xe2e8f0); K.box(-9.6, 2.35, 6.6, 2.2, 0.2, 2.2, 0x475569); K.box(-9.6, 1.4, 7.52, 1.2, 0.8, 0.06, 0x2f6fa6);
+        [[-5.6, 0xef4444], [-3.4, 0xf8fafc], [-1.2, 0x3b82f6]].forEach(([x, c]) => { K.box(x, 0.55, 6.9, 1.5, 0.7, 3.0, c); K.box(x, 1.05, 6.8, 1.35, 0.5, 1.6, 0x1f2937); });
+        K.box(-3.4, 0.05, 6.9, 7.6, 0.08, 4.4, 0x9aa3ad);
+        K.flush();
+
       } else if (mod.type === 'region') {
         // 地區方位地標柱
         const isTaipei = mod.id === 13;
@@ -5648,7 +6648,7 @@
       // 太陽雨 → 彩虹
       W.t += dt;
       if (W.phase === 'idle') {
-        if (t > W.nextAt && nightFactor < 0.3 && !tweening) { W.phase = 'rain'; W.t = 0; W.rain.visible = true; }
+        if (t > W.nextAt && nightFactor < 0.3 && !TWEEN.getAll().length) { W.phase = 'rain'; W.t = 0; W.rain.visible = true; }
       } else if (W.phase === 'rain') {
         const k = W.t / 13;
         W.rainMat.opacity = 0.5 * Math.sin(Math.min(1, k) * Math.PI);
@@ -5718,6 +6718,202 @@
 
     // 帆船：在島群外圍的開闊水域繞行（路線會先檢查不經過陸地與島嶼），隨浪起伏，船尾拖著尾流；入夜後桅燈亮起
     let boats = null;
+    // =============================================================
+    // [交通] 服務島群與地區島之間的交通：近的用橋、遠的用船
+    //   新莊（本院所在地）：一座長橋直接連到服務島群
+    //   其他地區：雙頭交通船在兩端的碼頭之間往返，海面上有流動的虛線航道
+    //   取代原本從醫院中心拋出的弧形虛線與三艘裝飾帆船
+    // =============================================================
+    const HEX_DIR = (e) => { const a = (30 + 60 * e) * Math.PI / 180; return [Math.cos(a), Math.sin(a)]; };
+    const regionApothem = (m) => (m.id === 13 ? 36 : 22) * Math.cos(Math.PI / 6);
+    let ferries = null, laneTex = null, longBridge = null;
+    function buildTransport() {
+      const cores = ISLAND_MODULES.filter(m => m.type !== 'region'), regions = ISLAND_MODULES.filter(m => m.type === 'region');
+      const links = coreLinks();
+      const usedEdge = new Set();
+      links.forEach(k => { usedEdge.add(k.a.id + ':' + edgeNodeToward(k.a, k.b) / 2); usedEdge.add(k.b.id + ':' + edgeNodeToward(k.b, k.a) / 2); });
+      const boxes = [], lamps = [], pillars = [];
+      const Q = new THREE.Quaternion(), UP = new THREE.Vector3(0, 1, 0), LOOK = new THREE.Matrix4();
+      const box = (x, y, z, w, h, d, yaw, color) => boxes.push({ m: new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(UP, yaw), new THREE.Vector3(w, h, d)), color });
+      const beam = (p0, p1, w, h, color, side = 0, lift = 0) => {
+        const len = p0.distanceTo(p1) + 0.1, mid = new THREE.Vector3().addVectors(p0, p1).multiplyScalar(0.5);
+        Q.setFromRotationMatrix(LOOK.lookAt(p0, p1, UP));
+        const nx = p1.z - p0.z, nz = -(p1.x - p0.x), nl = Math.hypot(nx, nz) || 1;
+        mid.x += nx / nl * side; mid.z += nz / nl * side; mid.y += lift;
+        boxes.push({ m: new THREE.Matrix4().compose(mid, Q.clone(), new THREE.Vector3(w, h, len)), color });
+      };
+      // 碼頭：沿著島緣的峭壁往下的階梯，接到水面上的棧橋。回傳船停靠的位置
+      const buildDock = (m, e, topY, apo) => {
+        const [ux, uz] = HEX_DIR(e), tx = -uz, tz = ux, yaw = Math.atan2(ux, uz);
+        const half = apo * Math.tan(Math.PI / 6), run = Math.min(15, half - 2.5), N = 10, pierY = 1.5;
+        for (let k = 0; k < N; k++) {                                       // 階梯
+          const t = (k + 0.5) / N * run, y = topY - (k + 0.5) / N * (topY - pierY);
+          box(m.gridPos.x + ux * (apo + 1.4) + tx * t, y, m.gridPos.z + uz * (apo + 1.4) + tz * t, 2.6, 0.35, run / N + 0.25, Math.atan2(tx, tz), 0xc9a57b);
+        }
+        const bx = m.gridPos.x + tx * run, bz = m.gridPos.z + tz * run;     // 階梯底端
+        box(bx + ux * (apo + 1.6), pierY, bz + uz * (apo + 1.6), 3.2, 0.4, 3.4, yaw, 0xd9d4c8);          // 平台
+        box(bx + ux * (apo + 8.2), pierY, bz + uz * (apo + 8.2), 3.4, 0.4, 10, yaw, 0xc9a57b);           // 棧橋
+        [[apo + 4, 1.5], [apo + 4, -1.5], [apo + 12.6, 1.5], [apo + 12.6, -1.5]].forEach(([r, sd]) => box(bx + ux * r + tx * sd, pierY - 1.6, bz + uz * r + tz * sd, 0.45, 3.6, 0.45, yaw, 0x8b6b4a));
+        [-1.4, 1.4].forEach(sd => {                                          // 棧橋尾端兩側各一盞燈，成對
+          box(bx + ux * (apo + 12.9) + tx * sd, pierY + 1.7, bz + uz * (apo + 12.9) + tz * sd, 0.18, 3.0, 0.18, yaw, 0x475569);
+          lamps.push(new THREE.Vector3(bx + ux * (apo + 12.9) + tx * sd, pierY + 3.4, bz + uz * (apo + 12.9) + tz * sd));
+        });
+        return {
+          berth: new THREE.Vector3(bx + ux * (apo + 19), 0, bz + uz * (apo + 19)),                       // 船停靠的位置
+          road: roadNode(m, e * 2, topY),                                                                  // 島上道路在這條邊的中點
+          top: new THREE.Vector3(m.gridPos.x + ux * (apo + 1.4), topY, m.gridPos.z + uz * (apo + 1.4)),     // 階梯頂
+          bottom: new THREE.Vector3(bx + ux * (apo + 1.6), pierY + 0.2, bz + uz * (apo + 1.6)),             // 階梯底
+          pierEnd: new THREE.Vector3(bx + ux * (apo + 12), pierY + 0.2, bz + uz * (apo + 12)),              // 棧橋尾端（等船的位置）
+          dirX: ux, dirZ: uz
+        };
+      };
+      const coreApo = 36 * Math.cos(Math.PI / 6);
+      const lanes = [], list = [];
+      regions.forEach(reg => {
+        // 找離這座地區島最近、而且那條邊還沒架橋的服務島邊
+        let best = null;
+        cores.forEach(c => { for (let e = 0; e < 6; e++) {
+          if (usedEdge.has(c.id + ':' + e)) continue;
+          const [ux, uz] = HEX_DIR(e), d = Math.hypot(c.gridPos.x + ux * (coreApo + 12) - reg.gridPos.x, c.gridPos.z + uz * (coreApo + 12) - reg.gridPos.z);
+          if (!best || d < best.d) best = { c, e, d };
+        } });
+        if (!best) return;
+        usedEdge.add(best.c.id + ':' + best.e);
+        const [cux, cuz] = HEX_DIR(best.e);
+        const ang = Math.atan2(best.c.gridPos.z + cuz * coreApo - reg.gridPos.z, best.c.gridPos.x + cux * coreApo - reg.gridPos.x) * 180 / Math.PI;
+        const re = ((Math.round((ang - 30) / 60) % 6) + 6) % 6, [rux, ruz] = HEX_DIR(re), rApo = regionApothem(reg), rTop = tileTop(reg), cTop = tileTop(best.c);
+        if (reg.id === 8) {
+          // 新莊：長橋。從服務島的邊緣直接架到新莊島，中段微微拱起，下方有橋墩
+          const a = new THREE.Vector3(best.c.gridPos.x + cux * BRIDGE_END_R, cTop, best.c.gridPos.z + cuz * BRIDGE_END_R);
+          const b = new THREE.Vector3(reg.gridPos.x + rux * (rApo - 0.7), rTop, reg.gridPos.z + ruz * (rApo - 0.7));
+          const len = a.distanceTo(b), SEG = Math.max(8, Math.round(len / 5)), W = 3.6;
+          const at = (u, v) => v.lerpVectors(a, b, u).setY(a.y + (b.y - a.y) * u + 0.22 + 2.4 * Math.sin(Math.PI * u));
+          const p0 = new THREE.Vector3(), p1 = new THREE.Vector3();
+          for (let n = 0; n < SEG; n++) {
+            at(n / SEG, p0); at((n + 1) / SEG, p1);
+            beam(p0, p1, W, 0.38, 0xc9a57b, 0, -0.19);
+            [-1, 1].forEach(sd => beam(p0, p1, 0.16, 0.16, 0xf4efe6, sd * (W / 2 - 0.12), 1.05));
+            const sx = (p1.z - p0.z), sz = -(p1.x - p0.x), sl = Math.hypot(sx, sz) || 1;
+            [-1, 1].forEach(sd => box(p0.x + sx / sl * sd * (W / 2 - 0.12), p0.y + 0.55, p0.z + sz / sl * sd * (W / 2 - 0.12), 0.18, 1.1, 0.18, 0, 0xf4efe6));
+            if (n > 0 && n % 3 === 0) pillars.push({ x: p0.x, z: p0.z, top: p0.y - 0.4 });
+          }
+          const walk = []; for (let n = 0; n <= 12; n++) walk.push(at(n / 12, new THREE.Vector3()).clone().setY(at(n / 12, p0).y + 0.08));
+          longBridge = { core: best.c, e: best.e, reg, re, walk };
+          // 長橋兩端各一對橋頭燈
+          const bdx = (b.x - a.x) / len, bdz = (b.z - a.z) / len;
+          [[a, 0.6], [b, -0.6]].forEach(([p, off]) => [-1, 1].forEach(sd => {
+            const lx = p.x + bdx * off + bdz * sd * (W / 2 + 0.6), lz = p.z + bdz * off - bdx * sd * (W / 2 + 0.6);
+            box(lx, p.y + 1.55, lz, 0.2, 3.1, 0.2, 0, 0x475569); lamps.push(new THREE.Vector3(lx, p.y + 3.3, lz));
+          }));
+          [a, b].forEach((p, k) => { box(p.x, p.y + 0.05, p.z, W + 0.7, 0.5, 1.8, Math.atan2(b.x - a.x, b.z - a.z), 0xd9d4c8); });
+          return;
+        }
+        const da = buildDock(best.c, best.e, cTop, coreApo), db = buildDock(reg, re, rTop, rApo), pa = da.berth, pb = db.berth;
+        lanes.push({ a: pa, b: pb });
+        list.push({ a: pa, b: pb, len: pa.distanceTo(pb), yaw: Math.atan2(pb.x - pa.x, pb.z - pa.z), u: 0, dir: 1, wait: list.length * 2.5, speed: 8.5, phase: list.length * 1.7, from: best.c, to: reg, e: best.e, re, dockA: da, dockB: db });
+      });
+      // 橋、階梯、棧橋：一個實例化的方塊網格
+      const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 }); mat.userData.linear = true;
+      const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mat, boxes.length);
+      const col = new THREE.Color();
+      boxes.forEach((b, n) => { mesh.setMatrixAt(n, b.m); mesh.setColorAt(n, col.setHex(b.color).convertSRGBToLinear()); });
+      mesh.instanceMatrix.needsUpdate = true; mesh.instanceColor.needsUpdate = true; mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
+      scene.add(mesh);
+      if (pillars.length) {
+        const pm = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.55, 0.7, 1, 8), new THREE.MeshStandardMaterial({ color: 0xd9d4c8, roughness: 0.9 }), pillars.length);
+        const M4 = new THREE.Matrix4();
+        pillars.forEach((p, n) => pm.setMatrixAt(n, M4.compose(new THREE.Vector3(p.x, (p.top - 1.5) / 2, p.z), new THREE.Quaternion(), new THREE.Vector3(1, p.top + 1.5, 1))));
+        pm.instanceMatrix.needsUpdate = true; pm.frustumCulled = false; pm.castShadow = true; scene.add(pm);
+      }
+      const lampMat = new THREE.MeshStandardMaterial({ color: 0xfff3d6, emissive: 0xffc46b, emissiveIntensity: 0.15, roughness: 0.4 });
+      if (lamps.length) {
+        const lm = new THREE.InstancedMesh(new THREE.SphereGeometry(0.38, 10, 8), lampMat, lamps.length), M4 = new THREE.Matrix4();
+        lamps.forEach((p, n) => lm.setMatrixAt(n, M4.makeTranslation(p.x, p.y, p.z)));
+        lm.instanceMatrix.needsUpdate = true; lm.frustumCulled = false; scene.add(lm);
+      }
+      // 航道：貼在海面上的虛線，朝地區島的方向流動
+      const cvs = document.createElement('canvas'); cvs.width = 64; cvs.height = 16;
+      const ctx = cvs.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(6, 3, 34, 10, 5); else ctx.rect(6, 3, 34, 10); ctx.fill();
+      laneTex = new THREE.CanvasTexture(cvs); laneTex.wrapS = THREE.RepeatWrapping;
+      const laneMat = new THREE.MeshBasicMaterial({ map: laneTex, color: 0xe0f4ff, transparent: true, opacity: 0.82, depthWrite: false });
+      lanes.forEach(L => {
+        const len = L.a.distanceTo(L.b), g = new THREE.PlaneGeometry(len, 2.5);
+        const uv = g.attributes.uv; for (let k = 0; k < uv.count; k++) uv.setX(k, uv.getX(k) * len / 9);
+        g.rotateX(-Math.PI / 2);
+        const m = new THREE.Mesh(g, laneMat);
+        m.position.set((L.a.x + L.b.x) / 2, 0.2, (L.a.z + L.b.z) / 2);
+        m.rotation.y = -Math.atan2(L.b.z - L.a.z, L.b.x - L.a.x);
+        m.renderOrder = 1; m.raycast = () => {};
+        scene.add(m);
+      });
+      // 交通船：雙頭船（兩端對稱，到站後直接往回開，不用掉頭）
+      const hullMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.55 }), stripeMat = new THREE.MeshStandardMaterial({ color: 0x0ea5a4, roughness: 0.6 });
+      const cabinMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 }), glassMat = new THREE.MeshStandardMaterial({ color: 0x1e3a5f, roughness: 0.2, metalness: 0.4, emissive: 0xffd9a0, emissiveIntensity: 0 });
+      const deckMat = new THREE.MeshStandardMaterial({ color: 0xb98a5e, roughness: 0.8 }), boatLamp = new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffc46b, emissiveIntensity: 0 });
+      const wakeCvs = document.createElement('canvas'); wakeCvs.width = 128; wakeCvs.height = 32;
+      const wctx = wakeCvs.getContext('2d'), wg = wctx.createLinearGradient(0, 0, 128, 0);
+      wg.addColorStop(0, 'rgba(255,255,255,0.8)'); wg.addColorStop(0.5, 'rgba(255,255,255,0.28)'); wg.addColorStop(1, 'rgba(255,255,255,0)');
+      wctx.fillStyle = wg; wctx.beginPath(); wctx.moveTo(0, 11); wctx.lineTo(128, 0); wctx.lineTo(128, 32); wctx.lineTo(0, 21); wctx.closePath(); wctx.fill();
+      const wakeTex = new THREE.CanvasTexture(wakeCvs);
+      list.forEach(f => {
+        const g = new THREE.Group();
+        const hull = new THREE.Mesh(rbox(3.6, 1.5, 11, 0.7), hullMat); hull.position.y = 0.5;
+        const stripe = new THREE.Mesh(rbox(3.7, 0.4, 10.4, 0.15), stripeMat); stripe.position.y = 0.95;
+        const deck = new THREE.Mesh(rbox(3.0, 0.25, 9.6, 0.1), deckMat); deck.position.y = 1.32;
+        const cabin = new THREE.Mesh(rbox(2.6, 2.0, 5.0, 0.3), cabinMat); cabin.position.y = 2.4;
+        const glass = new THREE.Mesh(rbox(2.7, 0.8, 4.4, 0.1), glassMat); glass.position.y = 2.7;
+        const roof = new THREE.Mesh(rbox(3.0, 0.25, 5.6, 0.12), stripeMat); roof.position.y = 3.5;
+        const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.26, 8, 6), boatLamp); lamp.position.y = 4.0;
+        const wake = new THREE.Mesh(new THREE.PlaneGeometry(17, 5), new THREE.MeshBasicMaterial({ map: wakeTex, transparent: true, opacity: 0, depthWrite: false }));
+        wake.rotation.x = -Math.PI / 2; wake.position.y = 0.3; wake.raycast = () => {};
+        g.add(hull, stripe, deck, cabin, glass, roof, lamp, wake);
+        g.traverse(o => { if (o.isMesh && o !== wake) { o.castShadow = false; o.receiveShadow = true; } });
+        g.rotation.y = f.yaw; g.position.copy(f.a);
+        scene.add(g);
+        f.g = g; f.wake = wake;
+      });
+      ferries = { list };
+      // 橋頭與碼頭的燈：每一盞外圍加一圈柔和的微光（白天很淡，傍晚與夜晚明顯）
+      lamps.forEach(p => GLOW_LAMPS.push(p));
+      if (GLOW_LAMPS.length) {
+        const gc = document.createElement('canvas'); gc.width = gc.height = 64;
+        const g2 = gc.getContext('2d'), gr = g2.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gr.addColorStop(0, 'rgba(255,236,190,0.9)'); gr.addColorStop(0.35, 'rgba(255,214,140,0.35)'); gr.addColorStop(1, 'rgba(255,200,120,0)');
+        g2.fillStyle = gr; g2.fillRect(0, 0, 64, 64);
+        const pos = new Float32Array(GLOW_LAMPS.length * 3);
+        GLOW_LAMPS.forEach((p, n) => { pos[n * 3] = p.x; pos[n * 3 + 1] = p.y; pos[n * 3 + 2] = p.z; });
+        const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        const glowMat = new THREE.PointsMaterial({ map: new THREE.CanvasTexture(gc), size: 7.5, sizeAttenuation: true, transparent: true, opacity: 0.25, depthWrite: false, blending: THREE.AdditiveBlending });
+        const glow = new THREE.Points(gg, glowMat); glow.frustumCulled = false; glow.raycast = () => {};
+        scene.add(glow);
+        nightLinked.push({ apply: (n) => { glowMat.opacity = 0.22 + 0.7 * n; } });
+      }
+      nightLinked.push({ apply: (n) => { lampMat.emissiveIntensity = 0.35 + 2.4 * n; boatLamp.emissiveIntensity = n * 2.2; glassMat.emissiveIntensity = n * 0.9; laneMat.opacity = 0.82 * (1 - n * 0.45); } });
+      updateTransport(0, 0);
+    }
+    function updateTransport(t, dt) {
+      if (!ferries) return;
+      if (laneTex) laneTex.offset.x -= dt * 0.22;
+      ferries.list.forEach(f => {
+        let v = 0;
+        if (f.wait > 0) f.wait -= dt;
+        else {
+          // 離站加速、進站減速
+          const d = f.dir > 0 ? f.u : 1 - f.u, ease = Math.min(1, 0.18 + Math.min(d, 1 - d) * f.len / 14);
+          v = f.speed * ease;
+          f.u += f.dir * v * dt / f.len;
+          if (f.u >= 1 || f.u <= 0) { f.u = Math.max(0, Math.min(1, f.u)); f.dir *= -1; f.wait = 6; v = 0; }   // 靠站停 6 秒，再往回開
+        }
+        const x = f.a.x + (f.b.x - f.a.x) * f.u, z = f.a.z + (f.b.z - f.a.z) * f.u;
+        f.g.position.set(x, 0.15 + oceanHeightAt(x, z, t) * 0.6, z);
+        f.g.rotation.set(Math.sin(t * 1.1 + f.phase) * 0.02, f.yaw, Math.sin(t * 0.9 + f.phase * 2) * 0.035);
+        // 尾流在行進方向的後方
+        f.wake.material.opacity = 0.75 * Math.min(1, v / f.speed);
+        f.wake.position.z = -f.dir * 13.5; f.wake.rotation.z = f.dir > 0 ? Math.PI / 2 : -Math.PI / 2;
+      });
+    }
+
     function buildBoats() {
       const clear = (x, z) => getTerrainElevation(x, z) < -6 && ISLAND_MODULES.every(mod => Math.hypot(x - mod.gridPos.x, z - mod.gridPos.z) > 42);
       // 找出離島群最近、周圍一圈都是開闊水域的位置，各放一艘繞小圈航行的帆船（彼此至少相隔 150）
@@ -5818,7 +7014,7 @@
 
       ISLAND_MODULES.forEach(mod => {
         const isRegion = mod.type === 'region';
-        const pinY = isRegion ? 32 : (mod.id === 0 ? 56 : 38);
+        const pinY = isRegion ? 32 : (mod.id === 0 ? 58 : 38);
         const worldPos = new THREE.Vector3(mod.gridPos.x, pinY, mod.gridPos.z);
 
         if (isRegion) {
@@ -5847,9 +7043,21 @@
           <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border ${theme} text-[11px] font-bold shadow-xl">
             ${svgIcon(doc.avatar)}
             <span>${doc.name}</span>
-          </div>`, `${doc.name}：查看醫師陣容`,
-          () => focusDoctor(doc), new THREE.Vector3(doc.pos.x, doc.pos.y + 15, doc.pos.z), { doctor: doc });
+          </div>`, `${doc.name}：查看這位醫師的說明`,
+          () => { const ag = agents && agents.list.find(a => a.doc === doc); if (ag) selectAgent(ag); else focusDoctor(doc); }, new THREE.Vector3(doc.pos.x, doc.pos.y + 6.4, doc.pos.z), { doctor: doc });
       });
+
+      // 彩蛋角色「島主」的名牌（這次進站有出現才會建立）
+      const ownerAgent = agents && agents.list.find(a => a.role === 'owner');
+      if (ownerAgent) {
+        makePin('island-pin', `
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-yellow-300/70 text-yellow-200 text-[11px] font-bold shadow-xl">
+            ${svgIcon('sparkles')}
+            <span>島主</span>
+          </div>`, '島主：恭喜你遇見了彩蛋角色',
+          () => selectAgent(ownerAgent), new THREE.Vector3(ownerAgent.pos.x, ownerAgent.pos.y + 6.4, ownerAgent.pos.z), { person: ownerAgent });
+        ownerAgent.pin = pinElements[pinElements.length - 1];
+      }
 
       // 臨場次數試算看板的標籤
       {
@@ -5933,6 +7141,11 @@
       const kept = [];
       const order = pinElements.filter(p => p.visible).sort((a, b) => (pinPriority(a) - pinPriority(b)) || (a.depth - b.depth));
       for (const item of order) {
+        // 小工具與人物的名牌永遠顯示：不因為和別的名牌重疊而讓位，也不會把島名擠掉
+        if (item.doctor || item.person || item.calc || item.lift || item.cvd) {
+          if (item.cluttered) { item.anchor.classList.remove('pin-hidden'); item.cluttered = false; }
+          continue;
+        }
         if (!item.w) {
           const r = item.el.getBoundingClientRect();
           item.w = r.width;
@@ -6002,7 +7215,7 @@
     const ENTRANCES = { 0: { doorZ: 10.3 }, 1: { doorZ: 13 }, 2: { doorZ: 14 }, 3: { doorZ: 7.5 }, 4: { doorZ: 8 }, 5: { doorZ: 15 }, 6: { doorZ: 3 }, 7: { doorZ: 5 } };
     const DOOR_DWELL_SECONDS = 2.4; // 小人在建築裡停留的時間
     const modById = (id) => ISLAND_MODULES.find(m => m.id === id);
-    const tileTop = (m) => (m.id === 0 ? 22 : (m.type === 'region' ? (m.id === 13 ? 14 : 12) : 16)) + 2.5;
+    const tileTop = (m) => (m.type === 'region' ? (m.id === 13 ? 14 : 12) : 16) + 2.5;   // 八座服務島同高
     let routeArrowMat = null;
     const routeStepBadges = [];
 
@@ -6024,69 +7237,36 @@
 
     // 依 route 產生沿步道的路徑點，並記錄每一個停留站在路徑上的位置
     function buildRoutePoints(scenario) {
+      // 路線沿著各島的邊緣道路與橋前進：起點在第一座島的道路上，過橋到下一座島，最後停在終點島的道路上。
+      //   循環路徑（起點與終點是同一座島）則繞回起點。每個停留站停在該島路段的中點
       const route = scenario.route;
       const loop = route.length > 2 && route[0] === route[route.length - 1];
       const ids = loop ? route.slice(0, -1) : route;
-      const n = ids.length;
-      const mods = ids.map(modById);
-      const angleTo = (a, b) => Math.atan2(b.gridPos.z - a.gridPos.z, b.gridPos.x - a.gridPos.x);
-      const pts = [];        // 小人實際走的路（含進出建築的岔路）
-      const ribbonPts = [];  // 畫在步道上的路線（不含岔路，避免折返處打結）
-      const stopIdx = [];    // 每個停留站的門口在 pts 裡的位置
-      const doorPts = [];
+      const n = ids.length, mods = ids.map(modById);
+      const pts = [], stopIdx = [];
       let nextStop = 0;
-      const wrap = (d) => { while (d > Math.PI) d -= Math.PI * 2; while (d <= -Math.PI) d += Math.PI * 2; return d; };
-      const pushArc = (m, y, fromAng, toAng, both) => {
-        const delta = wrap(toAng - fromAng);
-        const steps = Math.max(3, Math.ceil(Math.abs(delta) / (Math.PI / 16)));
-        for (let k = 0; k <= steps; k++) {
-          const a = fromAng + delta * (k / steps);
-          const p = new THREE.Vector3(m.gridPos.x + Math.cos(a) * ROUTE_WALK_R, y, m.gridPos.z + Math.sin(a) * ROUTE_WALK_R);
-          pts.push(p);
-          if (both) ribbonPts.push(p);
-        }
-      };
       for (let i = 0; i < n; i++) {
         const m = mods[i];
         const prev = loop ? mods[(i - 1 + n) % n] : mods[i - 1];
         const next = loop ? mods[(i + 1) % n] : mods[i + 1];
-        let inAng = prev ? angleTo(m, prev) : null;
-        let outAng = next ? angleTo(m, next) : null;
-        if (inAng === null) inAng = outAng + Math.PI * 0.6;   // 起點：先在第一座島上走一小段
-        if (outAng === null) outAng = inAng - Math.PI * 0.6;  // 終點：在最後一座島上多走一小段
         const y = tileTop(m) + 0.3;
+        const inNode = prev ? edgeNodeToward(m, prev) : null, outNode = next ? edgeNodeToward(m, next) : null;
+        let nodes;
+        if (inNode === null) nodes = perimeterNodes(outNode + 4, outNode);          // 起點：先在島上走兩條邊再出發
+        else if (outNode === null) nodes = perimeterNodes(inNode, inNode + 4);     // 終點：上島後再走兩條邊，停下
+        else nodes = perimeterNodes(inNode, outNode);
+        const first = pts.length;
+        nodes.forEach(k => pts.push(roadNode(m, k, y)));
         const stop = scenario.stops[nextStop];
-        const entrance = stop && stop.id === m.id ? ENTRANCES[m.id] : null;
-        if (!entrance) {
-          pushArc(m, y, inAng, outAng, true);
-          continue;
+        if (stop && stop.id === m.id) {
+          stopIdx.push(inNode === null ? first : (outNode === null ? pts.length - 1 : first + Math.floor((nodes.length - 1) / 2)));
+          nextStop++;
         }
-        // 停留站：門在 +z 側。一般路徑的起點只「走出來」、終點只「走進去」；中間站與循環路徑是進去再出來
-        const doorAng = Math.PI / 2;
-        const door = new THREE.Vector3(m.gridPos.x + (entrance.doorX || 0), y, m.gridPos.z + entrance.doorZ + 0.8);
-        const spurIn = [0.35, 0.7, 1].map(f => new THREE.Vector3(m.gridPos.x, y, m.gridPos.z + ROUTE_WALK_R - (ROUTE_WALK_R - door.z + m.gridPos.z) * f));
-        const spurOut = spurIn.slice(0, -1).reverse().map(p => p.clone());
-        const isStart = !loop && i === 0, isEnd = !loop && i === n - 1;
-        doorPts.push(door);
-        if (isStart) {
-          pts.push(door.clone());           // 路徑從門口開始
-          stopIdx.push(0);
-          spurOut.forEach(p => pts.push(p));
-        } else {
-          pushArc(m, y, inAng, doorAng, true);
-          spurIn.forEach(p => pts.push(p));
-          stopIdx.push(pts.length - 1);
-        }
-        if (!isEnd) {
-          if (!isStart) spurOut.forEach(p => pts.push(p));
-          pushArc(m, y, doorAng, outAng, true);
-        }
-        nextStop++;
+        if (next) bridgeWalkPoints(m, next, 0.38).forEach(p => pts.push(p));
       }
-      return { pts, ribbonPts, stopIdx, doorPts, loop };
+      return { pts, ribbonPts: pts, stopIdx, doorPts: [], loop };
     }
 
-    // 沿曲線產生平貼地面的帶狀幾何（寬度 width），UV 的 u 依長度遞增，讓箭頭貼圖等距重複
     function buildRibbonGeometry(curve, closed, width, length) {
       const segs = Math.max(40, Math.round(length / 1.5));
       const pts = curve.getSpacedPoints(segs);
@@ -6188,7 +7368,7 @@
 
       activeFlowCurve = walkCurve;
       activeScenario = scenario;
-      spawnFlowWalkers(scenario);
+      // [改版] 不再另外產生放大的搬運小人：路徑只以彩色路線帶與流動箭頭表示；實際在跑這條路徑的人就是島上的居民
     }
 
     // =============================================================
@@ -6302,9 +7482,10 @@
           w.group.visible = true;
         }
         const prevT = w.t;
-        const enter = () => { w.inside = DOOR_DWELL_SECONDS; w.group.visible = false; w.pinItem.anchor.style.opacity = '0'; w.seg = -1; };
+        // 沒有門了：中途的站原地停一下（辦事）再繼續走；走到終點的島才消失，稍後從起點重新出發
+        const enter = (finished = false) => { w.inside = DOOR_DWELL_SECONDS; if (finished) { w.group.visible = false; w.pinItem.anchor.style.opacity = '0'; w.seg = -1; } };
         // 一般路徑：走到終點的門口 → 進入建築，停留後從起點的門口重新出發
-        if (!sc._loop && prevT + dt / tripSeconds >= 1) { w.t = 0; enter(); continue; }
+        if (!sc._loop && prevT + dt / tripSeconds >= 1) { w.t = 0; enter(true); continue; }
         w.t = (w.t + dt / tripSeconds) % 1;
         // 中途的門口（循環路徑則是每一站）→ 進入建築
         const crossed = sc._stopU.findIndex(u => u > 0 && u < 0.999 && (prevT < u ? (w.t >= u || w.t < prevT) : (w.t < prevT && w.t >= u)));
@@ -6613,6 +7794,7 @@
       updateIdleOrbit(now);
       const tweening = TWEEN.getAll().length > 0;
       TWEEN.update();
+      updatePersonFollow();
       if (controls.update()) dirty = true;
       applyCameraFreedom();
       updateHoverRings(dt);
@@ -6631,7 +7813,8 @@
         if (skyMat) skyMat.uniforms.uTime.value = motionTime;
         WIND.uWindTime.value = motionTime;
         updateBirds(motionTime);
-        updateBoats(motionTime);
+        for (let k = 0; k < LANDMARK_ANIMS.length; k++) LANDMARK_ANIMS[k](motionTime);
+        updateTransport(motionTime, md);
         updateWeather(motionTime, dt * MOTION_SCALE);
         if (atmosphereParticles) atmosphereParticles.rotation.y = motionTime * 0.02;
         updateWalkers(md);
@@ -6641,6 +7824,7 @@
         updateDoctors(motionTime);
         if (routeArrowMat) routeArrowMat.map.offset.x -= md * 0.35;
         updatePedestrians(md);
+        updateAgents(md);
       }
 
       // [新增] 按需重繪：暫停動畫且鏡頭靜止時不重繪，省電也不發燙
@@ -6699,7 +7883,8 @@
     // =============================================================
     // [探索] 更自由的鏡頭：點兩下飛近、可拉到很近、平移有邊界、靠近時標籤淡出
     // =============================================================
-    const CAM_MIN_DIST = 15, CAM_PAN_RADIUS = 560, CAM_TARGET_MAX_Y = 70;
+    const CAM_MIN_DIST = 34, CAM_MAX_DIST = 780, CAM_PAN_RADIUS = 560, CAM_TARGET_MAX_Y = 70;   // 最近不貼到建築上、最遠不拉到看見場景邊界
+    const CANVAS_PICK = false;                       // 點 3D 場景不觸發詳情（改由名牌觸發）
     const _zoomRay = new THREE.Raycaster(), _zoomV = new THREE.Vector2(), _camV = new THREE.Vector3();
     let lastSelectAt = 0, lastTap = { t: 0, x: 0, y: 0 };
     // 在畫面上點兩下（手機是連點兩下）：鏡頭飛到那個位置並拉近；已經很近時再點會更近
@@ -6731,9 +7916,23 @@
       return true;
     }
     // 每幀在 controls.update() 之後呼叫：限制平移範圍、鏡頭不低於水面、依距離調整近裁切面與標籤透明度
-    let _pinsOpacity = 1, _pinsEl = null;
+    let _pinScale = 1;
     function applyCameraFreedom() {
       const t = controls.target;
+      controls.maxDistance = TWEEN.getAll().length ? 1400 : CAM_MAX_DIST;      // 進場與導覽的運鏡不受最遠距離限制
+      // 防穿模：鏡頭不進入各島建築所在的範圍（以島中心為軸的圓柱），也不鑽進周圍的山裡
+      for (let k = 0; k < ISLAND_MODULES.length; k++) {
+        const m = ISLAND_MODULES[k], reg = m.type === 'region';
+        const keep = reg ? (m.id === 13 ? 26 : 15) : 26.5, top = tileTop(m) + (m.id === 0 ? 48 : (m.id === 13 ? 62 : (reg ? 37 : 38)));
+        if (camera.position.y > top) continue;
+        const cxm = camera.position.x - m.gridPos.x, czm = camera.position.z - m.gridPos.z, d = Math.hypot(cxm, czm);
+        if (d < keep) {
+          const ux = d > 0.01 ? cxm / d : 1, uz = d > 0.01 ? czm / d : 0;
+          camera.position.x = m.gridPos.x + ux * keep; camera.position.z = m.gridPos.z + uz * keep;
+        }
+      }
+      const ground = getTerrainElevation(camera.position.x, camera.position.z);
+      if (camera.position.y < ground + 6) camera.position.y = ground + 6;
       const dx = t.x - OVERVIEW_TARGET_POS.x, dz = t.z - OVERVIEW_TARGET_POS.z, r = Math.hypot(dx, dz);
       if (r > CAM_PAN_RADIUS) {
         const k = CAM_PAN_RADIUS / r, nx = OVERVIEW_TARGET_POS.x + dx * k, nz = OVERVIEW_TARGET_POS.z + dz * k;
@@ -6744,15 +7943,10 @@
       if (camera.position.y < 2.5) camera.position.y = 2.5;
       const dist = camera.position.distanceTo(t);
       // 近看時把近裁切面拉近（不會切掉眼前的物件）；遠看時維持原本的 4，保留深度精度
+      const pinS = 1 - 0.2 * THREE.MathUtils.smoothstep(dist, 280, 700);                    // 鏡頭拉遠時名牌再縮小一些，減少重疊
+      if (Math.abs(pinS - _pinScale) > 0.01) { _pinScale = pinS; document.getElementById('pins-container').style.setProperty('--pin-s', pinS.toFixed(2)); }
       const near = THREE.MathUtils.clamp(dist * 0.045, 0.8, 4);
       if (Math.abs(camera.near - near) > 0.05) { camera.near = near; camera.updateProjectionMatrix(); }
-      // 靠近到一定距離後，島上的標籤逐漸淡出，不擋住細節
-      const op = tourActive ? 1 : THREE.MathUtils.smoothstep(dist, 38, 62);
-      if (Math.abs(op - _pinsOpacity) > 0.02 || (op === 0) !== (_pinsOpacity === 0) || (op === 1) !== (_pinsOpacity === 1)) {
-        _pinsEl = _pinsEl || document.getElementById('pins-container');
-        if (_pinsEl) { _pinsEl.style.opacity = op.toFixed(2); _pinsEl.style.visibility = op < 0.03 ? 'hidden' : ''; }
-        _pinsOpacity = op;
-      }
     }
 
     function onPointerDown(e) {
@@ -6771,8 +7965,8 @@
         hoverFramePending = false;
         if (!lastHover) return;
         const overCanvas = lastHover.target === canvas;
-        const hit = overCanvas ? pickAt(lastHover.clientX, lastHover.clientY) : null;
-        canvas.style.cursor = hit ? 'pointer' : '';
+        const hit = (overCanvas && CANVAS_PICK) ? pickAt(lastHover.clientX, lastHover.clientY) : null;
+        canvas.style.cursor = (hit || (overCanvas && pickAgent(lastHover.clientX, lastHover.clientY))) ? 'pointer' : '';
         setHoveredModule(hit && hit.module ? hit.module.id : null);
         if (hit) markActive();
       });
@@ -6790,6 +7984,11 @@
         lastTap = { t: now, x: e.clientX, y: e.clientY };
       }
 
+      // [人物] 點到人物：開啟人物說明並跟隨
+      const person = pickAgent(e.clientX, e.clientY, e.pointerType === 'touch');
+      if (person) { selectAgent(person); return; }
+      // [介面] 建築與島本身不再觸發點選：要看詳情請點名牌（避免拖曳、探索時誤觸）
+      if (!CANVAS_PICK) return;
       const hit = pickAt(e.clientX, e.clientY);
       if (!hit) return;
       lastSelectAt = performance.now();
@@ -6874,8 +8073,12 @@
       cameraTweens = [];
     }
 
+    let personFlight = false;                          // 這一次的鏡頭移動是不是「點選人物」發起的
     function flyCameraTo(targetPos, targetLookAt, duration = 1400) {
       if (!camera) return;
+      // 正在跟隨人物時，只要有別的操作要移動鏡頭（點地區島、點服務島、選服務路徑、回全景、點兩下、故事巡航…），
+      //   就結束跟隨並收起人物說明，避免兩邊搶鏡頭、兩個說明同時開著
+      if (selectedAgent && !personFlight) closePersonDrawer();
       stopCameraTweens();
       const d = REDUCED_MOTION ? Math.min(duration, 400) : duration;
       cameraTweens = [
@@ -6917,7 +8120,7 @@
       pulseModule(mod);
 
       const isCenter = mod.id === 0;
-      const lookHeight = isCenter ? 36 : 28;
+      const lookHeight = isCenter ? 31 : 28;
       const camDist = isCenter ? 122 : 98;
       const camHeight = isCenter ? 68 : 54;
 
@@ -6954,9 +8157,11 @@
       sound.playChime();
       showToast(`醫師介紹：${doc.name}（${doc.title}）`);
       openModal(doctorsModal);
+      const ag = agents && agents.list.find(a => a.doc === doc);
+      if (ag) ag.hold = true;                            // 被點選時停下腳步，介紹視窗關閉後再繼續走
       flyCameraTo(
-        { x: doc.pos.x + 32, y: doc.pos.y + 22, z: doc.pos.z + 38 },
-        { x: doc.pos.x, y: doc.pos.y + 6, z: doc.pos.z }
+        { x: doc.pos.x + 30, y: doc.pos.y + 26, z: doc.pos.z + 40 },
+        { x: doc.pos.x, y: doc.pos.y + 3, z: doc.pos.z }
       );
     }
 
@@ -6967,6 +8172,7 @@
     let regionHudTimer = null;
 
     function openRegionHud(reg) {
+      closePersonDrawer();                             // 地區島的說明卡和人物說明不同時開
       document.getElementById('regionHudTitle').textContent = reg.name;
       document.getElementById('regionHudCode').textContent = reg.code;
       document.getElementById('regionHudIcon').innerHTML = svgIcon(reg.icon, 'icon-lg');
@@ -7128,6 +8334,7 @@
     function isDrawerOpen() { return !infoDrawer.classList.contains('translate-x-full'); }
 
     function openDrawer(mod) {
+      closePersonDrawer();
       document.getElementById('drawerLiftBtn').classList.toggle('hidden', !(mod.id === 1 || mod.id === 5));
       document.getElementById('drawerCvdBtn').classList.toggle('hidden', !(mod.id === 6 || mod.id === 2));
       document.getElementById('drawerIcon').innerHTML = svgIcon(mod.icon, 'icon-lg');
@@ -7220,6 +8427,7 @@
 
     function openModal(modal) {
       if (!modal.classList.contains('hidden')) return;
+      closePersonDrawer();                             // 開啟任何視窗時，收起人物說明並停止跟隨
       lastFocusedEl = document.activeElement;
       modal.classList.remove('hidden');
       const closeBtn = modal.querySelector('[data-close]');
