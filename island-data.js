@@ -278,16 +278,20 @@
   //   voice：島上「帶著情況的勞工」頭上有黃色問號，點開後最上面顯示的這句話（他用第一人稱說的困擾）。
   //     有寫 voice 的項目才會分給島上的勞工（桌機最多 5 位、手機最多 3 位，依清單順序）；沒寫就只出現在清單裡
   //     ※ voice 為初稿，需由本科醫師核對
+  //   pose：那位勞工在島上的樣子（只影響外觀，不寫就是一般勞工的樣子）。可用的值：
+  //     'cough' 偶爾停下來咳嗽　'back' 腰上綁護腰、走得慢、偶爾扶腰　'tired' 不戴安全帽、拿著咖啡、偶爾打哈欠
+  //     'cane' 拄拐杖、步伐小　'sling' 右手掛三角巾、手臂不擺動
+  //     ※ 外觀表現需由本科醫師確認是否恰當；心理相關的情況（例如霸凌）不要加 pose
   const SITUATIONS = [
-    { short: '懷疑跟工作有關', text: '身體不舒服，懷疑跟工作有關', hint: '到門診評估病痛和工作的關係', flow: 'occ', icon: 'search',
+    { short: '懷疑跟工作有關', text: '身體不舒服，懷疑跟工作有關', hint: '到門診評估病痛和工作的關係', flow: 'occ', icon: 'search', pose: 'cough',
       voice: '這幾個月咳嗽一直好不了，會不會跟工廠裡的粉塵有關？' },
-    { short: '上班受傷了', text: '上班受傷，不清楚自己的權益', hint: '從診斷、權益說明到復工，一路有人陪', flow: 'rtw', icon: 'accessibility', contact: 'injury',
+    { short: '上班受傷了', text: '上班受傷，不清楚自己的權益', hint: '從診斷、權益說明到復工，一路有人陪', flow: 'rtw', icon: 'accessibility', contact: 'injury', pose: 'back',
       voice: '上個月在倉庫扭到腰，請了好幾天假，不知道職災可以申請什麼？' },
-    { short: '長工時・輪班', text: '長工時、輪班，身體快撐不住', hint: '評估工作負荷與健康風險，提出調整建議', flow: 'overload', icon: 'clock',
+    { short: '長工時・輪班', text: '長工時、輪班，身體快撐不住', hint: '評估工作負荷與健康風險，提出調整建議', flow: 'overload', icon: 'clock', pose: 'tired',
       voice: '最近每天加班到很晚，還要輪夜班，整個人很累、睡不好。' },
-    { short: '想回去上班', text: '治療告一段落，想回去上班', hint: '工作強化訓練，為重返職場做準備', module: 4, icon: 'activity',
+    { short: '想回去上班', text: '治療告一段落，想回去上班', hint: '工作強化訓練，為重返職場做準備', module: 4, icon: 'activity', pose: 'cane',
       voice: '手術後休養了三個月，想回去上班，但怕撐不住原本的工作。' },
-    { short: '需要鑑定', text: '事故後需要勞動能力減損鑑定', hint: '評估工作能力受損的程度', module: 7, icon: 'ruler', contact: 'injury',
+    { short: '需要鑑定', text: '事故後需要勞動能力減損鑑定', hint: '評估工作能力受損的程度', module: 7, icon: 'ruler', contact: 'injury', pose: 'sling',
       voice: '車禍之後右手沒辦法完全伸直，律師說要做勞動能力減損鑑定。' },
     { short: '壓力事件・霸凌', text: '在職場遇到霸凌或重大壓力事件，身心出了狀況', hint: '到門診評估身心症狀是否和工作有關', flow: 'occ', icon: 'heart-pulse' }
   ];
