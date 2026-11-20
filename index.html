@@ -82,7 +82,7 @@
           { "@type": "MedicalProcedure", "name": "勞動能力減損鑑定", "description": "評估車禍或職業災害造成的勞動能力減損比例，提供法院囑託鑑定與訴訟前自費門診諮詢。" }
         ],
         "contactPoint": [
-          { "@type": "ContactPoint", "contactType": "customer service", "telephone": "+886-2-2276-5566", "email": "om@tph.mohw.gov.tw", "availableLanguage": "zh-TW", "name": "企業臨場服務諮詢（分機 3242、3244）" }
+          { "@type": "ContactPoint", "contactType": "customer service", "telephone": "+886-2-2276-5566", "email": "om@tph.mohw.gov.tw", "availableLanguage": "zh-TW", "name": "企業臨場服務諮詢（分機 3242、3244）" }, { "@type": "ContactPoint", "contactType": "customer service", "telephone": "+886-2-2276-5566", "availableLanguage": "zh-TW", "name": "職災勞工權益、勞動能力減損鑑定（分機 3240、3245）" }
         ]
       },
       {
@@ -438,9 +438,9 @@
     }
   
     /* [介面] 名牌縮小，不擋住島嶼的操作；不隨鏡頭遠近消失（只有彼此重疊時，次要的那個會暫時讓位） */
-    .island-pin > div, .region-pin > div { transform: scale(calc(0.82 * var(--pin-s, 1))); transform-origin: 50% 100%; }
+    .island-pin > div, .region-pin > div { transform: scale(calc(1.06 * var(--pin-s, 1))); transform-origin: 50% 100%; }
     @media (max-width: 767px) {
-      .island-pin > div, .region-pin > div { transform: scale(calc(0.92 * var(--pin-s, 1))); }
+      .island-pin > div, .region-pin > div { transform: scale(calc(1.04 * var(--pin-s, 1))); }
       /* 拉遠時：服務島、小工具、人物的名牌只留圖示 */
       .pins-compact .island-pin > div { transform: scale(0.9); padding: 5px 6px; gap: 3px; border-radius: 9999px; }
       .pins-compact .island-pin > div > span:last-child { display: none; }
@@ -449,6 +449,9 @@
       #flowList { background: rgba(2, 6, 23, 0.9); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding: 8px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35); }
     }
   
+    /* 名牌和別的名牌重疊時：只留圖示（不消失） */
+    .pin-squeezed .island-pin > div > span:last-child, .pin-squeezed .region-pin > div > span:last-child { display: none; }
+    .pin-squeezed .island-pin > div, .pin-squeezed .region-pin > div { padding: 5px 6px; gap: 3px; border-radius: 9999px; }
     /* [人物] 人物說明：桌機從右側滑出，手機從底部升起（不擋住正在跟隨的人物） */
     #personDrawer { position: absolute; top: 0; right: 0; height: 100%; width: 340px; max-width: 100%; z-index: 30; display: flex; flex-direction: column;
       border-left: 1px solid rgba(255,255,255,0.1); transform: translateX(100%); transition: transform 0.45s ease; }
@@ -638,6 +641,10 @@
        [修正] 容器改為 pointer-events-none，只有按鈕可點，不再擋住整塊畫布的拖曳；手機版下移避免與標頭重疊 -->
   <nav id="flowBar" aria-label="服務路徑" class="hud-fade below-hud absolute md:top-28 left-0 right-0 md:left-8 md:right-auto z-10 md:flex md:items-start md:gap-2 pointer-events-none">
     <div id="flowChips" class="shrink-0 flex flex-col items-start gap-1.5 px-3 md:px-0 pointer-events-none">
+      <button id="situationBtn" type="button" class="pointer-events-auto px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-medblue-600 shadow-lg hover:brightness-110 transition flex items-center gap-2">
+        <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-search"></use></svg>
+        <span class="whitespace-nowrap">我該去哪裡？</span>
+      </button>
       <button id="flowToggle" type="button" aria-expanded="true" aria-controls="flowList" class="pointer-events-auto glass-morphism px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-brand-400 animate-ping" aria-hidden="true"></span>
         <span id="flowToggleText" class="whitespace-nowrap">服務路徑</span>
@@ -813,7 +820,7 @@
       </div>
 
       <div class="border-t border-white/10 pt-5 mt-4 space-y-2.5">
-        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-map-pin"></use></svg> 向職醫科諮詢臨場健康服務</div>
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-map-pin"></use></svg> 聯絡職醫科</div>
         <a data-contact="form" href="https://forms.gle/ifUNBS1DWR5aQzCG6" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-xl bg-brand-600/20 hover:bg-brand-600/30 border border-brand-500/30 transition text-xs text-slate-100">
           <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clipboard-pen"></use></svg>填寫臨場服務諮詢表單</span>
           <span class="text-brand-300 font-bold">前往填寫 <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg></span>
@@ -823,8 +830,12 @@
           <span class="font-bold" style="color:#3ddc84">加入好友 <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg></span>
         </a>
         <a data-contact="tel" href="tel:+886222765566,3242" class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 transition text-xs text-slate-200">
-          <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-phone"></use></svg>企業臨場諮詢熱線</span>
+          <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-phone"></use></svg>企業臨場服務</span>
           <span class="font-mono font-bold text-brand-400">分機 3242 / 3244</span>
+        </a>
+        <a id="drawerInjuryTel" data-contact="injuryTel" href="tel:+886222765566,3240" class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 transition text-xs text-slate-200">
+          <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-phone"></use></svg>職災權益・勞動能力減損鑑定</span>
+          <span class="font-mono font-bold text-amber-300">分機 3240 / 3245</span>
         </a>
         <a href="https://www.tph.mohw.gov.tw/?aid=60&pid=225" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 transition text-xs text-slate-200">
           <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-globe"></use></svg>臺北醫院職醫科官方首頁</span>
@@ -841,6 +852,21 @@
   </div>
 
   <!-- ================= 彈出面板：醫師介紹 ================= -->
+  <!-- 「我該去哪裡？」：依使用者遇到的情況，帶到對應的服務路徑或島（清單內容在 island-data.js 的 situations） -->
+  <div id="situationModal" role="dialog" aria-modal="true" aria-labelledby="situationModalTitle" class="modal fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div class="glass-morphism w-full max-w-xl max-h-[90vh] overflow-y-auto no-scrollbar rounded-3xl p-6 md:p-8 relative border border-white/20">
+      <button type="button" data-close aria-label="關閉" class="absolute top-6 right-6 text-slate-400 hover:text-white flex"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
+      <div class="flex items-center gap-3.5 mb-5 pr-8">
+        <div class="w-12 h-12 shrink-0 rounded-2xl bg-brand-500/20 text-brand-300 flex items-center justify-center border border-brand-500/30" aria-hidden="true"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-search"></use></svg></div>
+        <div class="min-w-0 flex-1">
+          <h2 id="situationModalTitle" class="text-xl font-extrabold text-white">我該去哪裡？</h2>
+          <p class="text-xs text-slate-400 mt-0.5">身體怪怪的，跟工作有關係嗎？選一個最接近你的情況。</p>
+        </div>
+      </div>
+      <ul id="situationList" class="flex flex-col gap-2"></ul>
+    </div>
+  </div>
+
   <div id="doctorsModal" role="dialog" aria-modal="true" aria-labelledby="doctorsModalTitle" class="modal fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
     <div class="glass-morphism w-full max-w-3xl max-h-[90vh] overflow-y-auto no-scrollbar rounded-3xl p-6 md:p-8 relative border border-white/20">
       <button type="button" data-close aria-label="關閉" class="absolute top-6 right-6 text-slate-400 hover:text-white flex"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
@@ -926,7 +952,8 @@
       </div>
       </div>
       <div class="text-center text-xs text-slate-400">
-        諮詢專線：<span data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span> ｜ 院址：<span data-contact-text="address">新北市新莊區思源路127號（醫療大樓門診區）</span>
+        企業臨場服務：<span data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span> ｜ 院址：<span data-contact-text="address">新北市新莊區思源路127號（醫療大樓門診區）</span>
+        <span class="block mt-1">職災勞工權益、勞動能力減損鑑定：<a data-contact="injuryTel" href="tel:+886222765566,3240" class="underline decoration-dotted hover:text-white" data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</a></span><span class="block mt-1">勞工諮詢申訴專線 <a href="tel:1955" class="font-bold hover:text-white">1955</a>｜安心專線 <a href="tel:1925" class="font-bold hover:text-white">1925</a></span>
       </div>
     </div>
   </div>
@@ -1148,7 +1175,7 @@
             <a data-contact="booking" href="https://nreg.tph.mohw.gov.tw/OReg/OpoDoctorsVisitListPage?sectcategory=%E5%85%A7%E7%A7%91%E7%B3%BB&amp;sectid=0106&amp;sectname=%E8%81%B7%E6%A5%AD%E9%86%AB%E5%AD%B8%E7%A7%91&amp;showcd=N" target="_blank" rel="noopener noreferrer" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-xs text-slate-200 text-center transition">🩺 職業醫學科門診掛號 <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg></a>
             <a data-contact="email" data-contact-label="email" href="mailto:om@tph.mohw.gov.tw" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-xs text-slate-200 text-center transition break-all"><span class="inline-flex items-center gap-1.5"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg><span data-email-text>om@tph.mohw.gov.tw</span></span></a>
           </div>
-          <p class="text-[11px] text-slate-500 text-center mt-3">諮詢專線：<span data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span>｜院址：<span data-contact-text="address">新北市新莊區思源路127號（醫療大樓門診區）</span></p>
+          <p class="text-[11px] text-slate-500 text-center mt-3">企業臨場服務：<span data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span>｜院址：<span data-contact-text="address">新北市新莊區思源路127號（醫療大樓門診區）</span><span class="block mt-1">職災勞工權益、勞動能力減損鑑定：<a data-contact="injuryTel" href="tel:+886222765566,3240" class="underline decoration-dotted hover:text-white" data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</a></span><span class="block mt-1">勞工諮詢申訴專線 <a href="tel:1955" class="font-bold hover:text-white">1955</a>｜安心專線 <a href="tel:1925" class="font-bold hover:text-white">1925</a></span></p>
         </section>
       </div>
     </div>
@@ -1832,6 +1859,7 @@
     const TOUR_STOPS = DATA_OK ? (DATA.tourStops || []) : [];
     const SCENARIOS = DATA_OK ? (DATA.scenarios || {}) : {};
     const SCENARIO_GROUPS = DATA_OK ? (DATA.scenarioGroups || {}) : {};
+    const SITUATIONS = DATA_OK ? (DATA.situations || []) : [];
     const CALC_RULES = DATA_OK ? DATA.calcRules : null;
     const INTRO_STEPS = DATA_OK ? (DATA.introSteps || []) : [];
     const TIPS = DATA_OK ? (DATA.tips || []) : [];
@@ -3231,7 +3259,7 @@
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.06;
-      controls.maxPolarAngle = Math.PI / 2 - 0.05;
+      controls.maxPolarAngle = 1.3;          // 鏡頭不能壓得太低（約離地平線 16 度）：太低時島和名牌會前後重疊
       controls.minDistance = CAM_MIN_DIST;   // [探索] 可以湊近看細節（原本是 60）
       controls.maxDistance = CAM_MAX_DIST;
       controls.target.set(OVERVIEW_TARGET_POS.x, OVERVIEW_TARGET_POS.y, OVERVIEW_TARGET_POS.z);
@@ -3267,7 +3295,9 @@
       canvas.addEventListener('dblclick', (e) => { e.preventDefault(); zoomToScreenPoint(e.clientX, e.clientY); });
       // 手機沒有常駐的操作提示列，第一次來訪時用一則訊息告知可以連點兩下
       if (IS_COARSE_POINTER && !readPref('tph-ohs-zoomhint')) {
-        setTimeout(() => { if (!document.hidden && !tourActive) { showToast('連點兩下畫面，可以飛近看細節'); writePref('tph-ohs-zoomhint', '1'); } }, 16000);
+        // 等首次造訪的導覽關掉、畫面空出來再提示（導覽還開著就每 4 秒再檢查一次）
+        const zoomHint = () => { if (document.hidden || tourActive || isIntroOpen() || ALL_MODALS.some(m => !m.classList.contains('hidden'))) { setTimeout(zoomHint, 4000); return; } showToast('連點兩下畫面，可以飛近看細節'); writePref('tph-ohs-zoomhint', '1'); };
+        setTimeout(zoomHint, 16000);
       }
     }
 
@@ -3876,16 +3906,15 @@
     // 三個小工具已融入各島的造景（在 buildBuildingForModule 裡建立），不再是獨立的道具：
     //   搬抬演示＝危害評估島堆置區正在搬紙箱的勞工；臨場次數試算＝四大計畫島會議桌旁的行事曆；心血管風險＝健檢分析島會談桌上的衛教模型
     //   這裡記錄它們在島上的位置（島中心為原點；y 是名牌離島面的高度），給名牌與灌木避讓使用
+    const GUIDE_PROP = { module: 0, x: 5.6, z: 24.8, y: 9.6 };      // 醫院門口的指路牌「我該去哪裡？」
     const LIFT_PROP = { module: 1, x: -8.4, z: 6.2, y: 7.4 };
     const CALC_PROP = { module: 5, x: 5.4, z: 1.2, y: 8.8 };
     const CVD_PROP = { module: 6, x: -7.4, z: 0.6, y: 10.2 };
     // 讓場景裡的物件可以點：flag 是 'lift'、'calc' 或 'cvd'
-    function markTool(root, flag) { root.traverse(o => { if (o.isMesh) { o.userData[flag] = true; pickables.push(o); } }); }
+    //   ※ 依使用者的決定：小工具與指路牌只能點名牌打開，場景裡的物件不加入可點選清單（避免拖曳、探索時誤觸）
+    function markTool(root, flag) { root.traverse(o => { if (o.isMesh) o.userData[flag] = true; }); }
     // 看不見的點選範圍（比實際物件大一圈，手機上才點得到）
-    function toolHitBox(parent, flag, x, y, z, w, h, d) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, colorWrite: false }));
-      m.position.set(x, y, z); m.userData[flag] = true; m.userData.hitProxy = true; parent.add(m); pickables.push(m); return m;
-    }
+    function toolHitBox() { return null; }                // 不再建立看不見的點選範圍（只能點名牌）
 
     // =============================================================
     // 5.3 [新增] 飄動的雲朵：由數個圓球疊成，繞著島群緩慢飄移
@@ -4574,9 +4603,11 @@
     const islandWalkways = [];
     let WALK_MAT = null;
     // [島群] 服務島的邊緣道路：沿六邊形邊緣一圈（中心線邊心距 ROAD_R，寬 3.2），橋接在每條邊的中央
-    const ROAD_R = 28.9, ROAD_HALF_W = 1.6;
-    // 各島邊緣道路中心線的邊心距：服務島與臺北市島較大（28.9），其餘地區島較小
-    const roadRadius = (m) => (m.type === 'region' && m.id !== 13) ? 22 * Math.cos(Math.PI / 6) - 2.28 : ROAD_R;
+    //   島的頂面邊緣有一圈往下收的圓角（大島寬 2.2、小島寬 1.54），平的範圍只到邊心距 28.98（大島）／17.51（小島）；
+    //   步道外緣必須收在平面之內（留 0.28），否則會懸在圓角上方、看起來凸出去
+    const ROAD_R = 27.1, ROAD_HALF_W = 1.6;
+    // 各島邊緣道路中心線的邊心距：服務島與臺北市島較大（27.1，外緣 28.7），其餘地區島較小（15.63，外緣 17.23）
+    const roadRadius = (m) => (m.type === 'region' && m.id !== 13) ? 22 * Math.cos(Math.PI / 6) - 3.42 : ROAD_R;
     function addHexRoad(cx, cz, topY, R = ROAD_R) {
       if (!WALK_MAT) {
         // 步道鋪面：米色系的六角形連鎖磚（和島的六邊形呼應），用世界座標貼圖，所以各島、各條邊的磚縫是連續的
@@ -4670,8 +4701,8 @@
         if (isRegion && radius < 36) r = 8 + rand() * 5.6;                    // 小的地區島：花草在道路內側
         else {
           // 服務島：花草沿著邊緣道路的內側排成一圈花帶（六邊形，邊心距約 26）
-          const d = ((a * 180 / Math.PI - 30) % 60 + 60) % 60 - 30;
-          r = (25.4 + rand() * 1.1) / Math.cos(d * Math.PI / 180);
+          const d = ((a * 180 / Math.PI - 30) % 60 + 90) % 60 - 30;     // 和最近一條邊的法線方向（30°＋60°k）差幾度（原本少加 30，算成和頂點的差，邊的中段會撒到步道上）
+          r = (23.4 + rand() * 1.2) / Math.cos(d * Math.PI / 180);       // 花草在步道內側（步道內緣的邊心距 25.5）
         }
         const fx = mod.gridPos.x + Math.cos(a) * r, fz = mod.gridPos.z + Math.sin(a) * r;
         flowerPlacements.push({ x: mod.gridPos.x + Math.cos(a) * r, y: topY, z: mod.gridPos.z + Math.sin(a) * r, s: 0.75 + rand() * 0.7, rot: rand() * 6.28, flower: rand() < 0.62, ci: Math.floor(rand() * 5) });
@@ -4762,7 +4793,7 @@
       }
 
       // 樹種在六角的角落（步道外側），灌木點綴在步道內側空位
-      const cornerR = radius * (isRegion && !big ? 0.6 : 0.72);    // 樹種在道路內側，連樹冠都不蓋到路面（道路內緣的角落：大島約 31.5、小島約 17.5）
+      const cornerR = radius * (isRegion && !big ? 0.56 : 0.69);    // 樹種在道路內側，連樹冠都不蓋到路面（道路內緣的角落：大島約 31.5、小島約 17.5）
       for (let i = 0; i < 6; i++) {
         if (mod.id === 8) continue;                                       // 新莊：球場占滿島中央，角落不種樹
         if (mod.id !== 0 && i % 2 === (mod.id % 2)) continue;
@@ -4775,7 +4806,7 @@
           const [x, z] = polar(pathR - 3.2, i * 60 + 15 + mod.id * 7);
           if (mod.id === 0 && Math.abs(x) < 23 && Math.abs(z) < 12) continue;
           if (mod.id === 0 && DOCTORS.some(d => z > d.pos.z && Math.hypot(x - d.pos.x, z - d.pos.z) < 10)) continue;   // 不擋住醫師公仔
-          if ([CALC_PROP, CVD_PROP, LIFT_PROP].some(p => mod.id === p.module && Math.hypot(x - p.x, z - p.z) < 5)) continue;   // 讓開小工具
+          if ([CALC_PROP, CVD_PROP, LIFT_PROP, GUIDE_PROP].some(p => mod.id === p.module && Math.hypot(x - p.x, z - p.z) < 5)) continue;   // 讓開小工具
           if (Math.abs(x) < 4.5 && z > 0) continue; // 讓開通往門口的岔路
           C.bush(x, z, 0.6 + Math.random() * 0.35);
         }
@@ -5243,7 +5274,7 @@
     const ROLES = {
       doctor:  { org: 'hospital', job: '醫師', badge: '醫師', icon: 'stethoscope', color: 0x4ade80, trait: '白色醫師袍、深色頭髮，頭上有姓名的名牌。' },
       rtw:     { org: 'company', job: '勞工', task: '職災復工', label: '勞工（職災復工中）', badge: '勞工', icon: 'accessibility', color: 0xf59e0b,
-                 trait: '橘色背心加黃色反光條、短髮、額頭纏著一圈白色繃帶，手上抱著橘黃色的資料箱。', desc: '因工作受傷或生病的勞工，正依照「職災勞工復工」的流程，從門診、復工評估走到復健。' },
+                 trait: '橘色背心加黃色反光條、短髮、額頭纏著一圈白色繃帶，手上抱著橘黃色的資料箱。', desc: '因工作受傷或生病的勞工，正依照「職災勞工復工」的流程，從門診、職能復健走到復工評估。' },
       occ:     { org: 'company', job: '勞工', task: '職業病認定', label: '勞工（職業病認定中）', badge: '勞工', icon: 'microscope', color: 0xa855f7,
                  trait: '紫色上衣、黃色安全帽，手上抱著紫色的資料箱。', desc: '懷疑疾病和工作有關的勞工，正依照「職業病認定」的流程到門診就醫，並進行工作環境的危害評估。' },
       ergo:    { org: 'company', job: '勞工', task: '人因性危害預防', label: '勞工（人因性危害預防中）', badge: '勞工', icon: 'activity', color: 0x06b6d4,
@@ -5557,7 +5588,7 @@
     // [島群] 服務島之間的橋：相鄰的服務島兩兩以低拱人行橋相連（表示服務範圍的地區島不架橋）
     // =============================================================
     const GLOW_LAMPS = [];                           // 橋頭與碼頭的燈：之後統一加上一圈微光
-    const BRIDGE_END_R = 30.5;                       // 橋頭在島上的位置（離島中心；島緣邊心距 31.18）
+    const BRIDGE_END_R = 28.7;                       // 橋頭在島上的位置（離島中心）：接在步道外緣，橋面蓋過島緣的圓角
     let _coreLinks = null;
     function coreLinks() {
       if (_coreLinks) return _coreLinks;
@@ -5667,7 +5698,7 @@
         tile.group.userData = ud;
         tile.group.traverse(child => {
           if (child.isMesh) {
-            if (child.userData.lift || child.userData.cvd || child.userData.calc) return;   // 融入造景的小工具：保留自己的標記（建立時已加入可點選清單）
+            if (child.userData.lift || child.userData.cvd || child.userData.calc || child.userData.guide) return;   // 融入造景的小工具：保留自己的標記（建立時已加入可點選清單）
             child.userData = Object.assign({}, child.userData, ud);
             pickables.push(child);
           }
@@ -5711,7 +5742,7 @@
             lines.forEach((l, k) => ctx.fillText(l, W / 2, H / 2 + (k - (lines.length - 1) / 2) * size * 1.18 + size * 0.04));
             return new THREE.CanvasTexture(cvs);
           });
-          const m = this.mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7 }), x, y, z, false); m.rotation.y = ry; m.userData.sign = true;
+          const m = this.mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -6 }), x, y, z, false); m.rotation.y = ry; m.userData.sign = true;
           const back = this.mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ color: bg, roughness: 0.7 }), x, y, z, false); back.rotation.y = ry + Math.PI;   // 背面：素色底板
           return m;
         },
@@ -6034,6 +6065,33 @@
         // 右塔頂的天線
         add(new THREE.CylinderGeometry(0.2, 0.36, 9, 6), metal, 19.6, TR + 1.1 + 4.5, -6);
 
+        // 指路牌「我該去哪裡？」：方形木柱加柱頭與底座；最上面是標題牌，下面六塊箭頭形的木牌各寫一種情況。點它會打開完整的清單
+        //   所有牌子都釘在木柱的「正面」（柱子不穿過牌子）；文字離牌面 0.03 並加深度偏移，遠看不會閃爍
+        {
+          const K = makeBuildKit(bGroup, baseTop), gx = GUIDE_PROP.x, gz = GUIDE_PROP.z, marks = [];
+          const woodM = new THREE.MeshStandardMaterial({ color: 0x8b6b4a, roughness: 0.85 }), plankM = new THREE.MeshStandardMaterial({ color: 0xf3ead8, roughness: 0.8 });
+          const navyM = new THREE.MeshStandardMaterial({ color: 0x1e3a5f, roughness: 0.7 });
+          K.mesh(rbox(1.2, 0.3, 1.2, 0.08), new THREE.MeshStandardMaterial({ color: 0xd9d4c8, roughness: 0.9 }), gx, 0.15, gz);      // 底座
+          K.mesh(rbox(0.36, 8.0, 0.36, 0.05), woodM, gx, 4.0, gz);                                                                    // 木柱
+          K.mesh(rbox(0.58, 0.2, 0.58, 0.05), woodM, gx, 8.05, gz); K.mesh(new THREE.SphereGeometry(0.21, 12, 8), woodM, gx, 8.33, gz); // 柱頭
+          const PZ = gz + 0.18 + 0.07;                    // 牌子的中心：貼在木柱正面（柱子半寬 0.18、牌子半厚 0.07）
+          K.mesh(rbox(4.6, 1.08, 0.14, 0.05), navyM, gx, 7.2, PZ);
+          marks.push(K.sign('我該去哪裡？', 4.2, 0.84, gx, 7.2, PZ + 0.1, '#1e3a5f', '#ffffff'));
+          // 箭頭形的木牌（尖端朝外）
+          const arrow = (dir) => { const sh = new THREE.Shape(); sh.moveTo(-0.34 * dir, -0.31); sh.lineTo(2.95 * dir, -0.31); sh.lineTo(3.42 * dir, 0); sh.lineTo(2.95 * dir, 0.31); sh.lineTo(-0.34 * dir, 0.31); sh.closePath();
+            const g = new THREE.ExtrudeGeometry(sh, { depth: 0.14, bevelEnabled: false }); g.translate(0, 0, -0.07); return g; };
+          const geoR = arrow(1), geoL = arrow(-1);
+          SITUATIONS.forEach((st, k) => {
+            const y = 6.15 - k * 0.8, side = k % 2 ? -1 : 1, hex = st.flow && SCENARIOS[st.flow] ? '#' + SCENARIOS[st.flow].color.toString(16).padStart(6, '0') : ((modById(st.module) || {}).color || '#475569');
+            K.mesh(side > 0 ? geoR : geoL, plankM, gx, y, PZ);
+            const dot = K.mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.05, 14), new THREE.MeshStandardMaterial({ color: hex, roughness: 0.5 }), gx + side * 0.02, y, PZ + 0.095, false); dot.rotation.x = Math.PI / 2;   // 釘在柱子位置的圓釘：顏色對應目的地
+            marks.push(K.sign(st.short, 2.5, 0.44, gx + side * 1.62, y, PZ + 0.1, '#f3ead8', '#1f2937'));
+          });
+          K.flush();
+          marks.forEach(m => markTool(m, 'guide'));
+          toolHitBox(bGroup, 'guide', gx, baseTop + 4.3, gz + 0.2, 7.6, 8.6, 2.4);
+        }
+
         logoImg.onload = () => { signRedraws.forEach(fn => fn()); dirty = true; };
         logoImg.src = TPH_LOGO_DATA;
 
@@ -6169,7 +6227,7 @@
         nightLinked.push({ apply: (n) => { glassM.emissiveIntensity = 0.9 * n; } });
 
       } else if (mod.id === 3) {
-        // 職業病與傷害診治：門診。後方是門診棟，左後是掛號櫃台，左前是有屋頂的候診長廊，右前是開放式的診間亭（診療桌、電腦、診療床）
+        // 職業病與傷害診治：門診。後方是門診棟，左後是掛號櫃台與職災權益諮詢櫃台，左前是有屋頂的候診長廊，右前是開放式的診間亭（診療桌、電腦、診療床）
         const K = makeBuildKit(bGroup, baseTop), FY = 0.14, L = STAGE_LOOKS;
         K.mesh(rbox(30, 0.14, 21, 0.4), new THREE.MeshStandardMaterial({ color: 0xdff1e4, roughness: 0.95 }), 0, 0.07, 4.5, false);
         const glassM = new THREE.MeshStandardMaterial({ color: 0x2c6b55, roughness: 0.2, metalness: 0.4, emissive: 0xffe6b8, emissiveIntensity: 0 });
@@ -6184,6 +6242,15 @@
         K.box(-12.7, FY + 2.75, -5.2, 0.2, 5.5, 0.2, 0x94a3b8); K.box(-8.1, FY + 2.75, -5.2, 0.2, 5.5, 0.2, 0x94a3b8); K.box(-10.4, FY + 5.6, -5.2, 5.6, 0.3, 2.6, 0x15803d);
         K.sign('掛號', 2.4, 0.9, -10.4, FY + 4.9, -4.2, '#15803d');
         const clerk = K.fig(L.medic, -10.4, -6.9, 0), regW = K.fig(L.checkup, -10.4, -2.6, Math.PI);
+        // 職災權益諮詢櫃台：說明職災保險的給付、補助與申請
+        const bx0 = -3.3, bz0 = -4.3;                     // 往前放一點，櫃台後面的人才不會頂到門診棟的雨遮
+        K.box(bx0, FY + 1.3, bz0, 4.4, 2.6, 1.5, 0xfdf6e3); K.box(bx0, FY + 2.66, bz0, 4.7, 0.14, 1.9, 0xb45309);
+        [-2.3, 2.3].forEach(dx => K.box(bx0 + dx, FY + 2.75, bz0, 0.2, 5.5, 0.2, 0x94a3b8)); K.box(bx0, FY + 5.6, bz0, 5.0, 0.3, 2.6, 0xb45309);
+        K.sign('職災權益諮詢', 4.0, 0.9, bx0, FY + 4.9, bz0 + 1.0, '#b45309');
+        K.sign('給付・補助・申請', 3.6, 0.62, bx0, FY + 1.5, bz0 + 0.77, '#fdf6e3', '#92400e');
+        K.box(bx0 + 3.2, FY + 1.2, bz0 + 0.3, 1.0, 2.4, 0.6, 0x94a3b8); [0xf59e0b, 0x38bdf8, 0x22c55e].forEach((c, k) => K.box(bx0 + 3.2, FY + 0.7 + k * 0.7, bz0 + 0.62, 0.8, 0.5, 0.06, c));   // 說明單張的架子
+        const benefit = K.fig(L.medic, bx0, bz0 - 1.7, 0), benW = K.fig(L.patient, bx0, bz0 + 2.6, Math.PI);
+        benefit.armR.rotation.x = -1.42;
         // 候診長廊：屋頂、長椅與候診的人
         [7.75, 11.45].forEach(z => K.box(-7.5, FY + 5.4, z, 13.6, 0.28, 0.3, 0x4d9f7a)); [-14.15, -0.85].forEach(x => K.box(x, FY + 5.4, 9.6, 0.3, 0.28, 4.0, 0x4d9f7a));
         for (let k2 = 1; k2 < 10; k2++) K.box(-14.15 + k2 * 1.33, FY + 5.55, 9.6, 0.14, 0.16, 4.3, 0x8ecbb0);   // 格柵屋頂：從上方看得到候診的人
@@ -6206,6 +6273,7 @@
           doc2.g.rotation.y = 0.1 * Math.max(0, Math.sin(t * 0.35)) ** 2;                    // 不時微微轉向勞工（幅度要小，手才不會掃到鍵盤）
           pat2.g.rotation.y = -Math.PI / 2 + Math.sin(t * 0.4 + 1) * 0.05;
           clerk.armR.rotation.x = -1.42 + Math.sin(t * 1.3) * 0.08;                            // 手在櫃台上方（不壓進櫃台）
+          benefit.armR.rotation.x = -1.42 + Math.sin(t * 1.1 + 2) * 0.08; benW.g.rotation.y = Math.PI + Math.sin(t * 0.35) * 0.08;
           waiters.forEach((w, k) => { w.g.rotation.y = Math.sin(t * 0.3 + k * 2.1) * 0.12; });   // 候診的人左右張望
         });
         nightLinked.push({ apply: (n) => { glassM.emissiveIntensity = 0.9 * n; } });
@@ -6469,7 +6537,7 @@
 
       } else if (mod.id === 7) {
         // 勞動能力減損鑑定：鑑定評估場。後方是有柱廊的鑑定中心；左側的評估亭裡量測關節活動度，右側是握力測試檯，
-        //   前方是有刻度的步行測試道，中央的桌上堆著鑑定的卷宗
+        //   前方是有刻度的步行測試道，中央的桌上是四疊卷宗，旁邊的告示牌寫著鑑定前要準備的四樣資料
         const K = makeBuildKit(bGroup, baseTop), FY = 0.14, L = STAGE_LOOKS;
         K.mesh(rbox(30, 0.14, 21, 0.4), new THREE.MeshStandardMaterial({ color: 0xe9e5df, roughness: 0.95 }), 0, 0.07, 4.5, false);
         const stoneM = new THREE.MeshStandardMaterial({ color: 0xebe5d9, roughness: 0.8 });
@@ -6492,7 +6560,11 @@
         noter.armL.rotation.x = -1.27;
         // 卷宗桌：鑑定報告與待審的資料
         K.box(0.4, FY + 2.3, -3.6, 4.4, 0.16, 1.8, 0x8b6b4a); [[-2, -0.7], [2, -0.7], [-2, 0.7], [2, 0.7]].forEach(([dx, dz]) => K.box(0.4 + dx, FY + 1.11, -3.6 + dz, 0.16, 2.22, 0.16, 0x6b4f35));
-        [[-1.2, 5], [0.0, 3], [1.3, 6]].forEach(([dx, n]) => { for (let k = 0; k < n; k++) K.box(0.4 + dx + (k % 2) * 0.06, FY + 2.47 + k * 0.17, -3.6, 1.0, 0.15, 1.3, k % 3 === 0 ? 0xd6b98c : 0xe8d9b8); });
+        // 四疊卷宗：對應鑑定前要準備的四樣資料（每疊最上面一本的顏色不同）
+        [[-1.5, 4, 0x38bdf8], [-0.5, 6, 0xf59e0b], [0.5, 3, 0x22c55e], [1.5, 5, 0xa78bfa]].forEach(([dx, n, top]) => { for (let k = 0; k < n; k++) K.box(0.4 + dx + (k % 2) * 0.05, FY + 2.47 + k * 0.17, -3.6, 0.85, 0.15, 1.3, k === n - 1 ? top : (k % 3 === 0 ? 0xd6b98c : 0xe8d9b8)); });
+        // 告示牌：鑑定前請準備
+        K.box(6.7, FY + 3.3, -5.5, 5.0, 3.9, 0.16, 0x44403c); [-2.2, 2.2].forEach(dx => K.box(6.7 + dx, FY + 0.7, -5.5, 0.2, 1.4, 0.2, 0x78716c));
+        K.sign('鑑定前請準備\n① 醫療狀態穩定\n② 完整病歷資料\n③ 職業與職務內容\n④ 日常生活功能', 4.7, 3.6, 6.7, FY + 3.3, -5.4, '#44403c', '#ffffff');
         K.box(2.4, FY + 2.52, -3.2, 0.4, 0.28, 0.4, 0xb91c1c);
         // 步行測試道：有刻度與起點、終點
         K.box(0, FY + 0.03, 11.6, 22, 0.05, 2.6, 0xfde68a); for (let k = 0; k <= 10; k++) K.box(-10 + k * 2, FY + 0.06, 11.6, 0.12, 0.02, k % 5 === 0 ? 2.6 : 1.3, 0x44403c);
@@ -6692,7 +6764,17 @@
         };
         [[-7.6, 0xf97316], [-6.4, 0xf97316], [-2.4, 0xfacc15], [0.4, 0xfb923c], [1.5, 0xfb923c]].forEach(([x, c]) => { onSlope(x, 0.55, 0.75, 7.6, c); [-0.42, 0.42].forEach(dx => onSlope(x + dx, 0.55, 0.1, 7.6, 0x64748b, 0.3)); });
         onSlope(-4.4, 0.52, 1.5, 7.2, 0xcbd5e1, 0.12);
-        const tube = K.mesh(new THREE.CylinderGeometry(0.55, 0.55, 9.6, 10), new THREE.MeshStandardMaterial({ color: 0x22c55e, roughness: 0.5 }), -10.1, 2.9, 2.2); tube.rotation.x = Math.PI / 2 - ang;
+        // 綠色的管狀溜滑梯：從坡頂左右彎曲地貼著斜坡滑下來，出口在坡腳的地面上
+        {
+          const TR = 0.55, slopeY = (z) => 5.2 * Math.max(0, Math.min(1, (7 - z) / 9));
+          const tubePts = [[-9.6, -2.6], [-9.6, -1.4], [-10.25, 0.4], [-8.95, 2.3], [-10.25, 4.2], [-9.0, 6.0], [-9.6, 7.6], [-9.6, 9.0]].map(([x, z]) => new THREE.Vector3(x, slopeY(z) + TR + 0.04, z));
+          const tubeM = new THREE.MeshStandardMaterial({ color: 0x22c55e, roughness: 0.45 });
+          K.mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(tubePts, false, 'centripetal'), 48, TR, 12, false), tubeM, 0, 0, 0);
+          const rim = (p, q) => { const r = K.mesh(new THREE.TorusGeometry(TR + 0.04, 0.09, 8, 18), new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.5 }), p.x, p.y, p.z, false); r.lookAt(bGroup.localToWorld(new THREE.Vector3(q.x, baseTop + q.y, q.z))); };
+          rim(tubePts[tubePts.length - 1], tubePts[tubePts.length - 2]); rim(tubePts[0], tubePts[1]);      // 出口與入口的圓框
+          K.box(-9.6, 5.3, -3.6, 2.2, 0.2, 1.6, 0xcbd5e1); [[-10.6, -4.3], [-8.6, -4.3], [-10.6, -2.9], [-8.6, -2.9]].forEach(([x, z]) => K.box(x, 5.95, z, 0.1, 1.3, 0.1, 0x94a3b8));   // 坡頂的入口平台與欄杆
+          K.box(-9.6, 0.05, 9.9, 2.2, 0.1, 1.4, 0x86efac);                                                 // 出口的緩衝墊
+        }
         [[-3.2, 9.4, 0xfacc15], [-0.2, 9.6, 0x38bdf8]].forEach(([x, z, c]) => K.mesh(new THREE.SphereGeometry(0.9, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, wireframe: false }), x, 0, z).scale.y = 0.7);
         // 前方草地上的綠色遮陽棚
         [-7.2, -4.4, 3.4, 6.2].forEach(x => { K.mesh(new THREE.ConeGeometry(1.5, 1.1, 4), new THREE.MeshStandardMaterial({ color: 0x2f9e6b, roughness: 0.7, flatShading: true }), x, 2.75, 10.4).rotation.y = Math.PI / 4; [[-0.9, -0.9], [0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]].forEach(([dx, dz]) => K.box(x + dx, 1.1, 10.4 + dz, 0.1, 2.2, 0.1, 0xe5e7eb)); });
@@ -7066,6 +7148,7 @@
           const t = (k + 0.5) / N * run, y = topY - (k + 0.5) / N * (topY - pierY);
           box(m.gridPos.x + ux * (apo + 1.4) + tx * t, y, m.gridPos.z + uz * (apo + 1.4) + tz * t, 2.6, 0.35, run / N + 0.25, Math.atan2(tx, tz), 0xc9a57b);
         }
+        { const r0 = roadRadius(m) + ROAD_HALF_W, r1 = apo + 2.7; box(m.gridPos.x + ux * (r0 + r1) / 2 + tx * 0.2, topY - 0.14, m.gridPos.z + uz * (r0 + r1) / 2 + tz * 0.2, 3.4, 0.3, r1 - r0, yaw, 0xd9d4c8); }   // 步道到階梯頂的平台
         const bx = m.gridPos.x + tx * run, bz = m.gridPos.z + tz * run;     // 階梯底端
         box(bx + ux * (apo + 1.6), pierY, bz + uz * (apo + 1.6), 3.2, 0.4, 3.4, yaw, 0xd9d4c8);          // 平台
         box(bx + ux * (apo + 8.2), pierY, bz + uz * (apo + 8.2), 3.4, 0.4, 10, yaw, 0xc9a57b);           // 棧橋
@@ -7102,7 +7185,7 @@
         if (reg.id === 8) {
           // 新莊：長橋。從服務島的邊緣直接架到新莊島，中段微微拱起，下方有橋墩
           const a = new THREE.Vector3(best.c.gridPos.x + cux * BRIDGE_END_R, cTop, best.c.gridPos.z + cuz * BRIDGE_END_R);
-          const b = new THREE.Vector3(reg.gridPos.x + rux * (rApo - 0.7), rTop, reg.gridPos.z + ruz * (rApo - 0.7));
+          const b = new THREE.Vector3(reg.gridPos.x + rux * (roadRadius(reg) + ROAD_HALF_W), rTop, reg.gridPos.z + ruz * (roadRadius(reg) + ROAD_HALF_W));   // 接在地區島步道的外緣
           const len = a.distanceTo(b), SEG = Math.max(8, Math.round(len / 5)), W = 3.6;
           const at = (u, v) => v.lerpVectors(a, b, u).setY(a.y + (b.y - a.y) * u + 0.22 + 2.4 * Math.sin(Math.PI * u));
           const p0 = new THREE.Vector3(), p1 = new THREE.Vector3();
@@ -7354,6 +7437,18 @@
         }
       });
 
+      // 指路牌的名牌
+      {
+        const m0 = modById(GUIDE_PROP.module);
+        if (m0 && SITUATIONS.length) makePin('island-pin', `
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900/90 backdrop-blur-md border border-brand-400/40 text-brand-200 text-[11px] font-bold shadow-lg">
+            ${svgIcon('search')}
+            <span>我該去哪裡？</span>
+          </div>`, '我該去哪裡？：依你遇到的情況，找到對應的服務',
+          () => { sound.playClick(); openModal(situationModal); track('island_situation_open', { from: 'pin' }); },
+          new THREE.Vector3(m0.gridPos.x + GUIDE_PROP.x, tileTop(m0) + GUIDE_PROP.y, m0.gridPos.z + GUIDE_PROP.z), { guide: true });
+      }
+
       DOCTORS.forEach(doc => {
         const theme = doc.id === 'tsai' ? 'border-brand-400/60 text-brand-300' : 'border-amber-400/60 text-amber-300';
         makePin('island-pin', `
@@ -7459,8 +7554,8 @@
       const order = pinElements.filter(p => p.visible).sort((a, b) => (pinPriority(a) - pinPriority(b)) || (a.depth - b.depth));
       for (const item of order) {
         // 小工具與人物的名牌永遠顯示：不因為和別的名牌重疊而讓位，也不會把島名擠掉
-        if (item.doctor || item.person || item.calc || item.lift || item.cvd) {
-          if (item.cluttered) { item.anchor.classList.remove('pin-hidden'); item.cluttered = false; }
+        if (item.doctor || item.person || item.calc || item.lift || item.cvd || item.guide) {
+          if (item.cluttered) { item.anchor.classList.remove('pin-squeezed'); item.cluttered = false; }
           continue;
         }
         if (!item.w) {
@@ -7470,9 +7565,10 @@
         }
         const box = { l: item.sx - item.w / 2 - 3, r: item.sx + item.w / 2 + 3, t: item.sy - item.h - 3, b: item.sy + 3 };
         const clash = kept.some(k => box.l < k.r && box.r > k.l && box.t < k.b && box.b > k.t);
-        if (!clash) kept.push(box);
+        // 和別的名牌重疊時不再隱藏，而是縮成只剩圖示（鏡頭拉近、不重疊了就恢復完整名稱）
+        kept.push(clash ? { l: item.sx - 15, r: item.sx + 15, t: item.sy - 28, b: item.sy + 3 } : box);
         if (item.cluttered !== clash) {
-          item.anchor.classList.toggle('pin-hidden', clash);
+          item.anchor.classList.toggle('pin-squeezed', clash);
           item.cluttered = clash;
         }
       }
@@ -8198,9 +8294,9 @@
       const hits = raycaster.intersectObjects(pickables, false);
       // 小工具站在島上，射線會先碰到那座島的點選範圍；所以只要前面沒有「別座島」擋著，就算點到小工具
       for (let i = 0; i < hits.length; i++) {
-        const ud = hits[i].object.userData, flag = ud.lift ? 'lift' : ud.cvd ? 'cvd' : ud.calc ? 'calc' : null;
+        const ud = hits[i].object.userData, flag = ud.lift ? 'lift' : ud.cvd ? 'cvd' : ud.calc ? 'calc' : ud.guide ? 'guide' : null;
         if (flag) { return { [flag]: true }; }
-        const own = [LIFT_PROP, CVD_PROP, CALC_PROP].some(p => ud.module && ud.module.id === p.module);
+        const own = [LIFT_PROP, CVD_PROP, CALC_PROP, GUIDE_PROP].some(p => ud.module && ud.module.id === p.module);
         if (!own) break;
       }
       for (let i = 0; i < hits.length; i++) {
@@ -8277,7 +8373,7 @@
       if (camera.position.y < 2.5) camera.position.y = 2.5;
       const dist = camera.position.distanceTo(t);
       // 近看時把近裁切面拉近（不會切掉眼前的物件）；遠看時維持原本的 4，保留深度精度
-      const pinS = 1 - 0.2 * THREE.MathUtils.smoothstep(dist, 280, 700);                    // 鏡頭拉遠時名牌再縮小一些，減少重疊
+      const pinS = 1 - 0.1 * THREE.MathUtils.smoothstep(dist, 280, 700);                    // 鏡頭拉遠時名牌再縮小一些，減少重疊
       if (Math.abs(pinS - _pinScale) > 0.01) { _pinScale = pinS; document.getElementById('pins-container').style.setProperty('--pin-s', pinS.toFixed(2)); }
       // 手機：鏡頭拉遠時名牌只留圖示（文字太小又互相重疊），拉近才顯示完整名稱
       const compact = viewW() < 768 && dist > 300;
@@ -8305,7 +8401,7 @@
         if (!lastHover) return;
         const overCanvas = lastHover.target === canvas;
         const any = overCanvas ? pickAt(lastHover.clientX, lastHover.clientY) : null;
-        const tool = any && (any.lift ? 'lift' : any.cvd ? 'cvd' : any.calc ? 'calc' : null);
+        const tool = any && (any.lift ? 'lift' : any.cvd ? 'cvd' : any.calc ? 'calc' : any.guide ? 'guide' : null);
         const hit = CANVAS_PICK ? any : null;
         canvas.style.cursor = (hit || tool || (overCanvas && pickAgent(lastHover.clientX, lastHover.clientY))) ? 'pointer' : '';
         if (tool !== hoveredTool) { hoveredTool = tool; linkPin(tool ? (p => p[tool]) : null); }   // 滑到小工具上：它的名牌跟著亮起來
@@ -8331,7 +8427,7 @@
       if (person) { selectAgent(person); return; }
       // [小工具] 融入造景的三個工具可以直接點：搬紙箱的勞工、行事曆、桌上的衛教模型
       const hit = pickAt(e.clientX, e.clientY);
-      const isTool = hit && (hit.lift || hit.cvd || hit.calc);
+      const isTool = hit && (hit.lift || hit.cvd || hit.calc || hit.guide);
       // [介面] 建築與島本身不再觸發點選：要看詳情請點名牌（避免拖曳、探索時誤觸）
       if (!hit || (!CANVAS_PICK && !isTool)) return;
       lastSelectAt = performance.now();
@@ -8343,6 +8439,10 @@
       } else if (hit.cvd) {
         sound.playClick();
         openCvdTool('island');
+      } else if (hit.guide) {
+        sound.playClick();
+        openModal(situationModal);
+        track('island_situation_open', { from: 'signpost' });
       } else if (hit.calc) {
         sound.playClick();
         openModal(calcModal);
@@ -8492,6 +8592,7 @@
     }
 
     function selectModule(mod) {
+      if (mod && mod.type === 'region') { selectRegionNode(mod); return; }   // 地區島用自己的說明卡
       track('island_select', { item_type: 'service', item_id: mod.id, item_name: mod.name });
       if (!camera) { selectedModule = mod; openDrawer(mod); return; } // 無 3D 備援模式
       if (tourActive) endNarrativeTour(true, false);
@@ -8723,6 +8824,7 @@
       document.getElementById('drawerIcon').innerHTML = svgIcon(mod.icon, 'icon-lg');
       document.getElementById('drawerBadge').textContent = mod.badge;
       document.getElementById('drawerTitle').textContent = mod.name;
+      { const inj = document.getElementById('drawerInjuryTel'), first = ((CONTACT && CONTACT.injuryModules) || []).includes(mod.id); const tel = inj && inj.parentElement.querySelector('a[data-contact="tel"]'); if (inj && tel) { if (first) tel.before(inj); else tel.after(inj); } }   // 職災業務的島：職災窗口排在前面
       document.getElementById('drawerOfficialName').textContent = mod.officialName;
       document.getElementById('drawerDesc').textContent = mod.desc;
 
@@ -8784,7 +8886,26 @@
     const toolsModal = document.getElementById('toolsModal');
     const liftModal = document.getElementById('liftModal');
     const cvdModal = document.getElementById('cvdModal');
-    const ALL_MODALS = [doctorsModal, marketModal, historyModal, calcModal, contactModal, toolsModal, liftModal, cvdModal];
+    const situationModal = document.getElementById('situationModal');
+    const ALL_MODALS = [doctorsModal, marketModal, historyModal, calcModal, contactModal, toolsModal, liftModal, cvdModal, situationModal];
+    // 「我該去哪裡？」的清單：點一個情況，就亮起對應的服務路徑，或飛到對應的島
+    (() => {
+      const ul = document.getElementById('situationList');
+      SITUATIONS.forEach((st, k) => {
+        const li = document.createElement('li'), btn = document.createElement('button');
+        const dest = st.flow && SCENARIOS[st.flow] ? `服務路徑：${SCENARIOS[st.flow].name}` : (modById(st.module) ? modById(st.module).name : '');
+        btn.type = 'button'; btn.className = 'w-full text-left bg-slate-800/70 hover:bg-slate-700/70 border border-white/10 rounded-2xl p-4 flex items-start gap-3 transition';
+        btn.innerHTML = `<span class="w-9 h-9 shrink-0 rounded-xl bg-brand-500/15 text-brand-300 flex items-center justify-center" aria-hidden="true">${svgIcon(st.icon)}</span><span class="min-w-0"><span class="block text-sm font-bold text-white"></span><span class="block text-xs text-slate-300 mt-1"></span><span class="block text-[11px] text-brand-300 mt-1"></span></span>`;
+        const sp = btn.lastElementChild.children; sp[0].textContent = st.text; sp[1].textContent = st.hint; sp[2].textContent = (dest ? `帶你去 → ${dest}` : '') + (st.contact === 'injury' && CONTACT && CONTACT.injuryPhoneText ? `｜職災業務窗口：${CONTACT.injuryPhoneText.replace(/^.*分機\s*/, '分機 ')}` : '');
+        btn.addEventListener('click', () => {
+          sound.playChime(); closeModal(situationModal);
+          if (st.flow && SCENARIOS[st.flow]) setActiveFlow(st.flow); else if (modById(st.module)) selectModule(modById(st.module));
+          track('island_situation', { index: k, target: st.flow || ('module-' + st.module) });
+        });
+        li.appendChild(btn); ul.appendChild(li);
+      });
+      document.getElementById('situationBtn').addEventListener('click', () => { sound.playClick(); openModal(situationModal); track('island_situation_open', { from: 'button' }); });
+    })();
 
     // 諮詢管道：以資料檔為準套用到所有按鈕（HTML 內已有預設網址，資料檔沒載入時仍可使用）
     // 量測頁首實際高度，讓服務路徑列、地區卡片、巡航橫幅排在它下方（手機頁首會因螢幕寬度換行）
@@ -8798,10 +8919,10 @@
 
     function applyContactLinks() {
       if (!CONTACT) return;
-      const href = { form: CONTACT.formUrl, line: CONTACT.lineUrl, booking: CONTACT.bookingUrl, email: CONTACT.email && `mailto:${CONTACT.email}`, tel: CONTACT.tel && `tel:${CONTACT.tel}` };
+      const href = { form: CONTACT.formUrl, line: CONTACT.lineUrl, booking: CONTACT.bookingUrl, email: CONTACT.email && `mailto:${CONTACT.email}`, tel: CONTACT.tel && `tel:${CONTACT.tel}`, injuryTel: CONTACT.injuryTel && `tel:${CONTACT.injuryTel}` };
       document.querySelectorAll('[data-contact]').forEach(a => { if (href[a.dataset.contact]) a.href = href[a.dataset.contact]; });
       document.querySelectorAll('[data-email-text]').forEach(el => { if (CONTACT.email) el.textContent = CONTACT.email; });
-      const text = { phone: CONTACT.phoneText, address: CONTACT.address, serviceArea: CONTACT.serviceArea };
+      const text = { phone: CONTACT.phoneText, injuryPhone: CONTACT.injuryPhoneText, address: CONTACT.address, serviceArea: CONTACT.serviceArea };
       document.querySelectorAll('[data-contact-text]').forEach(el => { if (text[el.dataset.contactText]) el.textContent = text[el.dataset.contactText]; });
     }
     applyContactLinks();
@@ -9638,7 +9759,7 @@
           const introPending = readPref(INTRO_KEY) !== '1';
           setTimeout(() => {
             if (introPending) { if (!tourActive) showIntro(0); }
-            else showToast('歡迎瀏覽臺北醫院職業醫學科服務導覽');
+            else showToast('職場健康，職醫把關｜歡迎瀏覽臺北醫院職業醫學科');
           }, 2200);
         }, Math.max(0, 900 - (performance.now() - t0)));
       }));
