@@ -439,7 +439,15 @@
   
     /* [介面] 名牌縮小，不擋住島嶼的操作；不隨鏡頭遠近消失（只有彼此重疊時，次要的那個會暫時讓位） */
     .island-pin > div, .region-pin > div { transform: scale(calc(0.82 * var(--pin-s, 1))); transform-origin: 50% 100%; }
-    @media (max-width: 767px) { .island-pin > div, .region-pin > div { transform: scale(calc(0.78 * var(--pin-s, 1))); } }
+    @media (max-width: 767px) {
+      .island-pin > div, .region-pin > div { transform: scale(calc(0.92 * var(--pin-s, 1))); }
+      /* 拉遠時：服務島、小工具、人物的名牌只留圖示 */
+      .pins-compact .island-pin > div { transform: scale(0.9); padding: 5px 6px; gap: 3px; border-radius: 9999px; }
+      .pins-compact .island-pin > div > span:last-child { display: none; }
+      .pins-compact .region-pin > div { transform: scale(0.82); }
+      /* 服務路徑清單：實心底色，後面的名牌不會透出來 */
+      #flowList { background: rgba(2, 6, 23, 0.9); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding: 8px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35); }
+    }
   
     /* [人物] 人物說明：桌機從右側滑出，手機從底部升起（不擋住正在跟隨的人物） */
     #personDrawer { position: absolute; top: 0; right: 0; height: 100%; width: 340px; max-width: 100%; z-index: 30; display: flex; flex-direction: column;
@@ -4006,7 +4014,9 @@
 
     function updateTipCloud() {
       if (!tipEls.size || !camera || !agents) return;
-      const blocked = tourActive || isIntroOpen() || ALL_MODALS.some(m => !m.classList.contains('hidden'));
+      const small = viewW() < 768;
+      const blocked = tourActive || isIntroOpen() || ALL_MODALS.some(m => !m.classList.contains('hidden'))
+        || (small && (activeFlow || selectedAgent || isDrawerOpen() || !document.getElementById('regionHudCard').classList.contains('hidden')));   // 手機畫面小，有說明打開時不再疊上泡泡
       const maxDist = viewW() < 768 ? 420 : 640;       // 鏡頭離得太遠時不顯示，避免全景時泡泡蓋住島
       agents.list.forEach(a => {
         if (a.type !== 'doctor') return;
@@ -4027,7 +4037,8 @@
           const below = above - (st.el.firstChild.offsetHeight || 80) < 130;
           st.el.classList.toggle('below', below);
           const y = below ? pin.sy + 24 : above;
-          st.el.style.transform = `translate3d(${pin.sx.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+          const bx = THREE.MathUtils.clamp(pin.sx, 128, Math.max(128, viewW() - 128));       // 泡泡最寬 240，左右不超出畫面
+          st.el.style.transform = `translate3d(${bx.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
         }
         if (show !== st.on) { st.on = show; st.el.classList.toggle('show', show); }
       });
@@ -8268,10 +8279,14 @@
       // 近看時把近裁切面拉近（不會切掉眼前的物件）；遠看時維持原本的 4，保留深度精度
       const pinS = 1 - 0.2 * THREE.MathUtils.smoothstep(dist, 280, 700);                    // 鏡頭拉遠時名牌再縮小一些，減少重疊
       if (Math.abs(pinS - _pinScale) > 0.01) { _pinScale = pinS; document.getElementById('pins-container').style.setProperty('--pin-s', pinS.toFixed(2)); }
+      // 手機：鏡頭拉遠時名牌只留圖示（文字太小又互相重疊），拉近才顯示完整名稱
+      const compact = viewW() < 768 && dist > 300;
+      if (compact !== _pinCompact) { _pinCompact = compact; document.getElementById('pins-container').classList.toggle('pins-compact', compact); pinElements.forEach(p2 => { p2.w = 0; }); }
       const near = THREE.MathUtils.clamp(dist * 0.045, 0.8, 4);
       if (Math.abs(camera.near - near) > 0.05) { camera.near = near; camera.updateProjectionMatrix(); }
     }
 
+    let _pinCompact = false;
     function onPointerDown(e) {
       pointerDownPos.x = e.clientX;
       pointerDownPos.y = e.clientY;
@@ -8418,16 +8433,54 @@
     }
 
     // 直式螢幕（手機）水平視角較窄，總覽時把鏡頭拉遠一些，周圍的服務地區才不會跑出畫面
+    // 取景：把鏡頭放在 (dirX, dirZ) 這個方位、仰角由 elev（每單位水平距離的高度）決定，
+    //   調整距離與注視點，讓 mods 這幾座島剛好落在畫面的 rect 範圍內（rect 用畫面比例表示：l、r、t、b 都是 0～1）
+    const _fitCam = { cam: null, v: new THREE.Vector3() };
+    function fitView(mods, dirX, dirZ, elev, rect, lookY = 18) {
+      const tmp = _fitCam.cam || (_fitCam.cam = new THREE.PerspectiveCamera()); tmp.fov = camera.fov; tmp.aspect = viewW() / viewH(); tmp.near = 1; tmp.far = 6000; tmp.updateProjectionMatrix();
+      const pts = []; mods.forEach(m => { const r = m.type === 'region' ? 20 : 34; for (let k = 0; k < 6; k++) pts.push(new THREE.Vector3(m.gridPos.x + Math.cos(k * Math.PI / 3) * r, lookY, m.gridPos.z + Math.sin(k * Math.PI / 3) * r)); });
+      const cx = mods.reduce((a, m) => a + m.gridPos.x, 0) / mods.length, cz = mods.reduce((a, m) => a + m.gridPos.z, 0) / mods.length;
+      const L = rect.l * 2 - 1, R = rect.r * 2 - 1, T = 1 - rect.t * 2, B = 1 - rect.b * 2, v = _fitCam.v;
+      const look = new THREE.Vector3(), cam = new THREE.Vector3();
+      let dist = 160, fwd = 0, side = 0;
+      for (let it = 0; it < 36; it++) {
+        look.set(cx + dirX * fwd + dirZ * side, lookY, cz + dirZ * fwd - dirX * side);
+        cam.set(look.x + dirX * dist, lookY + dist * elev, look.z + dirZ * dist);
+        tmp.position.copy(cam); tmp.lookAt(look); tmp.updateMatrixWorld(true);
+        let x0 = 9, x1 = -9, y0 = 9, y1 = -9;
+        pts.forEach(p => { v.copy(p).project(tmp); x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); });
+        const scale = Math.max((x1 - x0) / (R - L), (y1 - y0) / (T - B));
+        dist = THREE.MathUtils.clamp(dist * THREE.MathUtils.clamp(scale, 0.75, 1.35), 70, 760);
+        fwd += ((T + B) / 2 - (y0 + y1) / 2) * dist * 0.3;                  // 內容太低：注視點往鏡頭這邊移，內容就會往上
+        side += ((x0 + x1) / 2 - (L + R) / 2) * dist * 0.3 * tmp.aspect;    // 內容偏右：注視點往右移，內容就會往左
+      }
+      return { cam, look };
+    }
+    const isPortrait = () => viewW() / viewH() < 0.8;
+    // 全景：橫式用固定的機位；直式（手機）改成讓八座服務島剛好填滿標頭與工具列之間的範圍
+    let _ovFit = null, _ovKey = '';
+    function overviewFit() {
+      const key = viewW() + 'x' + viewH();
+      if (!_ovFit || _ovKey !== key) {
+        const t = OVERVIEW_TARGET_POS, c = OVERVIEW_CAMERA_POS, h = Math.hypot(c.x - t.x, c.z - t.z);
+        _ovFit = fitView(ISLAND_MODULES.filter(m => m.type !== 'region'), (c.x - t.x) / h, (c.z - t.z) / h, (c.y - t.y) / h, { l: 0.04, r: 0.96, t: 0.26, b: 0.8 }, 10);
+        _ovKey = key;
+      }
+      return _ovFit;
+    }
     function overviewCameraPos() {
-      const aspect = viewW() / viewH();
-      const k = aspect < 1 ? 1 + (1 - aspect) * 0.9 : 1;
+      if (camera && isPortrait()) { const f = overviewFit(); return { x: f.cam.x, y: f.cam.y, z: f.cam.z }; }
       const t = OVERVIEW_TARGET_POS, c = OVERVIEW_CAMERA_POS;
-      return { x: t.x + (c.x - t.x) * k, y: t.y + (c.y - t.y) * k, z: t.z + (c.z - t.z) * k };
+      return { x: c.x, y: c.y, z: c.z };
+    }
+    function overviewTargetPos() {
+      if (camera && isPortrait()) { const f = overviewFit(); return { x: f.look.x, y: f.look.y, z: f.look.z }; }
+      return OVERVIEW_TARGET_POS;
     }
 
     function flyToOverview(duration = 1400) {
       isTopDownView = false;
-      flyCameraTo(overviewCameraPos(), OVERVIEW_TARGET_POS, duration);
+      flyCameraTo(overviewCameraPos(), overviewTargetPos(), duration);
     }
 
     function shiftForSidePanel(lookTarget, camTarget, amount) {
@@ -8878,14 +8931,9 @@
           const cz = mods.reduce((a, m) => a + m.gridPos.z, 0) / mods.length;
           // 各島的造景都朝正前方，所以固定從前方偏右看；距離與高度依這條路徑涵蓋的範圍調整，整條路徑都在畫面裡
           const dir = new THREE.Vector2(Math.cos(65 * Math.PI / 180), Math.sin(65 * Math.PI / 180));
-          const span = Math.max(...mods.map(m => Math.hypot(m.gridPos.x - cx, m.gridPos.z - cz)));
-          // 直式螢幕拉遠；手機的路徑說明在畫面下方，注視點往鏡頭方向移，讓路徑出現在畫面上半部
-          const aspect = viewW() / viewH();
-          const k = aspect < 1 ? 1 + (1 - aspect) * 1.1 : 1;
-          const mobile = viewW() < 768;
-          const look = new THREE.Vector3(cx + (mobile ? dir.x * 45 : 0), 18, cz + (mobile ? dir.y * 45 : 0));
-          const cam = new THREE.Vector3(cx + dir.x * (96 + span * 0.85) * k, (78 + span * 0.5) * k, cz + dir.y * (96 + span * 0.85) * k);
-          shiftForSidePanel(look, cam, -26); // 左側有路徑說明面板，畫面往右讓一點
+          // 手機：路徑說明在畫面下方，路徑要落在標頭與說明之間；桌機：清單與說明在左側，路徑落在右邊
+          const fit = fitView(mods, dir.x, dir.y, 0.74, viewW() < 768 ? { l: 0.05, r: 0.95, t: 0.24, b: 0.53 } : { l: 0.47, r: 0.97, t: 0.16, b: 0.86 });
+          const cam = fit.cam, look = fit.look;
           flyCameraTo(cam, look);
         }
       }
@@ -9612,7 +9660,7 @@
         const ov = overviewCameraPos();
         camera.position.set(ov.x * 1.9, ov.y * 2.4, ov.z * 1.9);
         controls.update();
-        flyCameraTo(ov, OVERVIEW_TARGET_POS, 2600);
+        flyCameraTo(ov, overviewTargetPos(), 2600);
       }
       markActive();
     }
