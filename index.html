@@ -4931,20 +4931,91 @@
     }
 
     // [人物] 髮型與帽子：走動的居民（實例化零件）與造景人物（合併幾何）共用同一組形狀
-    //   頭頂的半球（cap）是頭髮或安全帽的本體；下面這些是加在上面的配件，位置是相對於人物腳底的偏移
-    //   helmet 安全帽＝帽簷加頂部的稜；bob 中長髮＝蓋到脖子的後髮；bun 包頭＝後上方的髮髻；
-    //   nurse 護士帽＝髮髻加白色的帽子；bandage 繃帶＝額頭一圈白色；short 短髮與 bald 光頭沒有配件
-    const HEAD_OFFSETS = { brim: [0, 4.1, 0], hairBack: [0, 3.74, 0], bun: [0, 4.62, -0.6], ncap: [0, 5.02, 0.16], bandage: [0, 4.27, 0] };   // 護士帽要高過頭髮才看得到
-    const HEAD_PARTS = { helmet: ['brim'], short: [], bob: ['hairBack'], bun: ['bun'], nurse: ['bun', 'ncap'], bandage: ['bandage'], bald: [] };
-    const HEAD_SHAPES = {
-      brim: () => { const T = (x, y, z) => new THREE.Matrix4().makeTranslation(x, y, z);
-        return [[new THREE.CylinderGeometry(1.0, 1.0, 0.09, 18), T(0, 0.02, 0)], [new THREE.BoxGeometry(0.62, 0.09, 0.36), T(0, 0.02, 1.02)], [new THREE.BoxGeometry(0.18, 0.1, 1.2), T(0, 0.79, 0)]]; },
-      hairBack: () => [[new THREE.CylinderGeometry(0.87, 0.8, 1.0, 14, 1, false, Math.PI / 2, Math.PI), null]],
-      bun: () => [[new THREE.SphereGeometry(0.32, 10, 8), null]],
-      ncap: () => [[new THREE.BoxGeometry(1.02, 0.36, 0.5), null], [new THREE.BoxGeometry(0.74, 0.22, 0.42), new THREE.Matrix4().makeTranslation(0, 0.27, 0)]],
-      bandage: () => [[new THREE.CylinderGeometry(0.845, 0.845, 0.26, 16), null]]
+    //   每個零件的座標都是相對於人物腳底（頭的球心在 y 3.95、半徑 0.78；眼睛在 y 4.02、z 0.71），一個零件只有一種顏色
+    //   helmet 安全帽＝帽殼＋三條稜與帽簷（深一階的顏色）；sidePart 旁分（醫師）；short 平頭（其他男性）；
+    //   bob 中長髮；bun 包頭＝往後梳＋髮髻＋紅色髮圈；nurse 護士帽＝包頭＋白色帽子；bandage 繃帶＝平頭＋額頭一圈白布、後面打結；bald 光頭（島主）
+    //   頭髮用球面的一段組成：phi 0 在 +x、PI/2 在正面（+z）；theta 0 在頭頂。改造型時先在 head-lab 比較頁試，再搬進來
+    const HEAD_C = 3.95, H_FRONT = Math.PI / 2, H_BACK = -Math.PI / 2;
+    const hShell = (r, phiC, phiW, t0, t1, ws = 20, hs = 7) => new THREE.SphereGeometry(r, ws, hs, phiC - phiW / 2, phiW, t0, t1 - t0);
+    const hM = (...ms) => ms.reduce((acc, m) => acc.multiply(m), new THREE.Matrix4());
+    const hT = (x, y, z) => new THREE.Matrix4().makeTranslation(x, y, z), hS = (x, y, z) => new THREE.Matrix4().makeScale(x, y, z);
+    const hRX = (a) => new THREE.Matrix4().makeRotationX(a), hRY = (a) => new THREE.Matrix4().makeRotationY(a), hRZ = (a) => new THREE.Matrix4().makeRotationZ(a);
+    const HEAD_PARTS = {
+      helmet: ['helmet', 'helmetTrim'], sidePart: ['sidePart'], short: ['crew'], bob: ['bob'],
+      bun: ['bunHair', 'bun', 'scrunchie'], nurse: ['bunHair', 'bun', 'ncap'], bandage: ['crew', 'bandage'], bald: []
     };
-    const headPartColor = (part, capColor) => (part === 'ncap' || part === 'bandage') ? '#ffffff' : capColor;
+    const HEAD_SHAPES = {
+      // 安全帽：比頭大一圈的帽殼
+      helmet: () => [[hShell(0.86, H_FRONT, 2 * Math.PI, 0, Math.PI / 2, 22, 8), hM(hT(0, HEAD_C + 0.27, 0), hS(1, 0.92, 1.04))]],
+      // 安全帽的稜（中央一條、兩側各一條，順著帽殼的弧度）與帽簷（一圈，前面較長並微微上翹）
+      helmetTrim: () => {
+        const R = 0.86, Y = HEAD_C + 0.27, sy = 0.92;
+        const ridge = (x, tube) => [new THREE.TorusGeometry(Math.sqrt(R * R - x * x), tube, 5, 18, Math.PI), hM(hT(x, Y, 0), hS(1, sy, 1), hRY(Math.PI / 2))];
+        return [ridge(0, 0.085), ridge(0.36, 0.05), ridge(-0.36, 0.05),
+          [new THREE.CylinderGeometry(R + 0.1, R + 0.12, 0.08, 24), hT(0, Y + 0.02, 0)],
+          [new THREE.CylinderGeometry(R + 0.12, R + 0.12, 0.08, 16, 1, false, -Math.PI / 2.6, Math.PI / 1.3), hM(hT(0, Y + 0.02, 0), hRX(-0.22), hS(1, 1, 1.14))]];
+      },
+      // 旁分（醫師）：兩側後面剃短；分線右邊往右梳的髮量、前額稍微蓬起、分線左邊較薄的一片；短鬢角
+      sidePart: () => {
+        const R = 0.82, Y = HEAD_C + 0.03;
+        return [
+          [hShell(R, H_FRONT, 2 * Math.PI, 0, 0.3 * Math.PI), hT(0, Y, 0)],
+          [hShell(R, H_BACK, 1.44 * Math.PI, 0.28 * Math.PI, 0.56 * Math.PI), hT(0, Y, 0)],
+          [new THREE.SphereGeometry(1, 16, 8, 0, 2 * Math.PI, 0, Math.PI / 2), hM(hT(0.16, Y + 0.5, -0.02), hRZ(-0.2), hS(0.66, 0.36, 0.8))],
+          [new THREE.SphereGeometry(1, 12, 7), hM(hT(0.18, Y + 0.56, 0.5), hRX(-0.5), hRZ(-0.25), hS(0.5, 0.2, 0.3))],
+          [new THREE.SphereGeometry(1, 12, 6, 0, 2 * Math.PI, 0, Math.PI / 2), hM(hT(-0.5, Y + 0.48, 0.02), hRZ(0.55), hS(0.3, 0.16, 0.66))],
+          [new THREE.BoxGeometry(0.07, 0.26, 0.15), hM(hT(0.79, HEAD_C + 0.12, 0.12), hRY(0.15))],
+          [new THREE.BoxGeometry(0.07, 0.26, 0.15), hM(hT(-0.79, HEAD_C + 0.12, 0.12), hRY(-0.15))]
+        ];
+      },
+      // 平頭（醫師以外的男性、職災勞工）：整顆剃短、頭頂略平；顏色比原本的髮色淡一點（headPartColor）
+      crew: () => {
+        const R = 0.83, F = hM(hT(0, HEAD_C + 0.1, 0), hS(1, 0.86, 1.02));
+        return [
+          [hShell(R, H_FRONT, 2 * Math.PI, 0, 0.32 * Math.PI, 22, 8), F],
+          [hShell(R, H_BACK, 1.44 * Math.PI, 0.3 * Math.PI, 0.64 * Math.PI, 22, 8), F],
+          [new THREE.BoxGeometry(0.07, 0.22, 0.14), hM(hT(0.775, HEAD_C + 0.12, 0.12), hRY(0.15))],
+          [new THREE.BoxGeometry(0.07, 0.22, 0.14), hM(hT(-0.775, HEAD_C + 0.12, 0.12), hRY(-0.15))]
+        ];
+      },
+      // 中長髮：頭頂＋整齊的瀏海＋蓋到下巴高度的外層（前面開口露出臉）＋稍微外翻的髮尾
+      bob: () => {
+        const tb = 0.74 * Math.PI;
+        return [
+          [hShell(0.88, H_FRONT, 2 * Math.PI, 0, 0.3 * Math.PI), hT(0, HEAD_C, 0)],
+          [hShell(0.9, H_FRONT, 0.7 * Math.PI, 0.18 * Math.PI, 0.36 * Math.PI), hT(0, HEAD_C, 0)],
+          [hShell(0.88, H_BACK, 1.36 * Math.PI, 0.28 * Math.PI, tb, 22, 8), hT(0, HEAD_C, 0)],
+          [new THREE.CylinderGeometry(0.88 * Math.sin(tb), 0.92 * Math.sin(tb), 0.08, 22, 1, false, Math.PI - 0.68 * Math.PI, 1.36 * Math.PI), hT(0, HEAD_C + 0.88 * Math.cos(tb), 0)]
+        ];
+      },
+      // 包頭：頭髮往後梳（後面蓋多一點）
+      bunHair: () => [
+        [hShell(0.83, H_FRONT, 2 * Math.PI, 0, 0.3 * Math.PI), hT(0, HEAD_C, 0)],
+        [hShell(0.84, H_BACK, 1.3 * Math.PI, 0.26 * Math.PI, 0.58 * Math.PI), hT(0, HEAD_C, 0)]
+      ],
+      bun: () => [[new THREE.SphereGeometry(0.36, 12, 8), hT(0, HEAD_C + 0.55, -0.66)]],
+      scrunchie: () => [[new THREE.TorusGeometry(0.22, 0.06, 5, 12), hM(hT(0, HEAD_C + 0.47, -0.52), hRX(-0.9))]],
+      // 護士帽：前面一片往上翻的弧形帽緣、後面平貼的帽頂
+      ncap: () => {
+        const sh = new THREE.Shape(), a0 = -Math.PI / 2 - 1.15, a1 = -Math.PI / 2 + 1.15;
+        sh.absarc(0, 0, 0.7, a0, a1, false); sh.absarc(0, 0, 0.6, a1, a0, true);
+        const band = new THREE.ExtrudeGeometry(sh, { depth: 0.34, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 1, curveSegments: 12 });
+        return [[band, hM(hT(0, HEAD_C + 0.5, 0.04), hRX(-0.2), hRX(-Math.PI / 2))],
+          [new THREE.SphereGeometry(0.56, 14, 6, 0, 2 * Math.PI, 0, Math.PI / 2), hM(hT(0, HEAD_C + 0.7, -0.12), hS(1.05, 0.42, 0.95))]];
+      },
+      // 繃帶：額頭一圈，後腦勺打一個結、垂兩條布尾
+      bandage: () => [
+        [new THREE.CylinderGeometry(0.85, 0.85, 0.26, 18), hT(0, HEAD_C + 0.32, 0)],
+        [new THREE.SphereGeometry(0.12, 8, 6), hT(0, HEAD_C + 0.32, -0.86)],
+        [new THREE.BoxGeometry(0.1, 0.32, 0.05), hM(hT(-0.08, HEAD_C + 0.12, -0.88), hRZ(0.35))],
+        [new THREE.BoxGeometry(0.1, 0.28, 0.05), hM(hT(0.08, HEAD_C + 0.14, -0.88), hRZ(-0.35))]
+      ]
+    };
+    const HEAD_OFFSETS = Object.fromEntries(Object.keys(HEAD_SHAPES).map(p => [p, [0, 0, 0]]));   // 形狀本身已含位置
+    // 同一個顏色調亮或調暗（安全帽的稜與帽簷、平頭的髮色）
+    const shadeHex = (hex, k) => { const c = new THREE.Color(hex), hsl = {}; c.getHSL(hsl); c.setHSL(hsl.h, hsl.s, THREE.MathUtils.clamp(hsl.l + k, 0, 1)); return '#' + c.getHexString(); };
+    const headPartColor = (part, capColor) => (part === 'ncap' || part === 'bandage') ? '#ffffff' : part === 'scrunchie' ? '#e11d48'
+      : part === 'helmetTrim' ? shadeHex(capColor, -0.08) : part === 'crew' ? shadeHex(capColor, 0.06) : capColor;
 
     const _ped = { base: new THREE.Matrix4(), local: new THREE.Matrix4(), out: new THREE.Matrix4(), q: new THREE.Quaternion(), p: new THREE.Vector3(), s: new THREE.Vector3(), up: new THREE.Vector3(0, 1, 0) };
     // [人物] 所有人物共用的五官與四肢：眼睛兩顆、手臂（袖子同上衣顏色）、手掌（膚色）
@@ -5091,14 +5162,14 @@
       });
       const legGeo = new THREE.BoxGeometry(0.42, 1.3, 0.42); legGeo.translate(0, -0.65, 0);
       const geos = { body: new THREE.CylinderGeometry(0.7, 0.85, 2.1, 10), head: new THREE.SphereGeometry(0.78, 12, 10),
-                     cap: new THREE.SphereGeometry(0.82, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), legL: legGeo, legR: legGeo, box: new THREE.BoxGeometry(1.25, 0.95, 0.95),
+                     legL: legGeo, legR: legGeo, box: new THREE.BoxGeometry(1.25, 0.95, 0.95),
                      band: new THREE.CylinderGeometry(0.8, 0.86, 0.3, 10), pack: new THREE.BoxGeometry(1.0, 1.25, 0.55) };   // 反光條（職災勞工）、背包（來訪民眾）
       Object.assign(geos, personLimbGeos());
       // 髮型與帽子的配件（每個人只顯示自己用到的那幾件）
       Object.keys(HEAD_SHAPES).forEach(p => { geos[p] = mergeColored(HEAD_SHAPES[p]().map(([g2, m2]) => [g2, '#ffffff', m2])); });
       list.forEach((a, n) => {
         if (a.role === 'onsite') a.cap = '#4a3426';      // 醫院特約的護理師：棕色頭髮，白色的是護士帽
-        if (!a.head) a.head = a.role === 'owner' ? 'bald' : a.type === 'doctor' ? 'short' : a.role === 'onsite' ? 'nurse' : a.role === 'nurseCorp' ? 'bob'
+        if (!a.head) a.head = a.role === 'owner' ? 'bald' : a.type === 'doctor' ? 'sidePart' : a.role === 'onsite' ? 'nurse' : a.role === 'nurseCorp' ? 'bob'
           : (a.cap === '#facc15' || a.cap === '#2563eb') ? 'helmet' : ['short', 'bob', 'bun'][n % 3];
       });
       // 眼鏡（只有林醫師戴）：兩個鏡框加鼻樑
@@ -5262,13 +5333,13 @@
       const look = ROUTE_LOOKS[a.key] || ['#94a3b8', '#facc15', 'helmet'];
       a.head = look[2]; a.cap = look[1];
       M.body.setColorAt(idx, c.set(look[0]).convertSRGBToLinear());
-      [M.cap, M.brim, M.hairBack, M.bun].forEach(m => { m.setColorAt(idx, c.set(look[1]).convertSRGBToLinear()); m.instanceColor.needsUpdate = true; });
+      Object.keys(HEAD_SHAPES).forEach(p => { const m = M[p]; m.setColorAt(idx, c.set(headPartColor(p, look[1])).convertSRGBToLinear()); m.instanceColor.needsUpdate = true; });   // 髮型與帽子跟著換色
       M.armL.setColorAt(idx, c.set(look[0]).convertSRGBToLinear()); M.armR.setColorAt(idx, c);          // 袖子跟著上衣換色
       M.box.setColorAt(idx, c.set(full.color).convertSRGBToLinear());
       M.legL.setColorAt(idx, c.set(a.pants).convertSRGBToLinear()); M.legR.setColorAt(idx, c);
-      [M.body, M.cap, M.box, M.armL, M.armR, M.legL, M.legR].forEach(m => { m.instanceColor.needsUpdate = true; });
+      [M.body, M.box, M.armL, M.armR, M.legL, M.legR].forEach(m => { m.instanceColor.needsUpdate = true; });
     }
-    const AGENT_PARTS = Object.assign({ body: [0, 2.35, 0], head: [0, 3.95, 0], cap: [0, 4.1, 0], legL: [-0.3, 1.35, 0], legR: [0.3, 1.35, 0], box: [0, 2.55, 1.0], band: [0, 2.5, 0], pack: [0, 2.55, -0.95], glasses: [0, 4.02, 0.82] }, HEAD_OFFSETS, FACE_LIMBS);
+    const AGENT_PARTS = Object.assign({ body: [0, 2.35, 0], head: [0, 3.95, 0], legL: [-0.3, 1.35, 0], legR: [0.3, 1.35, 0], box: [0, 2.55, 1.0], band: [0, 2.5, 0], pack: [0, 2.55, -0.95], glasses: [0, 4.02, 0.82] }, HEAD_OFFSETS, FACE_LIMBS);
     function updateAgents(dt) {
       if (!agents) return;
       const T = _ped;
@@ -5325,7 +5396,7 @@
         const carrying = a.type === 'route' || a.type === 'onsite';             // 手上有資料箱的人，雙手往前抱著
         Object.entries(AGENT_PARTS).forEach(([part, off]) => {
           if (personLimbLocal(T, part, off, swing, carrying)) { agents.meshes[part].setMatrixAt(n, T.out.multiplyMatrices(T.base, T.local)); return; }
-          if ((part === 'box' && a.type !== 'route' && a.type !== 'onsite') || (part === 'band' && a.role !== 'rtw' && a.role !== 'safety') || (part === 'pack' && a.role !== 'visitor') || (part === 'cap' && a.head === 'bald') || (HEAD_SHAPES[part] && !(HEAD_PARTS[a.head] || []).includes(part)) || (part === 'glasses' && !(a.doc && a.doc.id === 'lin'))) T.local.makeScale(0, 0, 0);
+          if ((part === 'box' && a.type !== 'route' && a.type !== 'onsite') || (part === 'band' && a.role !== 'rtw' && a.role !== 'safety') || (part === 'pack' && a.role !== 'visitor') || (HEAD_SHAPES[part] && !(HEAD_PARTS[a.head] || []).includes(part)) || (part === 'glasses' && !(a.doc && a.doc.id === 'lin'))) T.local.makeScale(0, 0, 0);
           else T.local.identity();
           T.local.setPosition(off[0], off[1], off[2]);
           agents.meshes[part].setMatrixAt(n, T.out.multiplyMatrices(T.base, T.local));
@@ -5935,7 +6006,6 @@
       const torsoGeo = cache(`t|${look.shirt}|${look.cap}|${head}|${look.band ? 1 : 0}|${lite}`, () => {
         const parts = [[new THREE.CylinderGeometry(0.7, 0.85, 2.1, 12), look.shirt, T(0, 2.35 - HIP, 0)], [new THREE.SphereGeometry(0.78, 14, 10), '#f3cfae', T(0, 3.95 - HIP, 0)]];
         if (look.band) parts.push([new THREE.CylinderGeometry(0.8, 0.86, 0.3, 12), '#fde047', T(0, 2.5 - HIP, 0)]);
-        if (head !== 'bald') parts.push([new THREE.SphereGeometry(0.82, 14, 6, 0, Math.PI * 2, 0, Math.PI / 2), look.cap, T(0, 4.1 - HIP, 0)]);
         (HEAD_PARTS[head] || []).forEach(p => { const o = HEAD_OFFSETS[p]; HEAD_SHAPES[p]().forEach(([g, m]) => parts.push([g, headPartColor(p, look.cap), m ? T(o[0], o[1] - HIP, o[2]).multiply(m) : T(o[0], o[1] - HIP, o[2])])); });
         if (!lite) [-0.27, 0.27].forEach(x => parts.push([new THREE.SphereGeometry(0.1, 8, 6), '#1f2937', T(x, 4.02 - HIP, 0.71)]));
         return mergeColored(parts);
