@@ -20,14 +20,14 @@
   <meta property="og:description" content="以 3D 島嶼介紹臺北醫院職業醫學科的門診與企業臨場健康服務。">
   <meta property="og:site_name" content="衛福部臺北醫院 職業醫學科">
   <meta property="og:url" content="https://nursingwork.github.io/tph-oh-island/">
-  <meta property="og:image" content="https://nursingwork.github.io/tph-oh-island/assets/og-cover.jpg">
+  <meta property="og:image" content="https://nursingwork.github.io/tph-oh-island/assets/og-cover.jpg?v=20261120">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="職醫守護島 ｜ 衛生福利部臺北醫院 職業醫學科">
   <meta name="twitter:description" content="以 3D 島嶼介紹臺北醫院職業醫學科的門診與企業臨場健康服務。">
-  <meta name="twitter:image" content="https://nursingwork.github.io/tph-oh-island/assets/og-cover.jpg">
+  <meta name="twitter:image" content="https://nursingwork.github.io/tph-oh-island/assets/og-cover.jpg?v=20261120">
 
   <!-- Google Analytics 4（評估 ID：G-D66JKDGD3F）：統計匿名的瀏覽數據；程式裡的 track() 會送出點擊事件
        不開啟廣告個人化與 Google 信號；互動工具輸入的健康數值不會送出 -->
@@ -36,6 +36,8 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
+    // 使用者在「隱私權說明」裡選擇不提供瀏覽統計時，停止傳送（設定存在這台裝置的瀏覽器）
+    try { if (localStorage.getItem('tph-ohs-noanalytics') === '1') window['ga-disable-G-D66JKDGD3F'] = true; } catch (e) { /* 隱私模式 */ }
     gtag('config', 'G-D66JKDGD3F', { allow_google_signals: false, allow_ad_personalization_signals: false });
   </script>
 
@@ -64,7 +66,7 @@
         "url": "https://nursingwork.github.io/tph-oh-island/",
         "sameAs": ["https://www.tph.mohw.gov.tw/?aid=60&pid=225"],
         "logo": "https://nursingwork.github.io/tph-oh-island/assets/logo-mark.png",
-        "image": "https://nursingwork.github.io/tph-oh-island/assets/og-cover.jpg",
+        "image": "https://nursingwork.github.io/tph-oh-island/assets/og-cover.jpg?v=20261120",
         "telephone": "+886-2-2276-5566",
         "email": "om@tph.mohw.gov.tw",
         "address": { "@type": "PostalAddress", "streetAddress": "思源路127號（醫療大樓門診區）", "addressLocality": "新莊區", "addressRegion": "新北市", "addressCountry": "TW" },
@@ -449,6 +451,19 @@
       #flowList { background: rgba(2, 6, 23, 0.9); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding: 8px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35); }
     }
   
+    /* 帶著情況的勞工：頭上的黃色小問號；鏡頭拉遠（.pins-far）時縮成小黃點 */
+    .resident-pin { display: block; padding: 6px; margin: 0; background: none; border: 0; font: inherit; transform: translate(-50%, -100%); pointer-events: auto; cursor: pointer; user-select: none; transition: transform 0.25s ease; }
+    .resident-pin:hover { transform: translate(-50%, -108%) scale(1.12); }
+    .resident-pin:focus-visible { outline: 2px solid #facc15; outline-offset: 2px; border-radius: 9999px; }
+    .resident-q { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 9999px; background: #facc15; color: #1f2937; font-size: 15px; font-weight: 900; line-height: 1; border: 2px solid rgba(15, 23, 42, 0.85); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45); transition: width 0.25s ease, height 0.25s ease, font-size 0.25s ease, border-width 0.25s ease; }
+    .resident-q.seen { background: #4ade80; color: #052e16; }
+    .resident-q.seen .icon { width: 13px; height: 13px; stroke-width: 3; }
+    .pins-far .resident-q { width: 9px; height: 9px; font-size: 0; border-width: 1px; }
+    .pins-far .resident-q .icon { display: none; }
+    @media (prefers-reduced-motion: reduce) { .resident-pin, .resident-q { transition: none; } }
+    .person-voice { margin: 0; padding: 10px 12px; border-left: 3px solid #facc15; border-radius: 0 12px 12px 0; background: rgba(250, 204, 21, 0.08); }
+    .person-voice::before { content: '「'; }
+    .person-voice::after { content: '」'; }
     /* 名牌和別的名牌重疊時：只留圖示（不消失） */
     .pin-squeezed .island-pin > div > span:last-child, .pin-squeezed .region-pin > div > span:last-child { display: none; }
     .pin-squeezed .island-pin > div, .pin-squeezed .region-pin > div { padding: 5px 6px; gap: 3px; border-radius: 9999px; }
@@ -521,6 +536,8 @@
     <symbol id="i-heart-pulse" viewBox="0 0 24 24"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" /> <path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" /></symbol>
     <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></symbol>
+    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" /></symbol>
     <symbol id="i-lightbulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></symbol>
     <symbol id="i-music" viewBox="0 0 24 24"><path d="M21 16V3a1 1 0 0 0-1.28-.96l-10 2.917a1 1 0 0 0-.72.96V19" /> <circle cx="18" cy="16" r="3" /> <circle cx="6" cy="19" r="3" /></symbol>
@@ -665,6 +682,7 @@
           <div id="routeTitle" class="text-sm font-extrabold text-white"></div>
           <div id="routeAudience" class="text-[10px] text-slate-400"></div>
         </div>
+        <button id="routeCopyLink" type="button" class="shrink-0 px-2 py-1 rounded-lg text-[10px] font-bold text-slate-300 hover:text-white bg-slate-800/80 border border-white/10 flex items-center gap-1" title="複製這條路徑的直達連結"><svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg>複製連結</button>
       </div>
       <ol id="routeSteps" class="space-y-1.5"></ol>
       <p id="routeLoopNote" class="hidden text-[10px] text-slate-400 mt-2">完成一輪後回到第一站，進入下一年度。</p>
@@ -773,6 +791,7 @@
           <h2 id="drawerTitle" class="text-xl font-extrabold text-white">模組名稱</h2>
         </div>
       </div>
+      <button id="drawerCopyLink" type="button" aria-label="複製這座島的直達連結" title="複製這座島的直達連結" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition flex ml-auto mr-1"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg></button>
       <button id="closeDrawerBtn" type="button" aria-label="關閉詳情" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition flex"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
     </div>
 
@@ -864,6 +883,35 @@
         </div>
       </div>
       <ul id="situationList" class="flex flex-col gap-2"></ul>
+    </div>
+  </div>
+
+  <!-- 隱私權說明（初稿：請院方確認是否需要依醫院統一的格式調整） -->
+  <div id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle" class="modal fixed inset-0 bg-black/60 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div class="glass-morphism w-full max-w-xl max-h-[90vh] overflow-y-auto no-scrollbar rounded-3xl p-6 md:p-8 relative border border-white/20">
+      <button type="button" data-close aria-label="關閉" class="absolute top-6 right-6 text-slate-400 hover:text-white flex"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
+      <div class="flex items-center gap-3.5 mb-5 pr-8">
+        <div class="w-12 h-12 shrink-0 rounded-2xl bg-brand-500/20 text-brand-300 flex items-center justify-center border border-brand-500/30" aria-hidden="true"><svg class="icon icon-lg" aria-hidden="true" focusable="false"><use href="#i-shield-check"></use></svg></div>
+        <div><h2 id="privacyModalTitle" class="text-xl font-extrabold text-white">隱私權說明</h2><p class="text-xs text-slate-400 mt-0.5">職醫守護島（衛生福利部臺北醫院 職業醫學科）</p></div>
+      </div>
+      <div class="space-y-5 text-sm text-slate-300 leading-relaxed">
+        <section><h3 class="text-sm font-extrabold text-brand-300 mb-1.5">我們收集什麼</h3>
+          <p>本網站使用 Google Analytics 收集<strong class="text-white">匿名的瀏覽統計</strong>，用來了解哪些服務說明最常被查看、哪些地方需要改善：</p>
+          <ul class="list-disc pl-5 mt-1.5 space-y-1 text-xs"><li>瀏覽的頁面，以及點選了哪些島、服務路徑、互動工具</li><li>在「服務清單」裡輸入的搜尋關鍵字（請不要在搜尋欄輸入個人資料）</li><li>裝置與瀏覽器的類型、螢幕大小</li><li>大約的所在國家或城市（不是精確位置）</li></ul>
+          <p class="mt-1.5 text-xs text-slate-400">已關閉 Google 信號與廣告個人化，統計資料不用於廣告。</p></section>
+        <section><h3 class="text-sm font-extrabold text-brand-300 mb-1.5">我們不收集什麼</h3>
+          <p>本網站沒有會員或登入功能，不收集姓名、電話、電子郵件、病歷或其他可以識別個人的資料。互動工具（如心血管風險、搬抬演示、臨場次數試算）輸入的數字只在你的瀏覽器裡計算，不會傳送出去。</p></section>
+        <section><h3 class="text-sm font-extrabold text-brand-300 mb-1.5">存在你瀏覽器裡的設定</h3>
+          <p>為了記住你的偏好（例如是否看過導覽、背景音樂與畫面特效的開關），網站會在你的瀏覽器裡存放少量設定。這些設定只留在你的裝置上，不會傳送給任何人；清除瀏覽器資料即可刪除。</p></section>
+        <section><h3 class="text-sm font-extrabold text-brand-300 mb-1.5">外部連結</h3>
+          <p>網站裡的諮詢表單（Google 表單）、官方 LINE、預約掛號系統等，屬於外部服務，各自依其隱私權政策處理資料。</p></section>
+        <section class="rounded-2xl bg-slate-800/70 border border-white/10 p-4">
+          <h3 class="text-sm font-extrabold text-white mb-1">不提供瀏覽統計</h3>
+          <p class="text-xs text-slate-400">關閉後，這台裝置的這個瀏覽器將不再傳送瀏覽統計。</p>
+          <button id="analyticsToggle" type="button" aria-pressed="false" class="mt-3 px-4 py-2 rounded-xl text-xs font-bold border transition"></button>
+        </section>
+        <p class="text-xs text-slate-400">有任何疑問，請來信 <a data-contact="email" href="mailto:om@tph.mohw.gov.tw" class="underline text-brand-300" data-email-text>om@tph.mohw.gov.tw</a>。</p>
+      </div>
     </div>
   </div>
 
@@ -1175,7 +1223,7 @@
             <a data-contact="booking" href="https://nreg.tph.mohw.gov.tw/OReg/OpoDoctorsVisitListPage?sectcategory=%E5%85%A7%E7%A7%91%E7%B3%BB&amp;sectid=0106&amp;sectname=%E8%81%B7%E6%A5%AD%E9%86%AB%E5%AD%B8%E7%A7%91&amp;showcd=N" target="_blank" rel="noopener noreferrer" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-xs text-slate-200 text-center transition">🩺 職業醫學科門診掛號 <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg></a>
             <a data-contact="email" data-contact-label="email" href="mailto:om@tph.mohw.gov.tw" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-xs text-slate-200 text-center transition break-all"><span class="inline-flex items-center gap-1.5"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg><span data-email-text>om@tph.mohw.gov.tw</span></span></a>
           </div>
-          <p class="text-[11px] text-slate-500 text-center mt-3">企業臨場服務：<span data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span>｜院址：<span data-contact-text="address">新北市新莊區思源路127號（醫療大樓門診區）</span><span class="block mt-1">職災勞工權益、勞動能力減損鑑定：<a data-contact="injuryTel" href="tel:+886222765566,3240" class="underline decoration-dotted hover:text-white" data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</a></span><span class="block mt-1">勞工諮詢申訴專線 <a href="tel:1955" class="font-bold hover:text-white">1955</a>｜安心專線 <a href="tel:1925" class="font-bold hover:text-white">1925</a></span></p>
+          <p class="text-[11px] text-slate-500 text-center mt-3"><a href="#privacy" data-open-privacy class="underline decoration-dotted hover:text-white">隱私權說明</a>｜企業臨場服務：<span data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span>｜院址：<span data-contact-text="address">新北市新莊區思源路127號（醫療大樓門診區）</span><span class="block mt-1">職災勞工權益、勞動能力減損鑑定：<a data-contact="injuryTel" href="tel:+886222765566,3240" class="underline decoration-dotted hover:text-white" data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</a></span><span class="block mt-1">勞工諮詢申訴專線 <a href="tel:1955" class="font-bold hover:text-white">1955</a>｜安心專線 <a href="tel:1925" class="font-bold hover:text-white">1925</a></span></p>
         </section>
       </div>
     </div>
@@ -1742,8 +1790,18 @@
       <button id="personClose" type="button" aria-label="關閉人物說明" class="w-9 h-9 shrink-0 rounded-xl glass-morphism flex items-center justify-center text-slate-300 hover:text-white"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
     </div>
     <div class="p-4 sm:p-5 space-y-4 overflow-y-auto text-sm text-slate-200">
+      <div id="personSituation" class="hidden space-y-3">
+        <blockquote id="personVoice" class="person-voice text-white font-medium leading-relaxed"></blockquote>
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 mb-1">可以怎麼幫他</div>
+          <p id="personHint" class="text-slate-300 leading-relaxed"></p>
+          <p id="personContact" class="hidden text-[13px] text-amber-300 mt-1 leading-relaxed"></p>
+        </div>
+        <button id="personGoBtn" type="button" class="w-full px-4 py-2.5 rounded-xl bg-brand-500/90 hover:bg-brand-400 text-slate-950 font-bold text-sm">帶我去看看</button>
+        <p class="text-xs text-slate-400 text-center">遇到的是別的情況？<button id="personSituationList" type="button" class="underline underline-offset-2 text-brand-300 hover:text-brand-200">打開「我該去哪裡？」</button></p>
+      </div>
       <p id="personDesc" class="leading-relaxed"></p>
-      <div>
+      <div id="personDoingBlock">
         <div class="text-[11px] font-bold text-slate-400 mb-1">現在正在做什麼</div>
         <p id="personDoing" class="text-white font-medium leading-relaxed"></p>
         <p id="personCarry" class="text-slate-300 mt-1 leading-relaxed"></p>
@@ -1775,6 +1833,9 @@
         <span class="flex-1">文字版服務說明與常見問題</span>
         <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg>
       </a>
+      <a href="#privacy" data-open-privacy class="mt-2 flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] text-slate-400 hover:text-white transition">
+        <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-shield-check"></use></svg><span>隱私權說明</span>
+      </a>
     </div>
   </aside>
 
@@ -1785,7 +1846,7 @@
       <h2 id="introTitle" class="text-lg font-extrabold text-white mb-2"></h2>
       <p id="introBody" class="text-sm text-slate-300 leading-relaxed"></p>
       <div class="flex justify-between items-center mt-6">
-        <button id="introSkip" type="button" class="px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-white transition">略過</button>
+        <span class="flex items-center gap-1"><button id="introSkip" type="button" class="px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-white transition">略過</button><a href="#privacy" data-open-privacy class="px-2 py-2 text-[11px] text-slate-500 hover:text-white underline decoration-dotted">隱私權說明</a></span>
         <button id="introNext" type="button" class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-brand-500 to-medblue-600 hover:from-brand-400 hover:to-medblue-500 transition">下一步</button>
       </div>
     </div>
@@ -1860,6 +1921,7 @@
     const SCENARIOS = DATA_OK ? (DATA.scenarios || {}) : {};
     const SCENARIO_GROUPS = DATA_OK ? (DATA.scenarioGroups || {}) : {};
     const SITUATIONS = DATA_OK ? (DATA.situations || []) : [];
+    const LINK_KEYS = DATA_OK ? (DATA.linkKeys || {}) : {};
     const CALC_RULES = DATA_OK ? DATA.calcRules : null;
     const INTRO_STEPS = DATA_OK ? (DATA.introSteps || []) : [];
     const TIPS = DATA_OK ? (DATA.tips || []) : [];
@@ -2247,7 +2309,7 @@
           if (playing) { playing = 0; }
           else playing = state.l >= 0.99 ? -1 : 1;    // 已經站直 → 放下；否則 → 搬起
           updatePlayButton();
-          track('island_lift_play', { stsq: Math.round(state.s), h_cm: Math.round(state.H) });
+          track('island_lift_play');
         });
         state.s = +posture.value; state.H = +dist.value; state.w = +weight.value;
         body.sex = $('liftSex').value === 'f' ? 'f' : 'm';
@@ -4963,6 +5025,11 @@
           pos: new THREE.Vector3()
         });
       }
+      // 帶著情況的勞工：從遊蕩的勞工裡依序挑（桌機 5 位、手機 3 位），每位對應「我該去哪裡？」裡一項有 voice 的情況；外觀與走法不變
+      const voiced = SITUATIONS.map((st, k) => ({ st, k })).filter(x => x.st && x.st.voice).slice(0, IS_COARSE_POINTER ? 3 : 5);
+      list.filter(a => a.type === 'wander' && a.role === 'worker').forEach((a, n) => {
+        if (voiced[n]) { a.situation = voiced[n].st; a.sitIndex = voiced[n].k; }
+      });
       // 固定路線的角色：沿著相鄰的島依序走、每座停一下，走完再從頭
       //   醫院特約的護理人員不在這裡：他們跑的就是「臨場服務年度循環」這條服務路徑（從臺北醫院出發、做完回醫院）
       //   島主（彩蛋）：每次進站約一成機率出現，巡視全島
@@ -5326,7 +5393,7 @@
       public:   { text: '一般民眾', icon: 'user-round', cls: 'bg-violet-500/15 text-violet-300 border-violet-400/30' }
     };
     const JOB_ICONS = { '醫師': 'stethoscope', '護理師': 'heart-pulse', '安全衛生人員': 'hard-hat', '勞工': 'wrench' };
-    function renderPersonTags(R) {
+    function renderPersonTags(R, a) {
       const ul = document.getElementById('personTags'); ul.replaceChildren();
       const add = (kind, text, icon, cls) => {
         const li = document.createElement('li'); li.className = `${TAG_BASE} ${cls}`;
@@ -5339,18 +5406,43 @@
       if (org) add('所屬', org.text, org.icon, org.cls);
       if (R.job) add('角色', R.job, JOB_ICONS[R.job] || 'user-round', 'bg-slate-700/60 text-slate-100 border-white/15');
       if (R.task) add('進行中的服務', R.task, 'activity', 'bg-sky-500/15 text-sky-300 border-sky-400/30');
+      if (a && a.situation) add('狀態', '有疑問', 'circle-help', 'bg-yellow-400/15 text-yellow-300 border-yellow-300/30');
+    }
+    // 帶著情況的勞工：抽屜內容（voice、可以怎麼幫他、職災窗口）
+    function renderSituation(a, R) {
+      const st = a.situation, $ = (id) => document.getElementById(id);
+      $('personTitle').textContent = R.label;
+      $('personSub').textContent = st.short;
+      $('personVoice').textContent = st.voice;
+      $('personHint').textContent = st.hint;
+      const c = $('personContact'), showTel = st.contact === 'injury' && CONTACT && CONTACT.injuryPhoneText;
+      c.classList.toggle('hidden', !showTel);
+      if (showTel && !c.childNodes.length) {
+        c.append('職災業務窗口：');
+        const link = document.createElement('a');
+        link.className = 'underline decoration-dotted hover:text-white';
+        link.textContent = CONTACT.injuryPhoneText;
+        if (CONTACT.injuryTel) link.href = `tel:${CONTACT.injuryTel}`;
+        c.appendChild(link);
+      }
     }
     function renderPerson() {
       const a = selectedAgent;
       if (!a) return;
       const R = ROLES[a.role] || ROLES.worker, $ = (id) => document.getElementById(id);
       $('personIcon').innerHTML = svgIcon(R.icon, 'icon-lg');
-      renderPersonTags(R);
+      renderPersonTags(R, a);
       $('personTrait').textContent = R.trait;
-      $('personTraitBlock').classList.toggle('hidden', a.role === 'owner');     // 島主是彩蛋，不公開辨認方式
+      const sit = !!a.situation;
+      $('personTraitBlock').classList.toggle('hidden', a.role === 'owner' || sit);     // 島主是彩蛋，不公開辨認方式
+      $('personSituation').classList.toggle('hidden', !sit);
+      $('personDesc').classList.toggle('hidden', sit);
+      $('personDoingBlock').classList.toggle('hidden', sit);
       const ol = $('personRoute'); ol.replaceChildren();
       $('personDoctorsBtn').classList.toggle('hidden', a.type !== 'doctor');
-      if (a.type === 'doctor') {
+      if (sit) {
+        renderSituation(a, R);
+      } else if (a.type === 'doctor') {
         $('personTitle').textContent = a.doc.name;
         $('personSub').textContent = `${a.doc.title}｜${a.doc.badge}`;
         $('personDesc').textContent = a.doc.desc;
@@ -5427,6 +5519,7 @@
       selectedAgent = a;
       sound.playClick();
       renderPerson();
+      if (a.situation) markResidentSeen(a);
       personDrawer.inert = false; personDrawer.classList.add('open');
       clearInterval(personTimer); personTimer = setInterval(renderPerson, 600);
       if (!personRing) {
@@ -5448,6 +5541,21 @@
       track('island_select', { item_type: 'person', item_id: a.type === 'doctor' ? a.doc.id : a.role });
       if (a.role === 'owner') track('island_easter_egg', { egg: 'owner' });
       dirty = true;
+    }
+    // 帶著情況的勞工：看過的人，頭上的問號換成綠色小勾（只記在這次瀏覽，重新整理就恢復）；全部看完跳一則提示
+    function markResidentSeen(a) {
+      if (a.seen) return;
+      a.seen = true;
+      if (a.pin) {
+        const q = a.pin.el.querySelector('.resident-q');
+        if (q) { q.classList.add('seen'); q.innerHTML = svgIcon('check', 'icon-sm'); }
+        a.pin.el.setAttribute('aria-label', `勞工（已看過）：${a.situation.short}。再看一次他遇到的情況`);
+      }
+      const all = agents ? agents.list.filter(x => x.situation) : [];
+      if (all.length && all.every(x => x.seen)) {
+        setTimeout(() => showToast('島上每位有疑問的勞工，你都認識了！還有其他情況，可以按「我該去哪裡？」看看。'), 900);
+        track('island_situation_all_seen', { count: all.length });
+      }
     }
     function closePersonDrawer() {
       if (!selectedAgent) return false;
@@ -7471,6 +7579,13 @@
         ownerAgent.pin = pinElements[pinElements.length - 1];
       }
 
+      // 帶著情況的勞工：頭上一直顯示黃色小問號（鏡頭拉遠時縮成小黃點），點了打開人物說明
+      if (agents) agents.list.filter(a => a.situation).forEach(a => {
+        makePin('resident-pin', '<span class="resident-q" aria-hidden="true">?</span>', `有疑問的勞工：${a.situation.short}。點開看看他遇到的情況`,
+          () => selectAgent(a), new THREE.Vector3(a.pos.x, a.pos.y + 6.4, a.pos.z), { person: a, resident: true });
+        a.pin = pinElements[pinElements.length - 1];
+      });
+
       // 臨場次數試算看板的標籤
       {
         const m = modById(CALC_PROP.module);
@@ -8378,11 +8493,15 @@
       // 手機：鏡頭拉遠時名牌只留圖示（文字太小又互相重疊），拉近才顯示完整名稱
       const compact = viewW() < 768 && dist > 300;
       if (compact !== _pinCompact) { _pinCompact = compact; document.getElementById('pins-container').classList.toggle('pins-compact', compact); pinElements.forEach(p2 => { p2.w = 0; }); }
+      // 帶著情況的勞工頭上的問號：鏡頭拉遠時縮成小黃點
+      const far = dist > RESIDENT_DOT_DIST;
+      if (far !== _pinFar) { _pinFar = far; document.getElementById('pins-container').classList.toggle('pins-far', far); }
       const near = THREE.MathUtils.clamp(dist * 0.045, 0.8, 4);
       if (Math.abs(camera.near - near) > 0.05) { camera.near = near; camera.updateProjectionMatrix(); }
     }
 
-    let _pinCompact = false;
+    let _pinCompact = false, _pinFar = false;
+    const RESIDENT_DOT_DIST = 260;        // 鏡頭和注視點的距離超過這個值，問號縮成小黃點
     function onPointerDown(e) {
       pointerDownPos.x = e.clientX;
       pointerDownPos.y = e.clientY;
@@ -8887,7 +9006,28 @@
     const liftModal = document.getElementById('liftModal');
     const cvdModal = document.getElementById('cvdModal');
     const situationModal = document.getElementById('situationModal');
-    const ALL_MODALS = [doctorsModal, marketModal, historyModal, calcModal, contactModal, toolsModal, liftModal, cvdModal, situationModal];
+    document.getElementById('routeCopyLink').addEventListener('click', () => { if (activeFlow) copyLink(linkFor('flow', activeFlow)); });
+    document.getElementById('drawerCopyLink').addEventListener('click', () => { if (selectedModule) copyLink(linkFor('island', keyOfModule(selectedModule))); });
+    const privacyModal = document.getElementById('privacyModal');
+    const ALL_MODALS = [doctorsModal, marketModal, historyModal, calcModal, contactModal, toolsModal, liftModal, cvdModal, situationModal, privacyModal];
+    // 隱私權說明：開關瀏覽統計
+    (() => {
+      const btn = document.getElementById('analyticsToggle'), GA_ID = 'G-D66JKDGD3F';
+      const render = () => {
+        const off = readPref('tph-ohs-noanalytics') === '1';
+        btn.textContent = off ? '目前：不提供瀏覽統計（按一下恢復）' : '目前：提供匿名瀏覽統計（按一下關閉）';
+        btn.setAttribute('aria-pressed', String(off));
+        btn.className = 'mt-3 px-4 py-2 rounded-xl text-xs font-bold border transition ' + (off ? 'bg-slate-700/80 text-slate-200 border-white/15' : 'bg-brand-600/30 text-brand-200 border-brand-500/40');
+      };
+      btn.addEventListener('click', () => {
+        const off = readPref('tph-ohs-noanalytics') !== '1';
+        if (!off) track('island_analytics', { action: 'on' });
+        writePref('tph-ohs-noanalytics', off ? '1' : '0'); window['ga-disable-' + GA_ID] = off;
+        render(); showToast(off ? '已停止傳送瀏覽統計' : '已恢復匿名瀏覽統計');
+      });
+      render();
+      document.querySelectorAll('[data-open-privacy]').forEach(a => a.addEventListener('click', (e) => { e.preventDefault(); openModal(privacyModal); }));
+    })();
     // 「我該去哪裡？」的清單：點一個情況，就亮起對應的服務路徑，或飛到對應的島
     (() => {
       const ul = document.getElementById('situationList');
@@ -8897,15 +9037,26 @@
         btn.type = 'button'; btn.className = 'w-full text-left bg-slate-800/70 hover:bg-slate-700/70 border border-white/10 rounded-2xl p-4 flex items-start gap-3 transition';
         btn.innerHTML = `<span class="w-9 h-9 shrink-0 rounded-xl bg-brand-500/15 text-brand-300 flex items-center justify-center" aria-hidden="true">${svgIcon(st.icon)}</span><span class="min-w-0"><span class="block text-sm font-bold text-white"></span><span class="block text-xs text-slate-300 mt-1"></span><span class="block text-[11px] text-brand-300 mt-1"></span></span>`;
         const sp = btn.lastElementChild.children; sp[0].textContent = st.text; sp[1].textContent = st.hint; sp[2].textContent = (dest ? `帶你去 → ${dest}` : '') + (st.contact === 'injury' && CONTACT && CONTACT.injuryPhoneText ? `｜職災業務窗口：${CONTACT.injuryPhoneText.replace(/^.*分機\s*/, '分機 ')}` : '');
-        btn.addEventListener('click', () => {
-          sound.playChime(); closeModal(situationModal);
-          if (st.flow && SCENARIOS[st.flow]) setActiveFlow(st.flow); else if (modById(st.module)) selectModule(modById(st.module));
-          track('island_situation', { index: k, target: st.flow || ('module-' + st.module) });
-        });
+        btn.addEventListener('click', () => { sound.playChime(); closeModal(situationModal); goToSituation(st, k); });
         li.appendChild(btn); ul.appendChild(li);
       });
       document.getElementById('situationBtn').addEventListener('click', () => { sound.playClick(); openModal(situationModal); track('island_situation_open', { from: 'button' }); });
+      // 帶著情況的勞工：抽屜裡的「帶我去看看」與「我該去哪裡？」
+      document.getElementById('personGoBtn').addEventListener('click', () => {
+        const a = selectedAgent;
+        if (!a || !a.situation) return;
+        sound.playChime(); closePersonDrawer();
+        goToSituation(a.situation, a.sitIndex, 'resident');
+      });
+      document.getElementById('personSituationList').addEventListener('click', () => {
+        sound.playClick(); closePersonDrawer(); openModal(situationModal); track('island_situation_open', { from: 'resident' });
+      });
     })();
+    // 「我該去哪裡？」的一項：亮起對應的服務路徑，或飛到對應的島（清單與島上的勞工共用）
+    function goToSituation(st, k, from) {
+      if (st.flow && SCENARIOS[st.flow]) setActiveFlow(st.flow); else if (modById(st.module)) selectModule(modById(st.module));
+      track('island_situation', Object.assign({ index: k, target: st.flow || ('module-' + st.module) }, from ? { from } : {}));
+    }
 
     // 諮詢管道：以資料檔為準套用到所有按鈕（HTML 內已有預設網址，資料檔沒載入時仍可使用）
     // 量測頁首實際高度，讓服務路徑列、地區卡片、巡航橫幅排在它下方（手機頁首會因螢幕寬度換行）
@@ -9749,20 +9900,53 @@
         }
         startTaipeiClockMonitor();
         setLoader(1, '準備完成');
-        if (location.hash === '#calc') setTimeout(() => openModal(calcModal), 1200);
-        if (location.hash === '#lift') setTimeout(() => openLiftDemo('link'), 1200);
-        if (location.hash === '#cvd') setTimeout(() => openCvdTool('link'), 1200);
+        const deepLinked = applyDeepLink();               // 直達連結：?flow=、?island=、?tool=、?view=（舊的 #calc、#lift、#cvd 也還能用）
         track('island_ready', { ms: Math.round(performance.now() - t0) });
         // 載入畫面至少停 900 毫秒，避免一閃而過
         setTimeout(() => {
           hideLoader(true);
           const introPending = readPref(INTRO_KEY) !== '1';
           setTimeout(() => {
-            if (introPending) { if (!tourActive) showIntro(0); }
+            if (introPending && !deepLinked) { if (!tourActive) showIntro(0); }   // 從直達連結進來的人，不先跳出導覽擋住內容
             else showToast('職場健康，職醫把關｜歡迎瀏覽臺北醫院職業醫學科');
           }, 2200);
         }, Math.max(0, 900 - (performance.now() - t0)));
       }));
+    }
+
+    // ---- 直達連結 ----
+    //   ?flow=rtw            打開一條服務路徑（代號見 island-data.js 的 scenarios）
+    //   ?island=clinic       打開一座島（代號見 island-data.js 的 linkKeys）
+    //   ?tool=calc|lift|cvd  打開互動工具
+    //   ?view=guide|contact|doctors|privacy  打開「我該去哪裡？」、企業臨場服務、醫師介紹、隱私權說明
+    //   回傳 true 表示有處理（就不先跳出首次造訪的導覽）
+    const SITE_URL = location.origin + location.pathname;
+    function linkFor(kind, key) { return `${SITE_URL}?${kind}=${encodeURIComponent(key)}`; }
+    function keyOfModule(mod) { return Object.keys(LINK_KEYS).find(k => LINK_KEYS[k] === mod.id) || String(mod.id); }
+    function applyDeepLink() {
+      const q = new URLSearchParams(location.search), hash = location.hash.replace('#', '');
+      const tool = q.get('tool') || (['calc', 'lift', 'cvd'].includes(hash) ? hash : null);
+      const view = q.get('view') || (hash === 'privacy' ? 'privacy' : null);
+      const flow = q.get('flow'), island = q.get('island');
+      let act = null, label = '';
+      if (flow && SCENARIOS[flow]) { act = () => setActiveFlow(flow); label = 'flow:' + flow; }
+      else if (island) {
+        const id = LINK_KEYS[island] !== undefined ? LINK_KEYS[island] : (/^\d+$/.test(island) ? +island : null), m = id === null ? null : modById(id);
+        if (m) { act = () => (m.type === 'region' ? selectRegionNode(m) : selectModule(m)); label = 'island:' + island; }
+      }
+      else if (tool) { act = { calc: () => openModal(calcModal), lift: () => openLiftDemo('link'), cvd: () => openCvdTool('link') }[tool]; label = 'tool:' + tool; }
+      else if (view) { act = { guide: () => openModal(situationModal), contact: () => document.getElementById('btnOpenContact').click(), doctors: () => openModal(doctorsModal), privacy: () => openModal(privacyModal) }[view]; label = 'view:' + view; }
+      if (!act) return false;
+      setTimeout(act, 1400);
+      track('island_deeplink', { target: label, source: q.get('utm_source') || '' });
+      return true;
+    }
+    // 複製直達連結（剪貼簿不能用時，跳出可以手動複製的視窗）
+    function copyLink(url) {
+      const done = () => showToast('已複製連結，可以貼到 LINE 或文宣');
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(done, () => window.prompt('複製這個連結：', url));
+      else window.prompt('複製這個連結：', url);
+      track('island_copylink', { url });
     }
 
     // ---- 載入畫面 ----

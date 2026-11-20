@@ -94,7 +94,7 @@ const html = `<!DOCTYPE html>
   <meta property="og:title" content="服務說明（文字版）｜衛生福利部臺北醫院 職業醫學科">
   <meta property="og:description" content="職業病門診、企業臨場健康服務、職能復健與勞動能力減損鑑定：法規門檻、申請流程與常見問題。">
   <meta property="og:url" content="${SITE}/services.html">
-  <meta property="og:image" content="${SITE}/assets/og-cover.jpg">
+  <meta property="og:image" content="${SITE}/assets/og-cover.jpg?v=20261120">
   <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
   <link rel="stylesheet" href="tailwind.css">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-D66JKDGD3F"></script>
@@ -256,6 +256,11 @@ const html = `<!DOCTYPE html>
         <div>門診掛號：<a class="underline text-brand-300" href="${esc(C.bookingUrl)}" target="_blank" rel="noopener noreferrer">職業醫學科線上掛號</a></div>
         <div>院方網頁：<a class="underline text-brand-300" href="https://www.tph.mohw.gov.tw/?aid=60&amp;pid=225" target="_blank" rel="noopener noreferrer">臺北醫院 職業醫學科</a></div>
       </address>
+    </section>
+
+    <section id="privacy" aria-labelledby="h-privacy">
+      <h2 id="h-privacy" class="text-xl font-extrabold text-white">隱私權說明</h2>
+      <p class="mt-2 text-sm text-slate-300 leading-relaxed">本網站使用 Google Analytics 收集匿名的瀏覽統計（瀏覽的頁面、點選的服務與工具、在服務清單輸入的搜尋關鍵字、裝置類型、大約的所在城市），用來改善服務說明；已關閉 Google 信號與廣告個人化。本網站沒有會員或登入功能，不收集姓名、電話、電子郵件、病歷等可識別個人的資料；互動工具輸入的數字只在你的瀏覽器裡計算。諮詢表單、官方 LINE、預約掛號系統等外部服務，各自依其隱私權政策處理資料。可以在 3D 版的「隱私權說明」中關閉瀏覽統計。</p>
     </section>
 
     <section id="sources" aria-labelledby="h-src" class="text-xs text-slate-400 border-t border-white/10 pt-6">

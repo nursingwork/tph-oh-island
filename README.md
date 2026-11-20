@@ -132,6 +132,11 @@ npx tailwindcss@3.4.17 -c tailwind.config.js -i tailwind.input.css -o tailwind.c
 
 | 日期 | 變更 |
 | --- | --- |
+| 2026-11-20 | 帶著情況的勞工：(1) 看過的人，頭上的黃色問號換成綠色小勾（拉遠時是小綠點），名牌的說明改為「已看過」；只記在這次瀏覽，重新整理就恢復（`markResidentSeen`）。(2) 島上每位都看過後，跳出提示「島上每位有疑問的勞工，你都認識了！還有其他情況，可以按「我該去哪裡？」看看。」，並送出統計 `island_situation_all_seen`。(3) 首次造訪引導第 2 步「不知道從哪裡開始？」補一句「島上頭頂有黃色問號的勞工也可以點，聽聽他遇到的情況。」（`introSteps`）。**(2)(3) 的文字為初稿，待本科醫師核對** |
+| 2026-11-20 | 島上加入「帶著情況的勞工」（**voice 五句皆為初稿，待本科醫師核對**）：(1) `SITUATIONS` 前五項加上 `voice`（勞工用第一人稱說的困擾）；「壓力事件・霸凌」等主任確認後再補，補上 `voice` 島上就會自動多一位。(2) 從遊蕩的勞工裡依序挑出桌機 5 位、手機 3 位（手機取前三項），外觀與走法不變，各對應一項情況；頭上一直顯示黃色小問號（`resident-pin`），鏡頭拉遠（距離超過 `RESIDENT_DOT_DIST` 260）縮成小黃點。(3) 點問號或點人物打開人物說明：標籤「事業單位」「勞工」「有疑問」，依序顯示 voice、可以怎麼幫他（`hint`）、受傷與鑑定兩項的職災業務窗口、「帶我去看看」按鈕（效果和「我該去哪裡？」清單相同，直接打開路徑或島，人物不走過去），以及打開「我該去哪裡？」的小字連結。(4) 清單與按鈕共用 `goToSituation`；統計事件 `island_situation` 加上 `from: 'resident'`（清單送出的內容不變），從人物說明打開清單記為 `island_situation_open`、`from: 'resident'`。voice 不放進文字版（services.html、llms.txt） |
+| 2026-11-20 | 對外文字核對：以官方法規與勞動部公告逐項核對初稿文字。依法修正兩處——母性健康保護的對象改為《女性勞工母性健康保護實施辦法》第 2 條的「保護期間（得知妊娠之日起至分娩後一年）」並註明分娩滿一年仍在哺乳者得請求；職業病認定的判斷原則由「五大基準」改為官方職業病評估報告書的五個評估項目。臨場次數試算的附表二、三、四、七數值已逐項對照勞工健康保護規則 115 年 6 月 26 日修正全文，全部一致（核對日期待主任確認後填入）。需主任判斷的 8 項整理在「職醫守護島 對外文字核對清單」文件 |
+| 2026-11-20 | (1) 隱私權說明（**初稿，請院方確認**）：說明收集的匿名瀏覽統計、不收集的個人資料、存在瀏覽器裡的設定、外部連結；可在說明裡關閉瀏覽統計（存在瀏覽器的 `tph-ohs-noanalytics`，載入時設定 `ga-disable-…`）。入口：服務清單底部、首次造訪的導覽、企業臨場服務視窗，以及 `?view=privacy`；文字版頁面也加了一段。為了和說明一致，搬抬演示的統計事件不再送出使用者調整的數值。(2) 直達連結：`?flow=`、`?island=`、`?tool=`、`?view=`，舊的 `#calc`、`#lift`、`#cvd` 仍可用；從直達連結進來時不先跳出首次造訪的導覽；路徑說明面板與島的說明抽屜新增「複製連結」。統計事件 `island_deeplink` 會記錄從哪個連結進來，可在網址加 `&utm_source=` 區分來源（例如文宣、LINE） |
+| 2026-11-20 | 社群分享圖（`assets/og-cover.jpg`，1200×630）重做：用目前的場景（新的島嶼排列、臺北醫院大樓、各島造景）重新擷取，左側為標誌、標題「職醫守護島」、服務說明與「我該去哪裡？」。網頁引用的網址加上 `?v=20261120`，讓 Facebook、LINE 重新抓取新圖 |
 | 2026-11-20 | 全面檢視後的修正：(1) 首次造訪的導覽文字更新為目前的版面（醫院已不在正中央、服務路徑在左側、新增「我該去哪裡？」一步，共四步）。(2) 文字版頁面（services.html、llms.txt）：服務路徑改用白話站名並標示「有需要時轉介」，新增「我該去哪裡？」段落，聯絡資訊補上職災業務窗口與 1955、1925。(3) 手機上「連點兩下」的提示改為等導覽與視窗都關掉才出現（原本會和導覽疊在一起）。(4) 地區島不會誤開服務島的說明抽屜（原本若傳入地區島會出錯，目前沒有使用者路徑會觸發，屬預防性修正）。(5) 資料檔裡島嶼佈局的舊註解更新 |
 | 2026-11-20 | (1) 聯絡窗口分流，避免找錯業務：企業臨場服務 分機 3242、3244；職災勞工權益、勞動能力減損鑑定等職災業務 分機 3240、3245（`CONTACT.injuryTel`、`injuryPhoneText`）。說明抽屜同時列出兩個窗口，門診、復健、鑑定三座島（`injuryModules`）職災窗口排在前面；各處的專線文字補上職災窗口與「勞工諮詢申訴專線 1955｜安心專線 1925」；「我該去哪裡？」的受傷與鑑定兩項標示職災窗口。(2) 名牌字放大（桌機約 1.3 倍）；名牌和別的名牌重疊時不再隱藏，改為只留圖示（`pin-squeezed`），不重疊時恢復完整名稱；鏡頭不能壓到太低（`maxPolarAngle` 1.3，約離地平線 16 度）。(3) 小工具與指路牌改為只能點名牌打開，點場景裡的物件不會觸發。(4) 修正花帶的角度計算錯誤（每條邊的中段會撒到步道上），步道上已沒有花草。(5) 指路牌移到門廊右側，不擋住救護車。文宣上的 QR code 網址不加入網站 |
 | 2026-11-20 | (1)「職災勞工復工」改為 醫院→門診→職能復健→復工評估（門診與復健不相鄰，路線回頭經過醫院），各站說明同步調整。(2) 步道貼齊島面：島的頂面邊緣有一圈往下收的圓角，平的範圍只到邊心距 28.98（大島）／17.51（小島），原本步道外緣到 30.5，有一段懸在圓角上方。步道中心線改為 27.1（小島 15.63），外緣收在平面之內；橋頭、新莊長橋、花草、角落的樹跟著內移；碼頭在步道和階梯之間加一塊平台蓋過圓角。(3) 指路牌重做：方形木柱加柱頭與底座，牌子都釘在柱子正面（柱子不再穿過牌子），六塊木牌改成箭頭形，柱子位置的圓釘顏色對應目的地；所有招牌的文字加深度偏移，遠看不再閃爍。(4) 三重的管狀溜滑梯改成從坡頂左右彎曲地貼著斜坡滑到地面，有入口平台、出入口的圓框與出口的緩衝墊 |
@@ -227,3 +232,40 @@ npx tailwindcss@3.4.17 -c tailwind.config.js -i tailwind.input.css -o tailwind.c
 - [ ] 用實際手機與科內電腦確認畫面特效的流暢度
 - [ ] 常見問題是否加「為什麼屈膝時壓縮力反而比較高？」（尚未決定）
 - [ ] 完整版 NIOSH（頻率、扭轉、握持、終點）：已決定暫不加入
+
+## 直達連結
+
+把下列網址放進文宣的 QR code、LINE 回覆或衛教單張，打開網站就會直接到那個內容（不先跳出導覽）。也可以在網站裡按路徑說明或島的說明抽屜上的「複製連結」取得。
+
+想知道人是從哪裡來的，可以在網址後面加 `&utm_source=來源`，例如 `https://nursingwork.github.io/tph-oh-island/?flow=rtw&utm_source=flyer`，GA4 的 `island_deeplink` 事件會記錄下來。
+
+| 內容 | 網址 |
+| --- | --- |
+| 職災勞工復工 | https://nursingwork.github.io/tph-oh-island/?flow=rtw |
+| 職業病認定 | https://nursingwork.github.io/tph-oh-island/?flow=occ |
+| 人因性危害預防 | https://nursingwork.github.io/tph-oh-island/?flow=ergo |
+| 母性健康保護 | https://nursingwork.github.io/tph-oh-island/?flow=maternal |
+| 異常工作負荷預防 | https://nursingwork.github.io/tph-oh-island/?flow=overload |
+| 在職勞工健康檢查管理 | https://nursingwork.github.io/tph-oh-island/?flow=mgmt |
+| 新進勞工體格檢查管理 | https://nursingwork.github.io/tph-oh-island/?flow=newhire |
+| 臺北醫院職業醫學科 | https://nursingwork.github.io/tph-oh-island/?island=hospital |
+| 工作環境危害評估 | https://nursingwork.github.io/tph-oh-island/?island=hazard |
+| 員工工作適應性評估 | https://nursingwork.github.io/tph-oh-island/?island=fitness |
+| 職業病與傷害診治（門診） | https://nursingwork.github.io/tph-oh-island/?island=clinic |
+| 職能復健與重返職場 | https://nursingwork.github.io/tph-oh-island/?island=rehab |
+| 四大計畫指導與法規諮詢 | https://nursingwork.github.io/tph-oh-island/?island=plans |
+| 健檢分析與健康管理 | https://nursingwork.github.io/tph-oh-island/?island=health |
+| 勞動能力減損鑑定 | https://nursingwork.github.io/tph-oh-island/?island=appraisal |
+| 新莊區 | https://nursingwork.github.io/tph-oh-island/?island=xinzhuang |
+| 五股區 | https://nursingwork.github.io/tph-oh-island/?island=wugu |
+| 三重區 | https://nursingwork.github.io/tph-oh-island/?island=sanchong |
+| 板橋區 | https://nursingwork.github.io/tph-oh-island/?island=banqiao |
+| 中和區 | https://nursingwork.github.io/tph-oh-island/?island=zhonghe |
+| 臺北市 | https://nursingwork.github.io/tph-oh-island/?island=taipei |
+| 臨場次數試算 | https://nursingwork.github.io/tph-oh-island/?tool=calc |
+| 搬抬演示 | https://nursingwork.github.io/tph-oh-island/?tool=lift |
+| 心血管風險（火山腳下的房子） | https://nursingwork.github.io/tph-oh-island/?tool=cvd |
+| 我該去哪裡？ | https://nursingwork.github.io/tph-oh-island/?view=guide |
+| 企業臨場服務 | https://nursingwork.github.io/tph-oh-island/?view=contact |
+| 醫師介紹 | https://nursingwork.github.io/tph-oh-island/?view=doctors |
+| 隱私權說明 | https://nursingwork.github.io/tph-oh-island/?view=privacy |
