@@ -611,7 +611,7 @@
       </div>
 
       <div class="flex items-center gap-1.5 md:gap-2 pl-2 border-l border-white/10 shrink-0">
-        <button id="bgmToggleBtn" type="button" aria-pressed="false" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-brand-300 border border-brand-500/20 transition flex items-center gap-2 group" title="背景音樂：《沉沒的神殿》Ambient Piano（程式即時合成）">
+        <button id="bgmToggleBtn" type="button" aria-pressed="false" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-brand-300 border border-brand-500/20 transition flex items-center gap-2 group" title="背景音樂：Crystal Loop">
           <div class="flex items-center gap-0.5 h-4 px-0.5 bgm-paused" id="bgmVisualizer" aria-hidden="true">
             <span class="w-1 bg-brand-400 rounded-full audio-bar-1"></span>
             <span class="w-1 bg-brand-400 rounded-full audio-bar-2"></span>
@@ -2768,9 +2768,14 @@
     })();
 
     // =============================================================
-    // 2. 背景音樂引擎 (Web Audio API) — 全部以程式即時合成，不載入任何音檔
+    // 2. 背景音樂引擎 (Web Audio API)
     //
-    // 曲目設定：《沉沒的神殿》Ambient Piano
+    // 背景音樂：音檔《Crystal Loop》（assets/bgm-crystal-loop.ogg，Safari 等不支援 Ogg 的瀏覽器改用 .m4a）
+    //   第一次播放時才下載（約 2 MB），用 Web Audio 無縫循環；換曲子只要替換這兩個檔案（或改 BGM_FILES）
+    //   音量：TRACK_LEVEL（音檔本身偏大聲，平均約 -20 dB，所以壓低一些，不蓋過介面音效）
+    //   音檔下載或解碼失敗時，改用下面的程式合成音樂
+    //
+    // 備援：程式即時合成的《沉沒的神殿》Ambient Piano
     //   風格：Ambient、鋼琴純音樂、電影感、療癒
     //   主題：深海、沉沒的神殿、失落文明、懷舊、神聖
     //   氛圍：靜謐、空靈、感傷、深埋、平靜
@@ -2823,6 +2828,47 @@
         this.CHORD_SECONDS = 8.5;
         this.nextChordAt = 0;
         this.lastNote = 440;
+        // 音檔背景音樂
+        this.BGM_FILES = { ogg: './assets/bgm-crystal-loop.ogg', m4a: './assets/bgm-crystal-loop.m4a' };
+        this.TRACK_LEVEL = 0.45;
+        this.trackBuffer = null; this.trackSrc = null; this.trackGain = null; this.trackLoading = null;
+        this.useSynth = false; this.bedReady = false;
+      }
+
+      trackUrl() {
+        const a = document.createElement('audio');
+        return a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"') ? this.BGM_FILES.ogg : this.BGM_FILES.m4a;
+      }
+      // 下載並解碼音檔（只做一次）；成功回傳 true
+      loadTrack() {
+        if (!this.trackLoading) {
+          this.trackLoading = fetch(this.trackUrl())
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })
+            .then(ab => new Promise((res, rej) => this.ctx.decodeAudioData(ab, res, rej)))   // 回呼寫法：舊版 Safari 也能用
+            .then(buf => { this.trackBuffer = buf; return true; })
+            .catch(e => { console.warn('[BGM] 背景音樂檔載入失敗，改用合成音樂：', e); return false; });
+        }
+        return this.trackLoading;
+      }
+      startTrack() {
+        const c = this.ctx;
+        if (!this.trackGain) { this.trackGain = c.createGain(); this.trackGain.gain.setValueAtTime(this.TRACK_LEVEL, c.currentTime); this.trackGain.connect(this.masterMusicGain); }   // 不經過合成音樂的水下濾波
+        const src = c.createBufferSource(); src.buffer = this.trackBuffer; src.loop = true;
+        src.connect(this.trackGain); src.start();
+        this.trackSrc = src;
+      }
+      startSynth() {
+        if (!this.bedReady) { this.setupDeepSeaBed(); this.bedReady = true; }
+        this.startChords(); this.startMelody(); this.startWhale();
+      }
+      // 開始（或接續）播放：音檔已在播就只靠 resume 接續；第一次先下載音檔，失敗才用合成音樂
+      startMusic() {
+        if (this.trackSrc) return;
+        if (this.useSynth) { this.startSynth(); return; }
+        this.loadTrack().then(ok => {
+          if (!this.isPlaying || this.trackSrc) return;
+          if (ok) this.startTrack(); else { this.useSynth = true; this.startSynth(); }
+        });
       }
 
       init() {
@@ -2833,8 +2879,7 @@
           this.ctx = new AC();
           this.setupMasterBus();
           this.setupSpace();
-          this.setupDeepSeaBed();
-          this.initialized = true;
+          this.initialized = true;                       // 深海底床（合成音樂的一部分）改在需要合成音樂時才建立
           return true;
         } catch (e) {
           console.warn('[BGM] Web Audio 初始化失敗：', e);
@@ -3063,9 +3108,7 @@
         g.linearRampToValueAtTime(this.MUSIC_LEVEL, now + 1.5);
         if (!this.isPlaying) {
           this.isPlaying = true;
-          this.startChords();
-          this.startMelody();
-          this.startWhale();
+          this.startMusic();
         }
         return true;
       }

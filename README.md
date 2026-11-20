@@ -12,7 +12,7 @@
 | `tailwind.config.js`、`tailwind.input.css` | 重新產生 `tailwind.css` 用的設定 | 負責網站的人 |
 | `services.html`、`llms.txt`、`sitemap.xml` | 文字版服務說明、給 AI 搜尋的網站摘要、網站地圖。**由 `build-text-page.js` 自動產生，不要手動改**；改完 island-data.js 後執行 `node build-text-page.js` 重新產生 | 自動產生 |
 | `robots.txt` | 範本；實際生效的版本放在另一個 repository `nursingwork.github.io` 的根目錄（那裡另有入口頁 index.html，負責讓 Google 顯示正確的網站名稱） | 負責網站的人 |
-| `assets/` | 院徽（`logo-mark.png`、`logo-lockup.png`）、網站圖示（`favicon.png`、`apple-touch-icon.png`）、社群分享預覽圖（`og-cover.jpg`） | 負責網站的人 |
+| `assets/` | 院徽（`logo-mark.png`、`logo-lockup.png`）、網站圖示（`favicon.png`、`apple-touch-icon.png`）、社群分享預覽圖（`og-cover.jpg`）、背景音樂（`bgm-crystal-loop.ogg`，以及給 Safari 用的 `bgm-crystal-loop.m4a`） | 負責網站的人 |
 
 所有檔案放在同一個資料夾，`assets` 資料夾也要一起上傳。網站實際運作需要 `index.html`、`island-data.js`、`tailwind.css` 與 `assets/` 資料夾。
 
@@ -132,6 +132,7 @@ npx tailwindcss@3.4.17 -c tailwind.config.js -i tailwind.input.css -o tailwind.c
 
 | 日期 | 變更 |
 | --- | --- |
+| 2026-11-21 | 背景音樂改用音檔《Crystal Loop》（`assets/bgm-crystal-loop.ogg`，96 秒、約 2 MB；瀏覽器不支援 Ogg 時改用同內容的 `bgm-crystal-loop.m4a`，約 1.6 MB）。第一次按下播放（或第一次點畫面）時才下載，用 Web Audio 無縫循環；音量由 `TRACK_LEVEL`（0.45）控制，音檔本身偏大聲所以壓低。音檔下載或解碼失敗時，自動改用原本程式合成的《沉沒的神殿》。換曲子：替換這兩個檔案，或改 `index.html` 的 `BGM_FILES` |
 | 2026-11-21 | 人物的髮型與帽子重做（`index.html` 的 `HEAD_SHAPES`、`HEAD_PARTS`、`headPartColor`）：原本安全帽與頭髮共用同一個半球，改為每種造型各自的形狀。(1) 安全帽：比頭大一圈的帽殼、中央與兩側三條稜、一圈帽簷（前面較長並微微上翹，從上方看得到眼睛），稜與帽簷的顏色深一階。(2) 醫師改為旁分（`sidePart`）。(3) 其他男性與職災勞工改為平頭（`short` → `crew`，髮色淡一點）。(4) 中長髮：整齊瀏海、外層包到下巴高度、髮尾外翻。(5) 包頭：往後梳、較大的髮髻與紅色髮圈。(6) 護士帽：前面往上翻的弧形帽緣加平貼的帽頂，取代兩個方塊。(7) 繃帶：後腦勺加一個結與兩條布尾。走動的人物與造景人物共用同一組形狀；`cap` 半球零件移除。造型的座標都以人物腳底為基準（頭的球心 y 3.95） |
 | 2026-11-20 | 帶著情況的勞工：(1) 看過的人，頭上的黃色問號換成綠色小勾（拉遠時是小綠點），名牌的說明改為「已看過」；只記在這次瀏覽，重新整理就恢復（`markResidentSeen`）。(2) 島上每位都看過後，跳出提示「島上每位有疑問的勞工，你都認識了！還有其他情況，可以按「我該去哪裡？」看看。」，並送出統計 `island_situation_all_seen`。(3) 首次造訪引導第 2 步「不知道從哪裡開始？」補一句「島上頭頂有黃色問號的勞工也可以點，聽聽他遇到的情況。」（`introSteps`）。**(2)(3) 的文字為初稿，待本科醫師核對** |
 | 2026-11-20 | 島上加入「帶著情況的勞工」（**voice 五句皆為初稿，待本科醫師核對**）：(1) `SITUATIONS` 前五項加上 `voice`（勞工用第一人稱說的困擾）；「壓力事件・霸凌」等主任確認後再補，補上 `voice` 島上就會自動多一位。(2) 從遊蕩的勞工裡依序挑出桌機 5 位、手機 3 位（手機取前三項），外觀與走法不變，各對應一項情況；頭上一直顯示黃色小問號（`resident-pin`），鏡頭拉遠（距離超過 `RESIDENT_DOT_DIST` 260）縮成小黃點。(3) 點問號或點人物打開人物說明：標籤「事業單位」「勞工」「有疑問」，依序顯示 voice、可以怎麼幫他（`hint`）、受傷與鑑定兩項的職災業務窗口、「帶我去看看」按鈕（效果和「我該去哪裡？」清單相同，直接打開路徑或島，人物不走過去），以及打開「我該去哪裡？」的小字連結。(4) 清單與按鈕共用 `goToSituation`；統計事件 `island_situation` 加上 `from: 'resident'`（清單送出的內容不變），從人物說明打開清單記為 `island_situation_open`、`from: 'resident'`。voice 不放進文字版（services.html、llms.txt） |
