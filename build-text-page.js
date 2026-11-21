@@ -128,7 +128,8 @@ const html = `<!DOCTYPE html>
       <ul class="mt-3 list-disc pl-5 space-y-1 text-sm text-slate-300">${center.keypoints.map(k => `<li>${esc(k)}</li>`).join('')}</ul>
       <div class="mt-5 flex flex-wrap gap-2 text-sm">
         <a href="${esc(C.formUrl)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-medblue-600 to-brand-500 text-white font-bold">填寫臨場服務諮詢表單</a>
-        <a href="${esc(C.lineUrl)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-[#06c755] text-[#06301a] font-bold">加入官方 LINE</a>
+        <a href="${esc(C.lineUrl)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-[#06c755] text-[#06301a] font-bold">企業臨場服務 LINE</a>${C.injuryLineUrl ? `
+        <a href="${esc(C.injuryLineUrl)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-[#06c755] text-[#06301a] font-bold">職災業務 LINE</a>` : ''}
         <a href="${esc(C.bookingUrl)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 font-bold">職業醫學科門診掛號</a>
       </div>
     </section>
@@ -250,7 +251,8 @@ const html = `<!DOCTYPE html>
         <div>${C.hotlines.map(h => `${esc(h.name)} ${esc(h.num)}`).join('｜')}</div>` : ''}
         <div>電子郵件：<a class="underline text-brand-300" href="mailto:${esc(C.email)}">${esc(C.email)}</a></div>
         <div>諮詢表單：<a class="underline text-brand-300" href="${esc(C.formUrl)}" target="_blank" rel="noopener noreferrer">${esc(C.formUrl)}</a></div>
-        <div>官方 LINE：<a class="underline text-brand-300" href="${esc(C.lineUrl)}" target="_blank" rel="noopener noreferrer">${esc(C.lineUrl)}</a></div>
+        <div>官方 LINE（企業臨場服務）：<a class="underline text-brand-300" href="${esc(C.lineUrl)}" target="_blank" rel="noopener noreferrer">${esc(C.lineUrl)}</a></div>${C.injuryLineUrl ? `
+        <div>官方 LINE（職災業務）：<a class="underline text-brand-300" href="${esc(C.injuryLineUrl)}" target="_blank" rel="noopener noreferrer">${esc(C.injuryLineUrl)}</a></div>` : ''}
         <div>門診掛號：<a class="underline text-brand-300" href="${esc(C.bookingUrl)}" target="_blank" rel="noopener noreferrer">職業醫學科線上掛號</a></div>
         <div>院方網頁：<a class="underline text-brand-300" href="https://www.tph.mohw.gov.tw/?aid=60&amp;pid=225" target="_blank" rel="noopener noreferrer">臺北醫院 職業醫學科</a></div>
       </address>
@@ -310,7 +312,8 @@ ${core.map(m => `- ${m.name}（${m.officialName}）：${m.desc}`).join('\n')}
 - 企業臨場服務：${C.phoneText}${C.injuryPhoneText ? `\n- 職災勞工權益、勞動能力減損鑑定：${C.injuryPhoneText}` : ''}${(C.hotlines || []).length ? `\n- ${C.hotlines.map(h => `${h.name} ${h.num}`).join('｜')}` : ''}
 - Email：${C.email}
 - 諮詢表單：${C.formUrl}
-- 官方 LINE：${C.lineUrl}
+- 官方 LINE（企業臨場服務）：${C.lineUrl}${C.injuryLineUrl ? `
+- 官方 LINE（職災業務）：${C.injuryLineUrl}` : ''}
 - 門診掛號：${C.bookingUrl}
 
 ## 頁面

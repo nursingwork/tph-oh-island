@@ -506,11 +506,12 @@
   ];
 
   // ----------------------------------------------------------------
-  // 諮詢管道：網站上所有「填寫表單／加入 LINE／撥打電話」按鈕都讀這裡
+  // 諮詢管道：網站上所有「填寫表單／加入 LINE」按鈕與電話文字都讀這裡
   // ----------------------------------------------------------------
   const CONTACT = {
     formUrl: 'https://forms.gle/ifUNBS1DWR5aQzCG6',   // 臨場健康服務諮詢表單（Google 表單）
-    lineUrl: 'https://lin.ee/u04Kx5p',                 // 官方 LINE
+    lineUrl: 'https://lin.ee/u04Kx5p',                 // 官方 LINE：企業臨場服務
+    injuryLineUrl: 'https://lin.ee/zJgZbzB',           // 官方 LINE：職災業務（職災勞工權益、勞動能力減損鑑定）
     bookingUrl: 'https://nreg.tph.mohw.gov.tw/OReg/OpoDoctorsVisitListPage?sectcategory=%E5%85%A7%E7%A7%91%E7%B3%BB&sectid=0106&sectname=%E8%81%B7%E6%A5%AD%E9%86%AB%E5%AD%B8%E7%A7%91&showcd=N', // 職業醫學科線上掛號
     email: 'om@tph.mohw.gov.tw',
     // 兩個業務窗口，避免找錯人：企業臨場服務 → 3242、3244；職災勞工權益、勞動能力減損鑑定等職災業務 → 3240、3245

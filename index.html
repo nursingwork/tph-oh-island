@@ -846,17 +846,19 @@
           <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clipboard-pen"></use></svg>填寫臨場服務諮詢表單</span>
           <span class="text-brand-300 font-bold">前往填寫 <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg></span>
         </a>
-        <a data-contact="line" href="https://lin.ee/u04Kx5p" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 transition text-xs text-slate-200">
-          <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-message-circle"></use></svg>加入官方 LINE</span>
-          <span class="font-bold" style="color:#3ddc84">加入好友 <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg></span>
-        </a>
-        <div data-contact-row="phone" class="p-3 rounded-xl bg-slate-800/80 border border-white/10 text-xs text-slate-200">
-          <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-phone"></use></svg>企業臨場服務</span>
-          <span class="block mt-1 pl-6 font-bold text-brand-300" data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span>
+        <div data-contact-row="phone" class="flex items-center justify-between gap-2 p-3 rounded-xl bg-slate-800/80 border border-white/10 text-xs text-slate-200">
+          <div>
+            <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-phone"></use></svg>企業臨場服務</span>
+            <span class="block mt-1 pl-6 font-bold text-brand-300" data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span>
+          </div>
+          <a data-contact="line" href="https://lin.ee/u04Kx5p" target="_blank" rel="noopener noreferrer" aria-label="加入企業臨場服務官方 LINE" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-slate-900/60 hover:bg-slate-700/80 border border-white/10 font-bold transition" style="color:#3ddc84">LINE <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg></a>
         </div>
-        <div id="drawerInjuryTel" class="p-3 rounded-xl bg-slate-800/80 border border-white/10 text-xs text-slate-200">
-          <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-phone"></use></svg>職災權益・勞動能力減損鑑定</span>
-          <span class="block mt-1 pl-6 font-bold text-amber-300" data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</span>
+        <div id="drawerInjuryTel" class="flex items-center justify-between gap-2 p-3 rounded-xl bg-slate-800/80 border border-white/10 text-xs text-slate-200">
+          <div>
+            <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-phone"></use></svg>職災權益・勞動能力減損鑑定</span>
+            <span class="block mt-1 pl-6 font-bold text-amber-300" data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</span>
+          </div>
+          <a data-contact="injuryLine" href="https://lin.ee/zJgZbzB" target="_blank" rel="noopener noreferrer" aria-label="加入職災業務官方 LINE" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-slate-900/60 hover:bg-slate-700/80 border border-white/10 font-bold transition" style="color:#3ddc84">LINE <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg></a>
         </div>
         <a href="https://www.tph.mohw.gov.tw/?aid=60&pid=225" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 transition text-xs text-slate-200">
           <span class="flex items-center gap-2"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-globe"></use></svg>臺北醫院職醫科官方首頁</span>
@@ -1002,7 +1004,7 @@
       </div>
       <div class="text-center text-xs text-slate-400">
         企業臨場服務：<span data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span> ｜ 院址：<span data-contact-text="address">新北市新莊區思源路127號（醫療大樓門診區）</span>
-        <span class="block mt-1">職災勞工權益、勞動能力減損鑑定：<span data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</span></span><span class="block mt-1">勞工諮詢申訴專線 <span class="font-bold">1955</span>｜安心專線 <span class="font-bold">1925</span></span>
+        <span class="block mt-1">職災勞工權益、勞動能力減損鑑定：<span data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</span>｜<a data-contact="injuryLine" href="https://lin.ee/zJgZbzB" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-white">職災業務 LINE</a></span><span class="block mt-1">勞工諮詢申訴專線 <span class="font-bold">1955</span>｜安心專線 <span class="font-bold">1925</span></span>
       </div>
     </div>
   </div>
@@ -1223,7 +1225,7 @@
             <a data-contact="booking" href="https://nreg.tph.mohw.gov.tw/OReg/OpoDoctorsVisitListPage?sectcategory=%E5%85%A7%E7%A7%91%E7%B3%BB&amp;sectid=0106&amp;sectname=%E8%81%B7%E6%A5%AD%E9%86%AB%E5%AD%B8%E7%A7%91&amp;showcd=N" target="_blank" rel="noopener noreferrer" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-xs text-slate-200 text-center transition">🩺 職業醫學科門診掛號 <svg class="icon icon-sm" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"></use></svg></a>
             <a data-contact="email" data-contact-label="email" href="mailto:om@tph.mohw.gov.tw" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-xs text-slate-200 text-center transition break-all"><span class="inline-flex items-center gap-1.5"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg><span data-email-text>om@tph.mohw.gov.tw</span></span></a>
           </div>
-          <p class="text-[11px] text-slate-500 text-center mt-3"><a href="#privacy" data-open-privacy class="underline decoration-dotted hover:text-white">隱私權說明</a>｜企業臨場服務：<span data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span>｜院址：<span data-contact-text="address">新北市新莊區思源路127號（醫療大樓門診區）</span><span class="block mt-1">職災勞工權益、勞動能力減損鑑定：<span data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</span></span><span class="block mt-1">勞工諮詢申訴專線 <span class="font-bold">1955</span>｜安心專線 <span class="font-bold">1925</span></span></p>
+          <p class="text-[11px] text-slate-500 text-center mt-3"><a href="#privacy" data-open-privacy class="underline decoration-dotted hover:text-white">隱私權說明</a>｜企業臨場服務：<span data-contact-text="phone">(02) 2276-5566 分機 3242、3244</span>｜院址：<span data-contact-text="address">新北市新莊區思源路127號（醫療大樓門診區）</span><span class="block mt-1">職災勞工權益、勞動能力減損鑑定：<span data-contact-text="injuryPhone">(02) 2276-5566 分機 3240、3245</span>｜<a data-contact="injuryLine" href="https://lin.ee/zJgZbzB" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-white">職災業務 LINE</a></span><span class="block mt-1">勞工諮詢申訴專線 <span class="font-bold">1955</span>｜安心專線 <span class="font-bold">1925</span></span></p>
         </section>
       </div>
     </div>
@@ -1980,7 +1982,7 @@
         if (!tp.text) problems.push(`tips 第 ${i + 1} 則：缺少 text`);
       });
       if (CONTACT) {
-        ['formUrl', 'lineUrl', 'bookingUrl'].forEach(k => { if (!/^https:\/\//.test(CONTACT[k] || '')) problems.push(`contact.${k}：網址要以 https:// 開頭`); });
+        ['formUrl', 'lineUrl', 'injuryLineUrl', 'bookingUrl'].forEach(k => { if (!/^https:\/\//.test(CONTACT[k] || '')) problems.push(`contact.${k}：網址要以 https:// 開頭`); });
       }
       return problems;
     }
@@ -5596,8 +5598,15 @@
       const c = $('personContact'), showTel = st.contact === 'injury' && CONTACT && CONTACT.injuryPhoneText;
       c.classList.toggle('hidden', !showTel);
       if (showTel && !c.childNodes.length) {
-        c.append('職災業務窗口：');
-        c.append(CONTACT.injuryPhoneText);
+        c.append('職災業務窗口：', CONTACT.injuryPhoneText);
+        if (CONTACT.injuryLineUrl) {
+          const line = document.createElement('a');
+          line.href = CONTACT.injuryLineUrl; line.target = '_blank'; line.rel = 'noopener noreferrer';
+          line.dataset.contact = 'injuryLine';
+          line.className = 'underline decoration-dotted hover:text-white';
+          line.textContent = '職災業務 LINE';
+          c.append('｜', line);
+        }
       }
     }
     function renderPerson() {
@@ -9307,7 +9316,7 @@
 
     function applyContactLinks() {
       if (!CONTACT) return;
-      const href = { form: CONTACT.formUrl, line: CONTACT.lineUrl, booking: CONTACT.bookingUrl, email: CONTACT.email && `mailto:${CONTACT.email}` };
+      const href = { form: CONTACT.formUrl, line: CONTACT.lineUrl, injuryLine: CONTACT.injuryLineUrl, booking: CONTACT.bookingUrl, email: CONTACT.email && `mailto:${CONTACT.email}` };
       document.querySelectorAll('[data-contact]').forEach(a => { if (href[a.dataset.contact]) a.href = href[a.dataset.contact]; });
       document.querySelectorAll('[data-email-text]').forEach(el => { if (CONTACT.email) el.textContent = CONTACT.email; });
       const text = { phone: CONTACT.phoneText, injuryPhone: CONTACT.injuryPhoneText, address: CONTACT.address, serviceArea: CONTACT.serviceArea };
