@@ -4711,7 +4711,6 @@
     };
 
     // 島嶼的步道環：小人沿著這圈散步
-    const islandWalkways = [];
     let WALK_MAT = null;
     // [島群] 服務島的邊緣道路：沿六邊形邊緣一圈（中心線邊心距 ROAD_R，寬 3.2），橋接在每條邊的中央
     //   島的頂面邊緣有一圈往下收的圓角（大島寬 2.2、小島寬 1.54），平的範圍只到邊心距 28.98（大島）／17.51（小島）；
@@ -4782,20 +4781,6 @@
       return [0, 0.2, 0.4, 0.6, 0.8, 1].map(u => new THREE.Vector3(ax + (bx - ax) * u, top + 0.22 + 1.5 * Math.sin(Math.PI * u) + lift, az + (bz - az) * u));
     }
 
-    function addWalkway(cx, cz, topY, r) {
-      if (!WALK_MAT) {
-        WALK_MAT = new THREE.MeshStandardMaterial({
-          color: 0xf1ebe1, roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4
-        });
-      }
-      const g = new THREE.RingGeometry(r - 1.3, r + 1.3, 72, 1);
-      g.rotateX(-Math.PI / 2);
-      const ring = new THREE.Mesh(g, WALK_MAT);
-      ring.position.set(cx, topY + 0.03, cz);
-      ring.receiveShadow = true;
-      scene.add(ring);
-      islandWalkways.push({ cx, cz, y: topY, r });
-    }
 
     // 各島的主題小物件（座標以島中心為原點，避開中央建築與步道）
     // [畫質] 島面細節：沿著島緣撒上隨風擺動的草叢與花叢（每座島的位置固定，不會每次載入都不同）
@@ -4924,61 +4909,6 @@
       }
     }
 
-    // =============================================================
-    // 6.2 [畫質] 島上行人：沿步道散步，全部合併成幾個 InstancedMesh，每幀只更新矩陣
-    // =============================================================
-    const pedestrians = [];
-    let pedMeshes = null;
-
-    function buildPedestrians() {
-      const shirts = ['#f8fafc', '#5eead4', '#93c5fd', '#fda4af', '#fcd34d', '#a7f3d0', '#c4b5fd', '#fdba74'];
-      const pants = ['#334155', '#1f2937', '#475569', '#6b7280'];
-      const hair = ['#1f1d22', '#4a3426', '#6b4a33', '#d9d4cc'];
-      islandWalkways.forEach((w, wi) => {
-        const n = w.r > 20 ? 3 : 2;
-        for (let k = 0; k < n; k++) {
-          const worker = (wi + k) % 4 === 0;  // 有些戴工地安全帽
-          const medic = wi === 0 && k === 0;  // 醫院島上有一位白袍
-          pedestrians.push({
-            w, a: (k / n) * Math.PI * 2 + wi, dir: k % 2 ? -1 : 1,
-            speed: (0.9 + Math.random() * 0.5) / w.r * 4, phase: Math.random() * 6.28,
-            shirt: medic ? '#ffffff' : shirts[(wi * 3 + k) % shirts.length],
-            pants: pants[(wi + k) % pants.length],
-            cap: worker ? '#facc15' : hair[(wi + k * 2) % hair.length],
-            scale: 1
-          });
-        }
-      });
-      if (!pedestrians.length) return;
-
-      const legGeo = new THREE.BoxGeometry(0.42, 1.3, 0.42);
-      legGeo.translate(0, -0.65, 0);
-      const geos = {
-        body: new THREE.CylinderGeometry(0.7, 0.85, 2.1, 10),
-        head: new THREE.SphereGeometry(0.78, 12, 10),
-        cap: new THREE.SphereGeometry(0.82, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2),
-        legL: legGeo, legR: legGeo
-      };
-      Object.assign(geos, personLimbGeos());
-      const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7 });
-      mat.userData.linear = true;
-      const col = new THREE.Color();
-      pedMeshes = {};
-      Object.entries(geos).forEach(([part, geo]) => {
-        const mesh = new THREE.InstancedMesh(geo, mat, pedestrians.length);
-        pedestrians.forEach((pd, i) => {
-          const c = personPartColor(part, pd.shirt, pd.pants, pd.cap);
-          mesh.setColorAt(i, col.set(c).convertSRGBToLinear());
-        });
-        mesh.instanceColor.needsUpdate = true;
-        mesh.frustumCulled = false;
-        mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-        scene.add(mesh);
-        pedMeshes[part] = mesh;
-      });
-      updatePedestrians(0);
-    }
-
     // [人物] 髮型與帽子：走動的居民（實例化零件）與造景人物（合併幾何）共用同一組形狀
     //   每個零件的座標都是相對於人物腳底（頭的球心在 y 3.95、半徑 0.78；眼睛在 y 4.02、z 0.71），一個零件只有一種顏色
     //   helmet 安全帽＝帽殼＋三條稜與帽簷（深一階的顏色）；sidePart 旁分（醫師）；short 平頭（其他男性）；
@@ -5069,7 +4999,6 @@
     const _ped = { base: new THREE.Matrix4(), local: new THREE.Matrix4(), out: new THREE.Matrix4(), q: new THREE.Quaternion(), p: new THREE.Vector3(), s: new THREE.Vector3(), up: new THREE.Vector3(0, 1, 0) };
     // [人物] 所有人物共用的五官與四肢：眼睛兩顆、手臂（袖子同上衣顏色）、手掌（膚色）
     const FACE_LIMBS = { eyeL: [-0.27, 4.02, 0.71], eyeR: [0.27, 4.02, 0.71], armL: [-0.92, 3.3, 0], armR: [0.92, 3.3, 0], handL: [-0.92, 3.3, 0], handR: [0.92, 3.3, 0] };
-    const PED_PARTS = Object.assign({ body: [0, 2.35, 0], head: [0, 3.95, 0], cap: [0, 4.1, 0], legL: [-0.3, 1.35, 0], legR: [0.3, 1.35, 0] }, FACE_LIMBS);
     function personLimbGeos() {
       const arm = new THREE.BoxGeometry(0.3, 1.5, 0.3); arm.translate(0, -0.75, 0);     // 以肩膀為軸
       const eye = new THREE.SphereGeometry(0.1, 8, 6), hand = new THREE.SphereGeometry(0.2, 8, 6);
@@ -5091,29 +5020,6 @@
       return false;
     }
 
-    function updatePedestrians(dt) {
-      if (!pedMeshes) return;
-      const T = _ped;
-      pedestrians.forEach((pd, i) => {
-        pd.a += pd.dir * pd.speed * dt;
-        pd.phase += dt * 7;
-        const x = pd.w.cx + Math.cos(pd.a) * pd.w.r;
-        const z = pd.w.cz + Math.sin(pd.a) * pd.w.r;
-        // 面向前進方向（圓周切線）
-        const yaw = Math.atan2(-Math.sin(pd.a) * pd.dir, Math.cos(pd.a) * pd.dir);
-        T.p.set(x, pd.w.y + Math.abs(Math.sin(pd.phase)) * 0.12, z);
-        T.q.setFromAxisAngle(T.up, yaw);
-        T.s.setScalar(pd.scale);
-        T.base.compose(T.p, T.q, T.s);
-        const swing = Math.sin(pd.phase) * 0.55;
-        Object.entries(PED_PARTS).forEach(([part, off]) => {
-          if (!personLimbLocal(T, part, off, swing, false)) { T.local.identity(); T.local.setPosition(off[0], off[1], off[2]); }
-          pedMeshes[part].setMatrixAt(i, T.out.multiplyMatrices(T.base, T.local));
-        });
-      });
-      Object.values(pedMeshes).forEach(m => { m.instanceMatrix.needsUpdate = true; });
-    }
-
     // =============================================================
     // [島群] 島上的居民：每個人都有自己的任務
     //   遊蕩的人：沿著邊緣道路走，過橋到隔壁島，一座接一座逛下去（不會馬上折返）
@@ -5131,7 +5037,8 @@
       const ROUNDS = [0, 7, 4, 6, 5, 1, 3, 2];   // 醫院 → 鑑定 → 復健 → 健檢分析 → 四大計畫 → 危害評估 → 門診 → 適性評估 → 回醫院
       const roundsOk = ROUNDS.every((id, k) => nb.has(id) && nb.get(id).some(m => m.id === ROUNDS[(k + 1) % ROUNDS.length]));
       const rand = seededRandom(2025);
-      const shirts = ['#f8fafc', '#5eead4', '#93c5fd', '#fda4af', '#fcd34d', '#a7f3d0', '#c4b5fd', '#fdba74'];
+      // 一般居民的上衣：不用白色（遠看像醫師袍，白袍只留給兩位醫師）與淺藍色（造景裡醫護人員的工作服）
+      const shirts = ['#f87171', '#5eead4', '#818cf8', '#fda4af', '#fcd34d', '#a7f3d0', '#c4b5fd', '#fdba74'];
       const pants = ['#334155', '#1f2937', '#475569', '#6b7280'], hair = ['#1f1d22', '#4a3426', '#6b4a33', '#d9d4cc'];
       const list = [];
       for (let k = 0; k < NW + NR; k++) {
@@ -6097,7 +6004,6 @@
       flushVegetation();
       flushFlowers();
       flushKit();
-      buildPedestrians();
       buildAgents();
 
 
@@ -8688,7 +8594,6 @@
         updateWalkers(md);
         updateDoctors(motionTime);
         if (routeArrowMat) routeArrowMat.map.offset.x -= md * 0.35;
-        updatePedestrians(md);
         updateAgents(md);
       }
 
