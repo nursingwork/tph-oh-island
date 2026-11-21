@@ -105,7 +105,7 @@ npx tailwindcss@3.4.17 -c tailwind.config.js -i tailwind.input.css -o tailwind.c
 
 - [ ] 由醫師逐列核對 `calcRules`（已依民國115年6月26日修正之附表二、三、四、七轉錄），確認後填入 `verifiedAt`。
 - [ ] 各服務補上法源連結（`sources`）與核對日期（`verifiedAt`）。
-- [ ] 選用：填入 GA4 評估 ID，取消 `index.html` 開頭那段註解，就能統計哪些服務最常被點。
+- [x] GA4 流量統計：評估 ID `G-D66JKDGD3F` 已於 2026-11-08 啟用（見「流量統計（GA4）」一節）。
 - [ ] 核對服務地區的方位與距離（例如院址本身就在新莊，「新莊區：西南方 1.2 km」需要確認）。
 
 
