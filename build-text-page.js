@@ -130,8 +130,6 @@ const html = `<!DOCTYPE html>
         <a href="${esc(C.formUrl)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-medblue-600 to-brand-500 text-white font-bold">填寫臨場服務諮詢表單</a>
         <a href="${esc(C.lineUrl)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-[#06c755] text-[#06301a] font-bold">加入官方 LINE</a>
         <a href="${esc(C.bookingUrl)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 font-bold">職業醫學科門診掛號</a>
-        <a href="tel:${esc(C.tel)}" class="px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 font-bold">企業臨場服務 ${esc(C.phoneText)}</a>${C.injuryTel ? `
-        <a href="tel:${esc(C.injuryTel)}" class="px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 font-bold">職災權益・勞動能力減損鑑定 ${esc(C.injuryPhoneText)}</a>` : ''}
       </div>
     </section>
 
@@ -247,9 +245,9 @@ const html = `<!DOCTYPE html>
       <address class="not-italic mt-3 text-sm text-slate-300 space-y-1">
         <div>衛生福利部臺北醫院 職業醫學科</div>
         <div>地址：${esc(C.address)}</div>
-        <div>企業臨場服務：<a class="underline text-brand-300" href="tel:${esc(C.tel)}">${esc(C.phoneText)}</a></div>${C.injuryTel ? `
-        <div>職災勞工權益、勞動能力減損鑑定：<a class="underline text-brand-300" href="tel:${esc(C.injuryTel)}">${esc(C.injuryPhoneText)}</a></div>` : ''}${(C.hotlines || []).length ? `
-        <div>${C.hotlines.map(h => `${esc(h.name)} <a class="underline text-brand-300" href="tel:${esc(h.num)}">${esc(h.num)}</a>`).join('｜')}</div>` : ''}
+        <div>企業臨場服務：${esc(C.phoneText)}</div>${C.injuryPhoneText ? `
+        <div>職災勞工權益、勞動能力減損鑑定：${esc(C.injuryPhoneText)}</div>` : ''}${(C.hotlines || []).length ? `
+        <div>${C.hotlines.map(h => `${esc(h.name)} ${esc(h.num)}`).join('｜')}</div>` : ''}
         <div>電子郵件：<a class="underline text-brand-300" href="mailto:${esc(C.email)}">${esc(C.email)}</a></div>
         <div>諮詢表單：<a class="underline text-brand-300" href="${esc(C.formUrl)}" target="_blank" rel="noopener noreferrer">${esc(C.formUrl)}</a></div>
         <div>官方 LINE：<a class="underline text-brand-300" href="${esc(C.lineUrl)}" target="_blank" rel="noopener noreferrer">${esc(C.lineUrl)}</a></div>

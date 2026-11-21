@@ -514,10 +514,8 @@
     bookingUrl: 'https://nreg.tph.mohw.gov.tw/OReg/OpoDoctorsVisitListPage?sectcategory=%E5%85%A7%E7%A7%91%E7%B3%BB&sectid=0106&sectname=%E8%81%B7%E6%A5%AD%E9%86%AB%E5%AD%B8%E7%A7%91&showcd=N', // 職業醫學科線上掛號
     email: 'om@tph.mohw.gov.tw',
     // 兩個業務窗口，避免找錯人：企業臨場服務 → 3242、3244；職災勞工權益、勞動能力減損鑑定等職災業務 → 3240、3245
-    tel: '+886222765566,3242',                         // 企業臨場服務（撥號用：國碼＋號碼，逗號後為分機）
-    phoneText: '(02) 2276-5566 分機 3242、3244',
-    injuryTel: '+886222765566,3240',                   // 職災業務：職災勞工權益、勞動能力減損鑑定
-    injuryPhoneText: '(02) 2276-5566 分機 3240、3245',
+    phoneText: '(02) 2276-5566 分機 3242、3244',       // 企業臨場服務（網站只顯示號碼，不提供撥號按鈕）
+    injuryPhoneText: '(02) 2276-5566 分機 3240、3245', // 職災業務：職災勞工權益、勞動能力減損鑑定
     injuryModules: [3, 4, 7],                          // 這幾座島的說明抽屜，職災業務窗口排在前面
     hotlines: [{ name: '勞工諮詢申訴專線', num: '1955' }, { name: '安心專線', num: '1925' }],
     address: '新北市新莊區思源路127號（醫療大樓門診區）',
