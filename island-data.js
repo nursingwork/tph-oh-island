@@ -183,19 +183,19 @@
     },
 
     // ========= 服務地區（新北市、臺北市）=========
-    //   bearing／distanceKm：本院到各區公所（臺北市為臺北車站）的方位與直線距離，四捨五入到 0.5 km
-    //   座標取自 OpenStreetMap（2026-11-21 計算；五股區公所以中興路四段50號旁的公車站為準）
-    { id: 8, type: 'region', name: '新莊區', bearing: '本院所在地', distanceKm: '—',
+    //   bearing：本院到各區公所（臺北市為臺北車站）的方位，座標取自 OpenStreetMap（2026-11-21 計算）
+    //   不寫距離：遠近以島在畫面上和本島的相對位置為參考
+    { id: 8, type: 'region', name: '新莊區', bearing: '本院所在地',
       transit: '本院位於新莊區思源路127號。', code: 'NEW TAIPEI · XINZHUANG', icon: 'factory', color: '#64748b', gridPos: { x: -129.9, z: -75 }, linkCore: 0 },
-    { id: 9, type: 'region', name: '五股區', bearing: '北北西方 (NNW)', distanceKm: '到區公所 約 5 km',
+    { id: 9, type: 'region', name: '五股區', bearing: '北北西方 (NNW)',
       transit: '區內有新北產業園區（五股工業區）。', code: 'NEW TAIPEI · WUGU', icon: 'cog', color: '#64748b', gridPos: { x: -85, z: -240 }, linkCore: 0 },
-    { id: 10, type: 'region', name: '三重區', bearing: '東北方 (NE)', distanceKm: '到區公所 約 3.5 km',
+    { id: 10, type: 'region', name: '三重區', bearing: '東北方 (NE)',
       transit: '與新莊區相鄰。', code: 'NEW TAIPEI · SANCHONG', icon: 'wrench', color: '#64748b', gridPos: { x: 208, z: -128 } },
-    { id: 11, type: 'region', name: '板橋區', bearing: '正南方 (S)', distanceKm: '到區公所 約 3.5 km',
+    { id: 11, type: 'region', name: '板橋區', bearing: '正南方 (S)',
       transit: '新北市政府所在地，可經大漢橋往返新莊。', code: 'NEW TAIPEI · BANQIAO', icon: 'building-2', color: '#64748b', gridPos: { x: 12, z: 240 } },
-    { id: 12, type: 'region', name: '中和區', bearing: '東南方 (SE)', distanceKm: '到區公所 約 6.5 km',
+    { id: 12, type: 'region', name: '中和區', bearing: '東南方 (SE)',
       transit: '可搭乘捷運環狀線往返新莊。', code: 'NEW TAIPEI · ZHONGHE', icon: 'microscope', color: '#64748b', gridPos: { x: 195, z: 208 } },
-    { id: 13, type: 'region', name: '臺北市', bearing: '正東方 (E)', distanceKm: '到臺北車站 約 6 km',
+    { id: 13, type: 'region', name: '臺北市', bearing: '正東方 (E)',
       transit: '隔淡水河與新北市相鄰，本科臨場服務範圍包含臺北市。', code: 'TAIPEI CITY', icon: 'landmark', color: '#64748b', gridPos: { x: 315, z: 40 } }
   ];
 

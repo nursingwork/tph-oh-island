@@ -713,10 +713,6 @@
         <span class="text-slate-400">相對臺北醫院方位：</span>
         <span id="regionHudBearing" class="font-bold text-amber-300">—</span>
       </div>
-      <div class="flex items-center justify-between p-2 rounded-xl bg-slate-800/80 border border-white/5">
-        <span class="text-slate-400">直線測距：</span>
-        <span id="regionHudDistance" class="font-mono font-bold text-brand-300">—</span>
-      </div>
       <div class="p-2 rounded-xl bg-medblue-500/10 border border-medblue-500/20 text-slate-300 leading-relaxed text-[11px]" id="regionHudTransit"></div>
     </div>
 
@@ -752,7 +748,7 @@
     <span>•</span>
     <span class="flex items-center gap-1.5"><span class="text-brand-400 flex items-center gap-1"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-mouse"></use></svg>點兩下</span> 飛近看細節</span>
     <span>•</span>
-    <span class="flex items-center gap-1.5"><span class="text-medblue-400 flex items-center gap-1"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>點擊外圍地名</span> 查看相距方位與測距</span>
+    <span class="flex items-center gap-1.5"><span class="text-medblue-400 flex items-center gap-1"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>點擊外圍地名</span> 查看相對方位</span>
   </aside>
 
   <!-- ================= 底部行動工具列 ================= -->
@@ -1946,7 +1942,7 @@
         need(m, ['id', 'type', 'name', 'icon', 'gridPos'], where);
         if (m.icon && !ICON_NAMES.has(m.icon)) problems.push(`${where}：圖示「${m.icon}」不在圖示清單中（可用名稱見 README）`);
         if (m.type === 'core') need(m, ['role', 'officialName', 'badge', 'desc', 'keypoints', 'employerBenefit', 'workerBenefit', 'cta'], where);
-        if (m.type === 'region') need(m, ['bearing', 'distanceKm', 'transit', 'code'], where);
+        if (m.type === 'region') need(m, ['bearing', 'transit', 'code'], where);
         (m.sources || []).forEach(src => {
           if (!/^https?:\/\//.test(src.url || '')) problems.push(`${where}：資料來源「${src.label || ''}」的網址要以 https:// 開頭`);
         });
@@ -8993,7 +8989,7 @@
       const camTarget = new THREE.Vector3(reg.gridPos.x + camDist * 0.72, camHeight, reg.gridPos.z + camDist * 0.88);
       shiftForSidePanel(lookTarget, camTarget, panelWidth('regionHudCard', 32));   // 地區卡片在右上角（含右側留白）
       flyCameraTo(camTarget, lookTarget, 1300);
-      showToast(`${reg.name}（${reg.bearing}${reg.distanceKm && reg.distanceKm !== '—' ? ' · ' + reg.distanceKm : ''}）`);
+      showToast(`${reg.name}（${reg.bearing}）`);
     }
 
     // [重構] 醫師標籤與 3D 點擊共用同一函式（原本兩段重複程式碼）
@@ -9023,7 +9019,6 @@
       document.getElementById('regionHudCode').textContent = reg.code;
       document.getElementById('regionHudIcon').innerHTML = svgIcon(reg.icon, 'icon-lg');
       document.getElementById('regionHudBearing').textContent = reg.bearing;
-      document.getElementById('regionHudDistance').textContent = reg.distanceKm;
       document.getElementById('regionHudTransit').textContent = reg.transit;
 
       clearTimeout(regionHudTimer);
@@ -9906,7 +9901,7 @@
         {
           title: '服務地區',
           items: ISLAND_MODULES.filter(m => m.type === 'region' && hit(m)).map(m => ({
-            icon: m.icon, name: m.name, sub: `${m.bearing}・${m.distanceKm}`,
+            icon: m.icon, name: m.name, sub: m.bearing,
             match: (p) => p.module === m, act: () => selectRegionNode(m)
           }))
         }
