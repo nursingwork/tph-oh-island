@@ -5165,8 +5165,8 @@
       const PATROLS = [
         // 職安人員：只在企業端活動，危害評估 ↔ 健檢分析 ↔ 四大計畫 來回
         { role: 'safety', order: [1, 5, 6, 5], n: IS_COARSE_POINTER ? 2 : 3, shirt: '#a3e635', cap: '#2563eb', pants: '#334155', speed: 4.0, dwell: 2.6 },
-        // 事業單位聘僱的護理人員：平常在健檢分析與四大計畫之間；陪同仁就醫時經過臺北醫院到門診、再到配工評估，原路回來
-        { role: 'nurseCorp', order: [6, 5, 6, 2, 0, 2], n: IS_COARSE_POINTER ? 1 : 2, shirt: '#6ee7b7', cap: '#4a3426', pants: '#f8fafc', speed: 3.8, dwell: 3.2 }
+        // 事業單位聘僱的護理人員：只在公司端活動（健檢分析、四大計畫、工作適應性評估）。陪同勞工就醫不是職護的義務，所以不走到醫院
+        { role: 'nurseCorp', order: [6, 5, 6, 2], n: IS_COARSE_POINTER ? 1 : 2, shirt: '#6ee7b7', cap: '#4a3426', pants: '#f8fafc', speed: 3.8, dwell: 3.2 }
       ];
       let ownerForced = false;
       try { ownerForced = /[?&]owner=1/.test(location.search) || readPref('tph-ohs-owner') === 'always'; } catch (e) {}
@@ -5246,7 +5246,8 @@
       // 檢查：島主的特徵組合（灰色上衣＋黑色褲子）不可被其他角色用到
       if (list.some(a => a.role !== 'owner' && a.shirt === '#9ca3af' && a.pants === '#111827')) console.warn('[人物] 有角色用到島主專用的特徵組合（灰色上衣＋黑色褲子），請改用其他配色');
       agents = { list, nb, meshes, keys, rand };
-      buildResidentGlows(list);      list.forEach((a, n) => {
+      buildResidentGlows(list);
+      list.forEach((a, n) => {
         if (a.type === 'route') { planRouteTask(a, n); return; }
         a.pos.copy(roadNode(a.mod, a.node, tileTop(a.mod)));
         if (a.type === 'onsite') return;                                   // 等交通船與碼頭建好後再排行程（見 updateAgents）
@@ -5643,8 +5644,8 @@
                  trait: '螢光黃綠色背心加反光條、藍色安全帽。', desc: '事業單位的職業安全衛生人員，負責辨識與改善作業現場的危害，並和醫護人員一起推動各項預防計畫。',
                  carry: '只在企業端活動：在危害評估、四大預防計畫、健檢分析三座島之間來回。' },
       nurseCorp: { org: 'company', job: '護理師', label: '護理師（事業單位聘僱）', badge: '護理師', icon: 'clipboard-list', color: 0x6ee7b7, sub: '事業單位自己聘僱的職護',
-                 trait: '薄荷綠色上衣、白色長褲，沒有戴帽子，手上沒有拿東西。', desc: '事業單位依規定聘僱的護理師（勞工健康服務護理人員），長期在公司內做健康管理：整理健檢結果、執行預防計畫，需要時協助同仁轉介門診與配工評估。',
-                 carry: '平常在健檢分析與四大計畫之間；有同仁需要時，陪同到工作適應性評估，有需要時再陪同到醫院，然後原路回到公司。' },
+                 trait: '薄荷綠色上衣、白色長褲，沒有戴帽子，手上沒有拿東西。', desc: '事業單位依規定聘僱的護理師（勞工健康服務護理人員），長期在公司內做健康管理：整理健檢結果、執行預防計畫、安排醫師面談與配工評估；同仁需要就醫時，提供轉介與就醫資訊。',
+                 carry: '在公司內的健檢分析、四大計畫與工作適應性評估之間往返。同仁需要就醫時，職護提供轉介與就醫資訊，但陪同就醫不是職護的義務，所以不會跟著到醫院。' },
       owner:   { egg: true, label: '島主', badge: '彩蛋', icon: 'sparkles', color: 0xfde047, sub: '每次進站大約只有一成的機率出現',
                  trait: '光頭、灰色上衣、黑色褲子，頭上有「島主」的名牌。', desc: '恭喜你遇見島主！每次進入守護島，島主大約只有十分之一的機率出現，下次來不一定遇得到。',
                  carry: '謝謝你來逛守護島，祝你工作平安、身體健康。' }
