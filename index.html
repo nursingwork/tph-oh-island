@@ -457,7 +457,7 @@
     .pins-far .resident-pin:not(:focus-visible) { opacity: 0; pointer-events: none; }
     /* 全島畫面只留八座服務島的名稱；地區島、醫師、小工具、島主的名牌拉近才出現（鍵盤切到時仍會出現） */
     .pin-minor > .island-pin, .pin-minor > .region-pin { transition: opacity 0.3s ease, transform 0.25s ease, filter 0.3s ease; }
-    .pins-far .pin-minor > :not(:focus-visible) { opacity: 0 !important; pointer-events: none; }
+    .pins-minor-off .pin-minor > :not(:focus-visible) { opacity: 0 !important; pointer-events: none; }
     /* 名牌的主人被建築物擋住時：半透明 */
     .pin-anchor.pin-occluded > * { opacity: 0.28; }
     .pin-anchor.pin-occluded > *:hover, .pin-anchor.pin-occluded > *:focus-visible { opacity: 1; }
@@ -7699,8 +7699,9 @@
         btn.addEventListener('click', (e) => { e.stopPropagation(); onClick(); });
         anchor.appendChild(btn);
         container.appendChild(anchor);
-        // 次要名牌（地區島、醫師、小工具、島主）：全島畫面先隱藏，只留八座服務島的名稱；拉近才出現（鍵盤仍可選到）
-        const ex = extra || {}, minor = className === 'region-pin' || !!(ex.doctor || ex.person || ex.calc || ex.cvd || ex.lift || ex.guide);
+        // 次要名牌（醫師、小工具、島主）：全島畫面先隱藏，稍微拉近（MINOR_PIN_RATIO）就出現（鍵盤仍可選到）
+        // 地區島在最外圍，拉近後就不在畫面裡，所以名牌在全島畫面就顯示（重疊時縮成圖示，讓位給服務島）
+        const ex = extra || {}, minor = !!(ex.doctor || ex.person || ex.calc || ex.cvd || ex.lift || ex.guide);
         if (minor) anchor.classList.add('pin-minor');
         pinElements.push(Object.assign({ anchor, el: btn, pos: worldPos, visible: true, minor }, extra));
       };
@@ -7844,7 +7845,7 @@
         _occIdx = (_occIdx + 1) % pinElements.length;
         const item = pinElements[_occIdx];
         let hidden = false;
-        if (item.visible && !(item.minor && _pinFar) && pinOwnerPoint(item, _occP)) {
+        if (item.visible && !(item.minor && _minorOff) && pinOwnerPoint(item, _occP)) {
           const dist = camera.position.distanceTo(_occP);
           _occRay.origin.copy(camera.position); _occRay.direction.subVectors(_occP, camera.position).normalize();
           for (let i = 0; i < occluderBoxes.length && !hidden; i++) {
@@ -7897,8 +7898,8 @@
       const order = pinElements.filter(p => p.visible).sort((a, b) => (pinPriority(a) - pinPriority(b)) || (a.depth - b.depth));
       for (const item of order) {
         // 小工具與人物的名牌永遠顯示：不因為和別的名牌重疊而讓位，也不會把島名擠掉
-        // 全島畫面隱藏的次要名牌（地區島）也不佔位置，島名才不會被擠成圖示
-        if (item.doctor || item.person || item.calc || item.lift || item.cvd || item.guide || (item.minor && _pinFar)) {
+        // 全島畫面隱藏的次要名牌也不佔位置，島名才不會被擠成圖示
+        if (item.doctor || item.person || item.calc || item.lift || item.cvd || item.guide || (item.minor && _minorOff)) {
           if (item.cluttered) { item.anchor.classList.remove('pin-squeezed'); item.cluttered = false; }
           continue;
         }
@@ -8725,12 +8726,17 @@
       // 帶著情況的勞工頭上的問號：鏡頭拉遠時隱藏（改由腳下光暈提示）
       const far = dist > RESIDENT_DOT_DIST;
       if (far !== _pinFar) { _pinFar = far; document.getElementById('pins-container').classList.toggle('pins-far', far); }
+      // 醫師、小工具、島主的名牌：從全島畫面稍微拉近（約滾輪兩格）就出現；手機與桌機的全島距離不同，所以用比例
+      const ovC = overviewCameraPos(), ovT = overviewTargetPos();
+      const minorOff = dist > MINOR_PIN_RATIO * Math.hypot(ovC.x - ovT.x, ovC.y - ovT.y, ovC.z - ovT.z);
+      if (minorOff !== _minorOff) { _minorOff = minorOff; document.getElementById('pins-container').classList.toggle('pins-minor-off', minorOff); }
       const near = THREE.MathUtils.clamp(dist * 0.045, 0.8, 4);
       if (Math.abs(camera.near - near) > 0.05) { camera.near = near; camera.updateProjectionMatrix(); }
     }
 
-    let _pinCompact = false, _pinFar = false;
+    let _pinCompact = false, _pinFar = false, _minorOff = false;
     const RESIDENT_DOT_DIST = 260;        // 鏡頭和注視點的距離超過這個值，問號隱藏
+    const MINOR_PIN_RATIO = 0.92;         // 鏡頭距離超過全島畫面距離的 92%，醫師、小工具、島主的名牌隱藏（滾輪一格約拉近 5%）
     function onPointerDown(e) {
       pointerDownPos.x = e.clientX;
       pointerDownPos.y = e.clientY;
