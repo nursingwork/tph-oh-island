@@ -337,9 +337,20 @@
     /* 懸停島嶼時的光環 */
     @media (prefers-reduced-motion: reduce) { .loader-mark { animation: none } .hud-fade { transition: none; opacity: 1; transform: none } .modal > div { animation: none } }
 
+    /* [外觀] 標題與名牌的中文用圓體（Chiron GoRound TC）；字型檔只含網站標題實際用到的字，由 loadHeadingFont() 依內容自動產生 */
+    h1, h2:not(#personTitle), .island-pin span, .region-pin span {
+      font-family: "Plus Jakarta Sans", "Chiron GoRound TC", "PingFang TC", "Noto Sans TC", "Noto Sans CJK TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+
+    /* [外觀] 頁首的音樂、天色按鈕只留圖示，讓標題更醒目；文字改為只給螢幕報讀，滑鼠移上去看提示 */
+    #hud .hud-pill-text { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    /* [外觀] 進場：鏡頭降落時，名牌由中央向外依序浮現 */
+    @keyframes pinIn { from { opacity: 0; translate: 0 10px; } to { opacity: 1; translate: 0 0; } }
+    .pins-intro .island-pin > div, .pins-intro .region-pin > div { animation: pinIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: var(--pin-d, 0s); }
+
     /* [修正] 平板與小筆電（768–1199px）：頁首放不下完整文字，改用精簡版，避免副標題被按鈕蓋住、右側按鈕超出畫面 */
     @media (min-width: 768px) and (max-width: 1199px) {
-      #hud .hud-sub, #hud .hud-pill-text, #hud .hud-long { display: none; }
+      #hud .hud-sub, #hud .hud-long { display: none; }
       #hud .hud-short { display: inline; }
     }
     @media (min-width: 768px) and (max-width: 899px) {
@@ -657,7 +668,7 @@
       </div>
 
       <div class="flex items-center gap-1.5 md:gap-2 pl-2 border-l border-white/10 shrink-0">
-        <button id="bgmToggleBtn" type="button" aria-pressed="false" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-brand-300 border border-brand-500/20 transition flex items-center gap-2 group" title="背景音樂：Crystal Loop">
+        <button id="bgmToggleBtn" type="button" aria-pressed="false" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-white/10 transition flex items-center gap-2 group" title="背景音樂：Crystal Loop">
           <div class="flex items-center gap-0.5 h-4 px-0.5 bgm-paused" id="bgmVisualizer" aria-hidden="true">
             <span class="w-1 bg-brand-400 rounded-full audio-bar-1"></span>
             <span class="w-1 bg-brand-400 rounded-full audio-bar-2"></span>
@@ -669,7 +680,7 @@
           </div>
         <span class="sr-only bgm-sr">背景音樂，按一下播放背景音樂</span></button>
 
-        <button id="timeCycleBtn" type="button" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-amber-400 border border-amber-500/20 transition flex items-center gap-2 group" title="切換天色（切回目前台北時段即恢復自動對齊）">
+        <button id="timeCycleBtn" type="button" class="h-9 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-white/10 transition flex items-center gap-2 group" title="切換天色（切回目前台北時段即恢復自動對齊）">
           <span id="timeCycleIcon" class="flex group-hover:scale-110 transition-transform" aria-hidden="true"><svg class="icon icon-md" aria-hidden="true" focusable="false"><use href="#i-moon"></use></svg></span>
           <div class="hud-pill-text hidden md:flex flex-col text-left leading-none">
             <div class="flex items-center gap-1">
@@ -799,19 +810,19 @@
     <button id="btnOpenContact" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-white bg-gradient-to-r from-brand-600 to-brand-600 hover:from-brand-500 hover:to-brand-500 shadow-lg transition flex items-center gap-2">
       <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-building-2"></use></svg><span class="md:hidden">臨場服務</span><span class="hidden md:inline">企業臨場服務</span>
     </button>
-    <button id="btnOpenDoctors" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-brand-300 hover:border-brand-400/60 hover:shadow-brand-500/10 hover:shadow-lg transition flex items-center gap-2">
+    <button id="btnOpenDoctors" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-slate-100 hover:border-white/40 transition flex items-center gap-2">
       <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-user-round"></use></svg><span class="md:hidden">醫師</span><span class="hidden md:inline">醫師介紹</span>
     </button>
-    <button id="btnOpenMarket" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-amber-300 hover:border-amber-400/60 hover:shadow-amber-500/10 hover:shadow-lg transition flex items-center gap-2">
+    <button id="btnOpenMarket" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-slate-100 hover:border-white/40 transition flex items-center gap-2">
       <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-ruler"></use></svg><span class="md:hidden">勞能鑑定</span><span class="hidden md:inline">勞能鑑定</span>
     </button>
-    <button id="btnOpenHistory" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-medblue-300 hover:border-medblue-400/60 transition flex items-center gap-2">
+    <button id="btnOpenHistory" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-slate-100 hover:border-white/40 transition flex items-center gap-2">
       <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-scroll-text"></use></svg><span class="md:hidden">科室</span><span class="hidden md:inline">科室介紹</span>
     </button>
-    <button id="btnOpenCalc" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-brand-300 hover:border-brand-400/60 transition flex items-center gap-2">
+    <button id="btnOpenCalc" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-slate-100 hover:border-white/40 transition flex items-center gap-2">
       <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-wrench"></use></svg><span class="md:hidden">工具</span><span class="hidden md:inline">互動工具</span>
     </button>
-    <button id="btnTopDownView" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-3.5 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-indigo-300 hover:border-indigo-400/60 hover:shadow-indigo-500/10 transition flex items-center gap-1.5" title="切換垂直俯瞰地圖視角">
+    <button id="btnTopDownView" type="button" class="shrink-0 whitespace-nowrap pointer-events-auto glass-morphism px-3 md:px-3.5 py-2 md:py-2.5 rounded-2xl text-xs md:text-sm font-bold text-slate-100 hover:border-white/40 transition flex items-center gap-1.5" title="切換垂直俯瞰地圖視角">
       <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-map"></use></svg><span class="hidden md:inline">俯瞰</span>
     </button>
     <button id="btnResetView" type="button" aria-label="攝影機置中歸位" class="shrink-0 pointer-events-auto glass-morphism w-9 h-9 md:w-10 md:h-10 rounded-2xl text-slate-300 hover:text-white hover:border-white/30 transition" title="攝影機置中歸位">
@@ -3259,9 +3270,16 @@
       return 3;
     }
 
+    // 天色按鈕只顯示圖示，時段名稱與台北時間放在滑鼠提示
+    function updateTimeTitle() {
+      const btn = document.getElementById('timeCycleBtn');
+      const name = document.getElementById('timePeriodName').textContent, clock = document.getElementById('taipeiClockText').textContent;
+      if (btn) btn.title = `${name}（${clock}）｜按一下切換天色`;
+    }
     function updateTimeUI(preset) {
       document.getElementById('timeCycleIcon').innerHTML = svgIcon(preset.icon, 'icon-md');
       document.getElementById('timePeriodName').textContent = preset.name;
+      updateTimeTitle();
       document.getElementById('autoSyncDot').classList.toggle('hidden', isManualTimeOverride);
     }
 
@@ -3270,7 +3288,7 @@
       const updateClock = () => {
         const tp = getTaipeiTime();
         const txt = `台北 ${tp.hhmm}`;
-        if (clockEl.textContent !== txt) clockEl.textContent = txt;
+        if (clockEl.textContent !== txt) { clockEl.textContent = txt; updateTimeTitle(); }
         if (!isManualTimeOverride) {
           const autoMode = getTaipeiPeriodMode(tp.hour);
           if (autoMode !== timeMode) applyTimeMode(autoMode, true, false);
@@ -3425,6 +3443,7 @@
       buildTransport();
       buildWeather();
       setupIslandPins();
+      loadHeadingFont();   // 名牌建好後，依實際用到的字下載標題字型
       setupTipCloud();
       // buildRegionalVectors();   // [交通] 原本從醫院中心拋向各區的弧形虛線，已由交通船與長橋取代
 
@@ -10236,6 +10255,24 @@
       track('island_copylink', { url });
     }
 
+    // ---- 標題字型：只向 Google Fonts 下載標題、名牌、島名實際用到的中文字（一種粗細，約 95 KB，名牌建好後才下載，不擋住載入），改了資料檔的島名也會自動跟上 ----
+    let headingFontLoaded = false;
+    function loadHeadingFont() {
+      if (headingFontLoaded) return;
+      headingFontLoaded = true;
+      try {
+        const parts = [...document.querySelectorAll('h1, h2:not(#personTitle), .island-pin, .region-pin')].map(e => e.textContent);
+        (typeof ISLAND_MODULES !== 'undefined' ? ISLAND_MODULES : []).forEach(m => parts.push(m.name || ''));
+        (typeof INTRO_STEPS !== 'undefined' ? INTRO_STEPS : []).forEach(st => parts.push(st[0] || ''));
+        const chars = [...new Set([...parts.join('')].filter(ch => ch.charCodeAt(0) > 0x2000))].join('');
+        if (!chars) return;
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@800&display=swap&text=' + encodeURIComponent(chars);
+        document.head.appendChild(link);
+      } catch (e) { /* 字型載入失敗就用電腦內建字型 */ }
+    }
+
     // ---- 載入畫面 ----
     function setLoader(frac, text) {
       const fill = document.getElementById('loaderFill');
@@ -10243,6 +10280,7 @@
       if (text) document.getElementById('loaderText').textContent = text;
     }
     function hideLoader(withEntrance) {
+      loadHeadingFont();   // 3D 沒有建立時（備援畫面）也載入；正常情況在名牌建好時就已載入
       const loader = document.getElementById('loader');
       loader.classList.add('done');
       setTimeout(() => loader.remove(), 800);
@@ -10253,6 +10291,11 @@
         camera.position.set(ov.x * 1.9, ov.y * 2.4, ov.z * 1.9);
         controls.update();
         flyCameraTo(ov, overviewTargetPos(), 2600);
+        // 名牌由中央向外依序浮現（鏡頭快降落時開始），結束後拿掉，之後的名牌照常顯示
+        const pc = document.getElementById('pins-container');
+        pinElements.forEach(p => { p.anchor.style.setProperty('--pin-d', (1.3 + Math.hypot(p.pos.x, p.pos.z) / 76.07 * 0.22).toFixed(2) + 's'); });
+        pc.classList.add('pins-intro');
+        setTimeout(() => pc.classList.remove('pins-intro'), 3600);
       }
       markActive();
     }
