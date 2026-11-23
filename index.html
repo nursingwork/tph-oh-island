@@ -9702,6 +9702,13 @@
     const fmtN = (n) => Number(n).toLocaleString('zh-TW');
     const inRange = (n, row) => n >= row.min && n <= row.max;
     const rocDate = (iso) => { const [y, m, d] = iso.split('-').map(Number); return `民國${y - 1911}年${m}月${d}日`; };
+    // 把「1次/年」「1次/3個月」「4次/月」換算成每年幾次，用來比較頻率高低
+    const freqPerYear = (t) => {
+      const m = /(\d+)次\/(\d*)個?(月|年)/.exec(t || '');
+      if (!m) return 0;
+      const n = +m[1], k = +(m[2] || 1);
+      return m[3] === '年' ? n / k : n * 12 / k;
+    };
     const notYet = (iso) => iso && Date.now() < new Date(iso + 'T00:00:00+08:00').getTime();
 
     // 滑桿用對數刻度：1～20,000 人
@@ -9799,15 +9806,14 @@
               out.notes.push(`勞工超過 ${fmtN(t2.extraOver)} 人，每增 ${fmtN(t2.extraStep)} 人，第${cls}類應增加 ${t2.extraPerMonth[cls]}次/月；本例增加 ${k} 級，共 ${add}次/月（附表二備註一）。`);
             }
           }
-          docs.push({ text, basis: `第3條・附表二（第${cls}類 ${fmtN(row.min)}${row.max === Infinity ? '人以上' : `～${fmtN(row.max)}人`}）`, perYear });
+          docs.push({ text, basis: `第3條・附表二（第${cls}類 ${fmtN(row.min)}${row.max === Infinity ? '人以上' : `～${fmtN(row.max)}人`}）`, perYear, general: true });
         }
         if (S >= 50) {
           const row = t2.special.find(r => inRange(S, r));
-          docs.push({ text: row.freq, basis: `第3條・附表二（特別危害健康作業 ${row.max === Infinity ? `${row.min}人以上` : `${row.min}～${row.max}人`}）`, perYear: row.perYear });
+          docs.push({ text: row.freq, basis: `第3條・附表二（特別危害健康作業 ${row.max === Infinity ? `${row.min}人以上` : `${row.min}～${row.max}人`}）`, perYear: row.perYear, special: true });
         }
         docs.forEach(d => out.doctor.push(d));
         if (N < 300) out.notes.push('勞工未滿 300 人、特別危害健康作業 50 人以上：附表四的臨場服務頻率照常適用；依附表四備註三，「應另」依附表二、附表三所定人力配置及臨場服務頻率，特約職業醫學科專科醫師及僱用護理人員，兩者都要辦理。');
-        if (docs.length > 1) out.notes.push('同時符合附表二兩列規定，建議以頻率較高者安排，並確保特別危害健康作業由職業醫學科專科醫師服務。');
         out.notes.push(`醫師每次臨場服務至少 ${t2.minHours} 小時（附表二備註二）。`);
 
         // 附表三：護理人員人力配置（僱用）
@@ -9836,7 +9842,7 @@
         else if (S >= 1) row = t4.special5099;
         if (row) {
           const label = N >= 100 ? `第${cls}類 ${row.min}～${row.max}人` : '50～99人且具特別危害健康作業';
-          out.doctor.unshift({ text: row.doctor, basis: `第4條・附表四（${label}）` });
+          out.doctor.unshift({ text: row.doctor, basis: `第4條・附表四（${label}）`, perYear: freqPerYear(row.doctor), general: true });
           if (employedNurses > 0) out.notes.push(`附表四護理人員臨場 ${row.nurse}：已依附表三僱用護理人員，僱用的層級高於特約，不必另外特約護理人員臨場。`);
           else out.nurse.unshift({ text: `臨場 ${row.nurse}`, basis: `第4條・附表四（${label}）` });
           out.notes.push(`每次臨場服務至少 ${t4.minHours} 小時，且每日不得超過 ${t4.maxPerDay} 場次；醫護人員應會同職業安全衛生人員每年度至少現場訪視 1 次，共同研訂年度重點工作事項（附表四備註一、二）。`);
@@ -9844,6 +9850,21 @@
         } else {
           addRecommendation('附表四未列50～99人且無特別危害作業之級距');
         }
+      }
+
+      // [整合] 醫師欄：一般醫師頻率（附表二依事業分類或附表四）與職醫頻率（附表二特別危害健康作業）合併成一行
+      //   一般頻率等於或低於職醫頻率 → 只列職醫頻率（職醫臨場也算醫師臨場）
+      //   一般頻率高於職醫頻率 → 列一般頻率，並註明其中包含的職醫次數
+      const gen = out.doctor.find(d => d.general), sp = out.doctor.find(d => d.special);
+      if (gen && sp) {
+        const merged = gen.perYear > sp.perYear
+          ? { text: gen.text, sub: `含${sp.text}`, basis: `${gen.basis}；${sp.basis}` }
+          : { text: sp.text, basis: `${sp.basis}；已涵蓋${gen.basis} ${gen.text}` };
+        out.doctor = out.doctor.filter(d => d !== gen && d !== sp);
+        out.doctor.unshift(merged);
+        out.notes.push(gen.perYear > sp.perYear
+          ? `醫師臨場 ${gen.text}，其中至少 ${sp.text.replace('職業醫學科專科醫師 ', '')} 須由職業醫學科專科醫師服務（特別危害健康作業）。`
+          : `醫師臨場頻率（${gen.text}）不高於職業醫學科專科醫師的頻率，由職業醫學科專科醫師臨場即可涵蓋。`);
       }
 
       if (out.doctor.length || out.nurse.length) {
@@ -9871,7 +9892,14 @@
         const basis = document.createElement('div');
         basis.className = it.recommended ? 'text-[10px] text-amber-300/80 mt-0.5' : 'text-[10px] text-slate-400 mt-0.5';
         basis.textContent = it.basis;
-        li.append(main, basis);
+        li.append(main);
+        if (it.sub) {   // 例如醫師欄的「含職業醫學科專科醫師 1次/4個月」
+          const sub = document.createElement('div');
+          sub.className = 'text-sm font-bold text-brand-300 leading-snug mt-0.5';
+          sub.textContent = it.sub;
+          li.append(sub);
+        }
+        li.append(basis);
         ul.appendChild(li);
       });
     }
