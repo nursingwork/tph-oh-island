@@ -9784,6 +9784,7 @@
 
       // ---- 第3條：勞工 300 人以上，或特別危害健康作業 50 人以上（附表二、附表三）----
       const art3 = N >= 300 || S >= 50;
+      let employedNurses = 0;   // 附表三應僱用的護理人員數；僱用的層級高於特約，有僱用就不再另列附表四的特約護理人員
       if (art3) {
         const docs = [];
         if (N >= 300) {
@@ -9805,7 +9806,7 @@
           docs.push({ text: row.freq, basis: `第3條・附表二（特別危害健康作業 ${row.max === Infinity ? `${row.min}人以上` : `${row.min}～${row.max}人`}）`, perYear: row.perYear });
         }
         docs.forEach(d => out.doctor.push(d));
-        if (N < 300) out.notes.push('特別危害健康作業 50 人以上，依附表四備註三，以附表二、附表三所定人力配置及臨場服務頻率辦理。');
+        if (N < 300) out.notes.push('勞工未滿 300 人、特別危害健康作業 50 人以上：附表四的臨場服務頻率照常適用；依附表四備註三，「應另」依附表二、附表三所定人力配置及臨場服務頻率，特約職業醫學科專科醫師及僱用護理人員，兩者都要辦理。');
         if (docs.length > 1) out.notes.push('同時符合附表二兩列規定，建議以頻率較高者安排，並確保特別危害健康作業由職業醫學科專科醫師服務。');
         out.notes.push(`醫師每次臨場服務至少 ${t2.minHours} 小時（附表二備註二）。`);
 
@@ -9814,26 +9815,30 @@
         const row3 = t3.rows.find(r => inRange(N, r));
         let nurses = row3 ? row3.counts[col] : 0;
         if (nurses > 0 && N > t3.extraOver) nurses += Math.floor((N - t3.extraOver) / t3.extraStep);
+        employedNurses = nurses;
         if (nurses > 0) {
           out.nurse.push({ text: `僱用護理人員 ${nurses} 人`, basis: `第3條・附表三（勞工${fmtN(row3.min)}${row3.max === Infinity ? '人以上' : `～${fmtN(row3.max)}人`}、特別危害作業${['0～99人', '100～299人', '300人以上'][col]}）` });
           if (nurses >= t3.supervisorAt) out.notes.push(`護理人員達 ${t3.supervisorAt} 人以上，得置護理主管 1 人（附表三備註二）。`);
           if (N >= 3000) out.notes.push('勞工 3,000 人以上，僱用之心理師、職能治療師、物理治療師或公共衛生師得納入附表三計算，但護理人員比例應達四分之三以上（第3條第2、3項）。');
         } else if (N < 300) {
-          out.nurse.push({ text: '附表三未規定僱用護理人員（勞工未滿300人且特別危害作業未滿100人）', basis: '第3條・附表三', muted: true });
+          out.nurse.push({ text: '附表三未規定須僱用護理人員（勞工未滿300人且特別危害作業未滿100人），護理人員依上列附表四特約臨場', basis: '第3條・附表三', muted: true });
         }
         out.notes.push('第3條所定醫護人員：醫師得僱用或特約，護理人員應僱用；僱用之勞工健康服務人員不得兼任其他與勞工健康服務無關之工作（第6條）。');
       }
 
       // ---- 第4條：勞工 50 人以上未達 300 人（附表四）----
-      // 特別危害健康作業 50 人以上者，依附表四備註三改依附表二、附表三辦理，這裡不再重複列附表四
-      if (N < 300 && !art3) {
+      // [修正] 附表四備註三原文是「應另分別依附表二及附表三」：特別危害健康作業 50 人以上時，附表四照常適用，
+      //   附表二、附表三是另外加上去的，不是取代。舊版在這種情況把附表四整個拿掉，
+      //   造成「勞工未滿 300 人、特別危害作業 50～99 人」時，附表三不必僱用護理人員，護理人員一欄就沒有任何臨場頻率。
+      if (N < 300) {
         let row = null;
         if (N >= 100) row = t4.byClass[cls].find(r => inRange(N, r));
         else if (S >= 1) row = t4.special5099;
         if (row) {
           const label = N >= 100 ? `第${cls}類 ${row.min}～${row.max}人` : '50～99人且具特別危害健康作業';
           out.doctor.unshift({ text: row.doctor, basis: `第4條・附表四（${label}）` });
-          out.nurse.unshift({ text: `臨場 ${row.nurse}`, basis: `第4條・附表四（${label}）` });
+          if (employedNurses > 0) out.notes.push(`附表四護理人員臨場 ${row.nurse}：已依附表三僱用護理人員，僱用的層級高於特約，不必另外特約護理人員臨場。`);
+          else out.nurse.unshift({ text: `臨場 ${row.nurse}`, basis: `第4條・附表四（${label}）` });
           out.notes.push(`每次臨場服務至少 ${t4.minHours} 小時，且每日不得超過 ${t4.maxPerDay} 場次；醫護人員應會同職業安全衛生人員每年度至少現場訪視 1 次，共同研訂年度重點工作事項（附表四備註一、二）。`);
           out.notes.push('經醫護人員評估有心理或肌肉骨骼疾病預防需求，得特約心理師、職能治療師等相關人員，服務頻率可納入附表四計算，但護理人員總服務頻率應達二分之一以上（第4條第2項）。');
         } else {
